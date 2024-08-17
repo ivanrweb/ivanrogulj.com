@@ -21,6 +21,7 @@
       "@ivanrogulj.com/dashboard": [
         "libs/frontend/shared/ui/dashboard/src/index.ts"
       ],
+      "@ivanrogulj.com/footer": ["libs/frontend/shared/ui/footer/src/index.ts"],
       "@ivanrogulj.com/juce-project-list": [
         "libs/frontend/domain/juce-project-list/src/index.ts"
       ],
@@ -32,7 +33,10 @@
       "@ivanrogulj.com/not-found": [
         "libs/frontend/shared/ui/not-found/src/index.ts"
       ],
-      "@ivanrogulj.com/ui": ["apps/frontend/shared/ui/src/index.ts"]
+      "@ivanrogulj.com/ui": ["apps/frontend/shared/ui/src/index.ts"],
+      "@ivanrogulj.com/wrapper": [
+        "libs/frontend/shared/ui/wrapper/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -18,7 +18,7 @@ export class NavComponent {
       url: 'dashboard'
     },
     {
-      title: 'Web Audio API Projects',
+      title: 'Web Audio API',
       url: 'audio-api-projects'
     },
     {
