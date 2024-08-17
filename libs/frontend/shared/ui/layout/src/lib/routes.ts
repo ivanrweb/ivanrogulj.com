@@ -8,6 +8,11 @@ export const routes: Routes = [
       import('@ivanrogulj.com/dashboard').then(m => m.DashboardComponent),
   },
   {
+    path: 'dashboard',
+    loadComponent: () =>
+      import('@ivanrogulj.com/dashboard').then(m => m.DashboardComponent),
+  },
+  {
     path: 'audio-api-projects',
     loadComponent: () =>
       import('@ivanrogulj.com/audio-api-project-list').then(m => m.AudioApiProjectListComponent),

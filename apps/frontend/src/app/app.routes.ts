@@ -1,11 +1,11 @@
 import { Route } from '@angular/router';
-import { LayoutComponent } from '@ivanrogulj.com/layout';
 
 export const appRoutes: Route[] = [
 
   {
     path: '',
-    component: LayoutComponent,
+    loadComponent: () =>
+      import('@ivanrogulj.com/layout').then(m => m.LayoutComponent),
     children: [
       {
         path: '',
@@ -15,6 +15,7 @@ export const appRoutes: Route[] = [
   },
   {
     path: '**',
-    redirectTo: ''
+    loadComponent: () =>
+      import('@ivanrogulj.com/not-found').then(m => m.NotFoundComponent),
   }
 ];

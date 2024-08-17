@@ -29,6 +29,9 @@
       "@ivanrogulj.com/nav-item": [
         "libs/frontend/shared/ui/nav-item/src/index.ts"
       ],
+      "@ivanrogulj.com/not-found": [
+        "libs/frontend/shared/ui/not-found/src/index.ts"
+      ],
       "@ivanrogulj.com/ui": ["apps/frontend/shared/ui/src/index.ts"]
     }
   },

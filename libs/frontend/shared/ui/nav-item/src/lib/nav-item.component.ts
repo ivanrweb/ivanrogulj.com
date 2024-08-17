@@ -8,7 +8,7 @@ import { NavItem } from './nav-item.interface';
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './nav-item.component.html',
-  styleUrl: './nav-item.component.css',
+  styleUrl: './nav-item.component.scss',
 })
 export class NavItemComponent {
   @Input()

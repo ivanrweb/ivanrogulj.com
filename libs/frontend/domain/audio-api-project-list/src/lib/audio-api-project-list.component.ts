@@ -6,6 +6,6 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './audio-api-project-list.component.html',
-  styleUrl: './audio-api-project-list.component.css',
+  styleUrl: './audio-api-project-list.component.scss',
 })
 export class AudioApiProjectListComponent {}

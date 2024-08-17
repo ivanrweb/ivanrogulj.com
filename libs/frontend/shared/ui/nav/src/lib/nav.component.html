@@ -1,3 +1,5 @@
 <nav>
-  <lib-nav-item *ngFor="let navItem of navItems" [routerLink]="navItem.url" [item]="navItem"></lib-nav-item>
+  <section class="items">
+    <lib-nav-item *ngFor="let navItem of navItems" [routerLink]="navItem.url" [item]="navItem"></lib-nav-item>
+  </section>
 </nav>

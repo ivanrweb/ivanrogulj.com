@@ -6,6 +6,6 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './juce-project-list.component.html',
-  styleUrl: './juce-project-list.component.css',
+  styleUrl: './juce-project-list.component.scss',
 })
 export class JuceProjectListComponent {}
