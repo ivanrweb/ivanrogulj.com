@@ -14,7 +14,23 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@ivanrogulj.com/audio-api-project-list": [
+        "libs/frontend/domain/audio-api-project-list/src/index.ts"
+      ],
+      "@ivanrogulj.com/dashboard": [
+        "libs/frontend/shared/ui/dashboard/src/index.ts"
+      ],
+      "@ivanrogulj.com/juce-project-list": [
+        "libs/frontend/domain/juce-project-list/src/index.ts"
+      ],
+      "@ivanrogulj.com/layout": ["libs/frontend/shared/ui/layout/src/index.ts"],
+      "@ivanrogulj.com/nav": ["libs/frontend/shared/ui/nav/src/index.ts"],
+      "@ivanrogulj.com/nav-item": [
+        "libs/frontend/shared/ui/nav-item/src/index.ts"
+      ],
+      "@ivanrogulj.com/ui": ["apps/frontend/shared/ui/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
