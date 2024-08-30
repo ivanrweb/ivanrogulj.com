@@ -33,6 +33,12 @@
       "@ivanrogulj.com/not-found": [
         "libs/frontend/shared/ui/not-found/src/index.ts"
       ],
+      "@ivanrogulj.com/tile-item": [
+        "libs/frontend/shared/ui/tile-item/src/index.ts"
+      ],
+      "@ivanrogulj.com/tile-list": [
+        "libs/frontend/shared/ui/tile-list/src/index.ts"
+      ],
       "@ivanrogulj.com/ui": ["apps/frontend/shared/ui/src/index.ts"],
       "@ivanrogulj.com/wrapper": [
         "libs/frontend/shared/ui/wrapper/src/index.ts"
