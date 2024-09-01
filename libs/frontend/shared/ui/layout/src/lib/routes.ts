@@ -24,6 +24,11 @@ export const routes: Routes = [
         path: 'modular-synth',
         loadComponent: () =>
           import('@ivanrogulj.com/modular-synth').then(m => m.ModularSynthComponent),
+      },
+      {
+        path: 'analog-synth',
+        loadComponent: () =>
+          import('@ivanrogulj.com/analog-synth').then(m => m.AnalogSynthComponent),
       }
     ]
   },
