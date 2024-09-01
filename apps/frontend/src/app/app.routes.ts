@@ -20,7 +20,7 @@ export const appRoutes: Route[] = [
     children: [
       {
         path: '',
-        children: routes,
+        loadChildren: () => import('@ivanrogulj.com/layout').then(m => m.routes),
       },
     ]
   },

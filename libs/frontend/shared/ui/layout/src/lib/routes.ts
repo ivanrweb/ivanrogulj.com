@@ -13,12 +13,19 @@ export const routes: Routes = [
       import('@ivanrogulj.com/dashboard').then(m => m.DashboardComponent),
   },
   {
-    path: 'audio-api-projects',
+    path: 'synths',
     loadComponent: () =>
       import('@ivanrogulj.com/audio-api-project-list').then(m => m.AudioApiProjectListComponent),
+    children: [
+      {
+        path: 'modular-synth',
+        loadComponent: () =>
+          import('@ivanrogulj.com/modular-synth').then(m => m.ModularSynthComponent),
+      }
+    ]
   },
   {
-    path: 'juce-projects',
+    path: 'juce',
     loadComponent: () =>
       import('@ivanrogulj.com/juce-project-list').then(m => m.JuceProjectListComponent),
   }

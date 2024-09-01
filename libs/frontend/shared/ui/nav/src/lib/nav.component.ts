@@ -19,11 +19,11 @@ export class NavComponent {
     },
     {
       title: 'My Synths',
-      url: 'audio-api-projects'
+      url: 'synths'
     },
     {
       title: 'JUCE Plugins',
-      url: 'juce-projects'
+      url: 'juce'
     }
   ]
 }

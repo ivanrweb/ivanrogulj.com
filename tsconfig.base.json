@@ -26,6 +26,9 @@
         "libs/frontend/domain/juce-project-list/src/index.ts"
       ],
       "@ivanrogulj.com/layout": ["libs/frontend/shared/ui/layout/src/index.ts"],
+      "@ivanrogulj.com/modular-synth": [
+        "libs/frontend/domain/audio-api-project-list/modular-synth/src/index.ts"
+      ],
       "@ivanrogulj.com/nav": ["libs/frontend/shared/ui/nav/src/index.ts"],
       "@ivanrogulj.com/nav-item": [
         "libs/frontend/shared/ui/nav-item/src/index.ts"
