@@ -8,4 +8,6 @@ import { CommonModule } from '@angular/common';
   templateUrl: './modular-synth.component.html',
   styleUrl: './modular-synth.component.css',
 })
-export class ModularSynthComponent {}
+export class ModularSynthComponent {
+
+}

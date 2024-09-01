@@ -1,5 +1,4 @@
 import { Route } from '@angular/router';
-import { LayoutComponent, routes } from '@ivanrogulj.com/layout';
 
 export const appRoutes: Route[] = [
 
@@ -16,7 +15,7 @@ export const appRoutes: Route[] = [
   // },
   {
     path: '',
-    component: LayoutComponent,
+    loadComponent: () => import('@ivanrogulj.com/layout').then(m => m.LayoutComponent),
     children: [
       {
         path: '',

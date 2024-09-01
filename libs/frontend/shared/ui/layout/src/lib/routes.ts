@@ -14,9 +14,12 @@ export const routes: Routes = [
   },
   {
     path: 'synths',
-    loadComponent: () =>
-      import('@ivanrogulj.com/audio-api-project-list').then(m => m.AudioApiProjectListComponent),
     children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('@ivanrogulj.com/audio-api-project-list').then(m => m.AudioApiProjectListComponent),
+      },
       {
         path: 'modular-synth',
         loadComponent: () =>
@@ -24,6 +27,7 @@ export const routes: Routes = [
       }
     ]
   },
+
   {
     path: 'juce',
     loadComponent: () =>
