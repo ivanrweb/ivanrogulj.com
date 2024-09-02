@@ -19,6 +19,7 @@ export class AudioContextService {
   public createAndStartOsc(): OscillatorNode {
     const osc = this.context.createOscillator();
     this.setOscProperties(osc);
+    osc.frequency.value = 440;
     osc.start();
     return osc;
   }

@@ -26,11 +26,18 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       oscillators: [],
       filters: [],
     });
+
+    this.midiService.midiMessage$.subscribe(({ note }) => {
+      const frequency = this.midiService.midiToFreq(note);
+      this.createOscillator(frequency);
+    });
   }
 
   // Method to create and start a new oscillator
-  public createOscillator(): void {
+  public createOscillator(frequency?: number): void {
     const oscNode = this.audioContextService.createAndStartOsc();
+    oscNode.frequency.value = frequency ?? 440;
+
     const newOsc: Oscillator = {
       id: uuidv7(),
       type: oscNode.type,
