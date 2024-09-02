@@ -1,6 +1,7 @@
 import { Component, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AudioContextService } from '../../../../../../shared/data-access/service/audio-context.service';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { AudioContextService } from '@ivanrogulj.com/analog-synth';
 
 @Component({
   selector: 'lib-oscillator',

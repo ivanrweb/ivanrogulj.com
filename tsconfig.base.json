@@ -24,6 +24,9 @@
       "@ivanrogulj.com/dashboard": [
         "libs/frontend/shared/ui/dashboard/src/index.ts"
       ],
+      "@ivanrogulj.com/filter": [
+        "libs/frontend/domain/audio-api-project-list/analog-synth/filter/src/index.ts"
+      ],
       "@ivanrogulj.com/footer": ["libs/frontend/shared/ui/footer/src/index.ts"],
       "@ivanrogulj.com/juce-project-list": [
         "libs/frontend/domain/juce-project-list/src/index.ts"

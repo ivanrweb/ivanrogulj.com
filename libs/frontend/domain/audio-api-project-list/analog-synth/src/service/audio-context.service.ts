@@ -44,4 +44,11 @@ export class AudioContextService {
   public stopSound(osc: OscillatorNode): void {
     osc.stop();
   }
+
+  public setFilter(filterValue: number): BiquadFilterNode {
+    const filter = this.context.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = filterValue
+    return filter;
+  }
 }
