@@ -5,6 +5,7 @@ import { Filter } from '@ivanrogulj.com/filter';
 import { Oscillator } from '@ivanrogulj.com/oscillator';
 import { v7 as uuidv7 } from 'uuid';
 import { AudioContextService } from '../service/audio-context.service';
+import { MidiService } from '../service/midi.service';
 
 export interface AnalogSynthState {
   oscillators: Oscillator[];
@@ -20,7 +21,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     filters: state.filters,
   }));
 
-  constructor(private readonly audioContextService: AudioContextService) {
+  constructor(private readonly audioContextService: AudioContextService, private readonly midiService: MidiService) {
     super({
       oscillators: [],
       filters: [],
