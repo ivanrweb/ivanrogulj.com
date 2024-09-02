@@ -3,7 +3,8 @@ import { Subject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class MidiService {
-  public midiMessage$ = new Subject<{ note: number, velocity: number }>();
+  public noteOn$ = new Subject<{ note: number, velocity: number }>();
+  public noteOff$ = new Subject<{ note: number }>();
 
   constructor() {
     if (navigator.requestMIDIAccess) {
@@ -40,10 +41,10 @@ export class MidiService {
 
       switch (cc) {
         case 144: // Note on message
-          this.midiMessage$.next({ note, velocity });
+          this.noteOn$.next({ note, velocity });
           break;
         case 128: // Note off message
-                  // Handle note off if needed
+          this.noteOff$.next({ note });
           break;
         default:
           // Handle other messages if needed

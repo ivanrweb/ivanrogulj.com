@@ -21,20 +21,32 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     filters: state.filters,
   }));
 
+  //Mapping to know which pressed key starts which oscillator
+  private midiNoteToOscillatorMap = new Map<number, Oscillator>();
+
   constructor(private readonly audioContextService: AudioContextService, private readonly midiService: MidiService) {
     super({
       oscillators: [],
       filters: [],
     });
 
-    this.midiService.midiMessage$.subscribe(({ note }) => {
+    this.midiService.noteOn$.subscribe(({ note }) => {
       const frequency = this.midiService.midiToFreq(note);
-      this.createOscillator(frequency);
+      const oscillator = this.createOscillator(frequency);
+      this.midiNoteToOscillatorMap.set(note, oscillator);
+    });
+
+    this.midiService.noteOff$.subscribe(({ note }) => {
+      const oscillator = this.midiNoteToOscillatorMap.get(note);
+      if (oscillator) {
+        this.stopOscillator(oscillator.id);
+        this.midiNoteToOscillatorMap.delete(note);
+      }
     });
   }
 
   // Method to create and start a new oscillator
-  public createOscillator(frequency?: number): void {
+  public createOscillator(frequency?: number): Oscillator {
     const oscNode = this.audioContextService.createAndStartOsc();
     oscNode.frequency.value = frequency ?? 440;
 
@@ -56,6 +68,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       oscillators: [...state.oscillators, newOsc],
       filters: [...state.filters, filter],
     }));
+
+    return newOsc;
   }
 
   public stopOscillator(oscId: string): void {
