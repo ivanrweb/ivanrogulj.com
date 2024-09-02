@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { AudioContextService } from '@ivanrogulj.com/analog-synth';
 
 @Component({
