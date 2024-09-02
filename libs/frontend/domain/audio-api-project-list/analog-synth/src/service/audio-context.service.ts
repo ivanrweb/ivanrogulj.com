@@ -14,6 +14,7 @@ export class AudioContextService {
 
   public async destroyContext(): Promise<void> {
     await this.context.close();
+    this._context = undefined;
   }
 
   public createAndStartOsc(): OscillatorNode {
@@ -42,12 +43,14 @@ export class AudioContextService {
     osc.frequency.value = 440;
   }
 
-  public stopSound(osc: OscillatorNode): void {
+  public stopAndDisconnect(osc: OscillatorNode): void {
     osc.stop();
+    osc.disconnect();
   }
 
   public createFilter(): BiquadFilterNode {
     const filterNode = this.context.createBiquadFilter();
+    filterNode.frequency.value = 5000;
     return filterNode;
   }
 }

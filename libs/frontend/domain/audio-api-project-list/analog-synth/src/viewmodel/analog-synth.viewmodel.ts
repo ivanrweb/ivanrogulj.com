@@ -78,7 +78,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     this.patchState((state) => {
       const updatedOscillators = state.oscillators.filter((osc) => {
         if (osc.id === oscId) {
-          this.audioContextService.stopSound(osc.node);
+          this.audioContextService.stopAndDisconnect(osc.node);
           return false; // Exclude this oscillator from the list
         }
         return true;
@@ -111,7 +111,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     this.patchState((state) => {
       const updatedFilters = state.filters.map((filter) => {
         if (filter.id === filterId) {
-          filter.node.frequency.value = newFilterValue; // Update filter node directly
+          // filter.node.frequency.value = newFilterValue; // Update filter node directly
+          filter.node.frequency.value = 4000;
           return {
             ...filter,
             frequency: newFilterValue,
