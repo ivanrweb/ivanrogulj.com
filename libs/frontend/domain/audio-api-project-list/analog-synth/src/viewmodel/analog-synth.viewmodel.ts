@@ -1,7 +1,9 @@
 import { ComponentStore } from '@ngrx/component-store';
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { Filter } from '@ivanrogulj.com/filter';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { Oscillator } from '@ivanrogulj.com/oscillator';
 import { v7 as uuidv7 } from 'uuid';
 import { AudioContextService } from '../service/audio-context.service';
@@ -31,7 +33,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     });
 
     this.midiService.noteOn$.subscribe(({ note }) => {
-      const frequency = this.midiService.midiToFreq(note);
+      const frequency = this.midiService.getFrequency(note);
       const oscillator = this.createOscillator(frequency);
       this.midiNoteToOscillatorMap.set(note, oscillator);
     });

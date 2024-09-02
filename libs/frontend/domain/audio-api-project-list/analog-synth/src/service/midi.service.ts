@@ -3,12 +3,19 @@ import { Subject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class MidiService {
+  private frequencyLookup: number[] = [];
+
   public noteOn$ = new Subject<{ note: number, velocity: number }>();
   public noteOff$ = new Subject<{ note: number }>();
 
   constructor() {
     if (navigator.requestMIDIAccess) {
       navigator.requestMIDIAccess().then(this.successMIDI.bind(this), this.failMIDI);
+    }
+
+    // Precompute frequencies for MIDI notes 0 to 127
+    for (let note = 0; note <= 127; note++) {
+      this.frequencyLookup[note] = this.midiToFreq(note);
     }
   }
 
@@ -55,5 +62,13 @@ export class MidiService {
 
   public midiToFreq(note: number): number {
     return 440 * Math.pow(2, (note - 69) / 12);
+  }
+
+  public getFrequency(note: number): number {
+    // Check if the note is within the valid MIDI range
+    if (note < 0 || note > 127) {
+      throw new Error('MIDI note out of range');
+    }
+    return this.frequencyLookup[note];
   }
 }
