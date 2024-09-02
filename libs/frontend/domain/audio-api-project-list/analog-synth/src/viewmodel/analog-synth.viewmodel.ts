@@ -1,9 +1,7 @@
 import { ComponentStore } from '@ngrx/component-store';
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import { Filter } from '@ivanrogulj.com/filter';
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import { Oscillator } from '@ivanrogulj.com/oscillator';
 import { v7 as uuidv7 } from 'uuid';
 import { AudioContextService } from '../service/audio-context.service';
@@ -22,7 +20,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     filters: state.filters,
   }));
 
-  constructor (private readonly audioContextService: AudioContextService){
+  constructor(private readonly audioContextService: AudioContextService) {
     super({
       oscillators: [],
       filters: [],
@@ -41,15 +39,15 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       node: oscNode,
     };
 
+    // Create filter and connect to oscillator
+    const filter = this.createFilter(newOsc.id); // Pass the oscillator ID
+    this.audioContextService.connectArrayOfAudioNodes([newOsc.node, filter.node]);
+
+    // Update state with the new oscillator and filter
     this.patchState((state) => ({
       oscillators: [...state.oscillators, newOsc],
+      filters: [...state.filters, filter],
     }));
-
-    //Create Filter for every Oscillator
-    const filter = this.createFilter();
-
-    //Connect all nodes in chain
-    this.connectNodes([newOsc.node, filter.node]);
   }
 
   // Method to stop an oscillator
@@ -63,27 +61,26 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
         return osc;
       });
 
+      // Optionally remove the filter associated with the stopped oscillator
+      const updatedFilters = state.filters.filter(filter => filter.id !== oscId);
+
       return {
         ...state,
         oscillators: updatedOscillators,
+        filters: updatedFilters,
       };
     });
   }
 
-
   // Create a new filter
-  public createFilter(): Filter {
-    const filterNode = this.audioContextService.setFilter();
+  public createFilter(oscillatorId: string): Filter {
+    const filterNode = this.audioContextService.createFilter();
     const newFilter: Filter = {
-      id: uuidv7(),
-      frequency: filterNode.frequency.value,
-      type: filterNode.type,
+      id: oscillatorId, // Associate filter with oscillator by using the oscillator ID
+      frequency: 5000,
+      type: 'lowpass',
       node: filterNode,
     };
-
-    this.patchState((state) => ({
-      filters: [...state.filters, newFilter],
-    }));
 
     return newFilter;
   }
@@ -93,13 +90,10 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     this.patchState((state) => {
       const updatedFilters = state.filters.map((filter) => {
         if (filter.id === filterId) {
-          // Update the filter properties and create a new filter node
-          const updatedFilterNode = this.audioContextService.setFilter();
+          filter.node.frequency.value = newFilterValue; // Update filter node directly
           return {
             ...filter,
             frequency: newFilterValue,
-            type: updatedFilterNode.type,
-            node: updatedFilterNode,
           };
         }
         return filter;
@@ -111,10 +105,4 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       };
     });
   }
-
-  // Method to connect nodes
-  public connectNodes(nodes: AudioNode[]): void {
-    this.audioContextService.connectArrayOfAudioNodes(nodes);
-  }
-
 }
