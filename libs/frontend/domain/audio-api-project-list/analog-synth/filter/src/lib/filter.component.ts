@@ -1,24 +1,33 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { AudioContextService } from '@ivanrogulj.com/analog-synth';
+import { map, Observable } from 'rxjs';
+import { Filter } from '@ivanrogulj.com/filter';
+import { AnalogSynthViewModel } from '../../../src/viewmodel/analog-synth.viewmodel';
 
 @Component({
   selector: 'lib-filter',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './filter.component.html',
-  styleUrl: './filter.component.css',
+  styleUrls: ['./filter.component.css'],
 })
 export class FilterComponent {
-
-  public filter1?: BiquadFilterNode;
   public filterValue = 1000;
 
-  private audioContextService = inject(AudioContextService);
+  private viewModel = inject(AnalogSynthViewModel);
+
+
+  public filters$: Observable<Filter[]> = this.viewModel.vm$.pipe(
+    map(state => state.filters)
+  );
+
 
   public createFilter(): void {
-    this.filter1 = this.audioContextService.setFilter(this.filterValue);
+    this.viewModel.createFilter(this.filterValue);
+  }
+
+  public updateFilter(filterId: string): void {
+    this.viewModel.updateFilter(filterId, this.filterValue);
   }
 }

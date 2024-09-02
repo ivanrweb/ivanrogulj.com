@@ -19,3 +19,4 @@ export class AnalogSynthComponent {
 
   protected audioContextService = inject(AudioContextService);
 }
+

@@ -1,7 +1,7 @@
 import { Component, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { AudioContextService } from '@ivanrogulj.com/analog-synth';
+import { AnalogSynthViewModel } from '../../../src/viewmodel/analog-synth.viewmodel';
 
 @Component({
   selector: 'lib-oscillator',
@@ -11,21 +11,16 @@ import { AudioContextService } from '@ivanrogulj.com/analog-synth';
   styleUrl: './oscillator.component.css',
 })
 export class OscillatorComponent {
-
   @Input()
   public type: OscillatorType = 'sine';
 
-  public osc1?: OscillatorNode;
+  protected analogSynthViewModel = inject(AnalogSynthViewModel);
 
-  private audioContextService = inject(AudioContextService);
-
-  public createFirstOscillator(): void {
-    this.osc1 = this.audioContextService.createAndStartOsc();
-    this.audioContextService.connectArrayOfAudioNodes([this.osc1]);
-    console.log('first osc: ' + JSON.stringify(this.osc1));
+  public createOscillator(): void {
+    this.analogSynthViewModel.createOscillator(this.type);
   }
 
-  public stopFirstOscillator(): void {
-    this.audioContextService.stopSound(this.osc1!);
+  public stopOscillator(oscId: string): void {
+    this.analogSynthViewModel.stopOscillator(oscId);
   }
 }

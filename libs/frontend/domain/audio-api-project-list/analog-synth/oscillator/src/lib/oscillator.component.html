@@ -1,2 +1,9 @@
-<button (click)="createFirstOscillator()">Play</button>
-<button (click)="stopFirstOscillator()">Stop</button>
+<button (click)="createOscillator()">Play</button>
+<div *ngIf="analogSynthViewModel.vm$ | async as vm">
+  <ul>
+    <li *ngFor="let osc of vm.oscillators">
+      Oscillator ID: {{ osc.id }} - Frequency: {{ osc.frequency }}
+      <button (click)="stopOscillator(osc.id)">Stop</button>
+    </li>
+  </ul>
+</div>

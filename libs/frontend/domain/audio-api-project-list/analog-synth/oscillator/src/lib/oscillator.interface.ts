@@ -4,4 +4,5 @@ export interface Oscillator {
   frequency: number;
   detune: number;
   isPlaying: boolean;
+  node: OscillatorNode;
 }
