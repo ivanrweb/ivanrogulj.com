@@ -11,13 +11,10 @@ import { AnalogSynthViewModel } from '../../../src/viewmodel/analog-synth.viewmo
   styleUrl: './oscillator.component.css',
 })
 export class OscillatorComponent {
-  @Input()
-  public type: OscillatorType = 'sine';
-
   protected analogSynthViewModel = inject(AnalogSynthViewModel);
 
   public createOscillator(): void {
-    this.analogSynthViewModel.createOscillator(this.type);
+    this.analogSynthViewModel.createOscillator();
   }
 
   public stopOscillator(oscId: string): void {

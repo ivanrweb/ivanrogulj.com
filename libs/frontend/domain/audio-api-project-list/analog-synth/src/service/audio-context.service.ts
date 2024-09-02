@@ -45,10 +45,10 @@ export class AudioContextService {
     osc.stop();
   }
 
-  public setFilter(filterValue: number): BiquadFilterNode {
+  public setFilter(): BiquadFilterNode {
     const filter = this.context.createBiquadFilter();
     filter.type = 'lowpass';
-    filter.frequency.value = filterValue
+    filter.frequency.value = 2000;
     return filter;
   }
 }

@@ -22,11 +22,6 @@ export class FilterComponent {
     map(state => state.filters)
   );
 
-
-  public createFilter(): void {
-    this.viewModel.createFilter(this.filterValue);
-  }
-
   public updateFilter(filterId: string): void {
     this.viewModel.updateFilter(filterId, this.filterValue);
   }

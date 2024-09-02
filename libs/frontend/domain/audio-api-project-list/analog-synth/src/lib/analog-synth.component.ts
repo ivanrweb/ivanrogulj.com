@@ -3,7 +3,9 @@ import { CommonModule } from '@angular/common';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { OscillatorComponent } from '@ivanrogulj.com/oscillator';
 import { AudioContextService } from '../service/audio-context.service';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { FilterComponent } from '@ivanrogulj.com/filter';
+import { AnalogSynthViewModel } from '../viewmodel/analog-synth.viewmodel';
 @Component({
   selector: 'lib-analog-synth',
   standalone: true,
@@ -17,6 +19,6 @@ export class AnalogSynthComponent {
   public oscillators: OscillatorNode[] = [];
 
 
-  protected audioContextService = inject(AudioContextService);
+  protected analogSynthViewModel = inject(AnalogSynthViewModel);
 }
 

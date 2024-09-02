@@ -30,9 +30,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   }
 
   // Method to create and start a new oscillator
-  public createOscillator(type: OscillatorType): void {
+  public createOscillator(): void {
     const oscNode = this.audioContextService.createAndStartOsc();
-    oscNode.type = type;
     const newOsc: Oscillator = {
       id: uuidv7(),
       type: oscNode.type,
@@ -46,7 +45,11 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       oscillators: [...state.oscillators, newOsc],
     }));
 
-    this.connectNodes([newOsc.node]);
+    //Create Filter for every Oscillator
+    const filter = this.createFilter();
+
+    //Connect all nodes in chain
+    this.connectNodes([newOsc.node, filter.node]);
   }
 
   // Method to stop an oscillator
@@ -69,8 +72,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
 
 
   // Create a new filter
-  public createFilter(filterValue: number): void {
-    const filterNode = this.audioContextService.setFilter(filterValue);
+  public createFilter(): Filter {
+    const filterNode = this.audioContextService.setFilter();
     const newFilter: Filter = {
       id: uuidv7(),
       frequency: filterNode.frequency.value,
@@ -81,6 +84,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     this.patchState((state) => ({
       filters: [...state.filters, newFilter],
     }));
+
+    return newFilter;
   }
 
   // Update an existing filter
@@ -89,10 +94,10 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       const updatedFilters = state.filters.map((filter) => {
         if (filter.id === filterId) {
           // Update the filter properties and create a new filter node
-          const updatedFilterNode = this.audioContextService.setFilter(newFilterValue);
+          const updatedFilterNode = this.audioContextService.setFilter();
           return {
             ...filter,
-            frequency: updatedFilterNode.frequency.value,
+            frequency: newFilterValue,
             type: updatedFilterNode.type,
             node: updatedFilterNode,
           };
