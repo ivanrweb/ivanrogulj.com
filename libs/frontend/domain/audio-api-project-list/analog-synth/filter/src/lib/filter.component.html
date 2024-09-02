@@ -1,12 +1,15 @@
 <div *ngFor="let filter of filters$ | async">
-  <label for="filter-slider-{{ filter.id }}">Filter ID: {{ filter.id }} - Frequency: {{ filter.frequency }}</label>
+  <label for="filter-slider-{{ filter.id }}">
+    Filter ID: {{ filter.id }}
+  </label>
   <input
     id="filter-slider-{{ filter.id }}"
     type="range"
-    min="0"
-    max="20000"
-    step="10"
+    min="10"
+    max="10000"
+    step="0.1"
     [(ngModel)]="filterValues[filter.id]"
     (ngModelChange)="onFilterValueChange(filter.id)"
   />
+  <span>Frequency: {{ filter.frequency }}</span>
 </div>

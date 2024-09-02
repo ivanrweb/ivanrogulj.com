@@ -50,18 +50,17 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     }));
   }
 
-  // Method to stop an oscillator
   public stopOscillator(oscId: string): void {
     this.patchState((state) => {
-      const updatedOscillators = state.oscillators.map((osc) => {
+      const updatedOscillators = state.oscillators.filter((osc) => {
         if (osc.id === oscId) {
           this.audioContextService.stopSound(osc.node);
-          return { ...osc, isPlaying: false };
+          return false; // Exclude this oscillator from the list
         }
-        return osc;
+        return true;
       });
 
-      // Optionally remove the filter associated with the stopped oscillator
+      // Remove the filters associated with the stopped oscillator
       const updatedFilters = state.filters.filter(filter => filter.id !== oscId);
 
       return {
@@ -72,7 +71,6 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     });
   }
 
-  // Create a new filter
   public createFilter(oscillatorId: string): Filter {
     const filterNode = this.audioContextService.createFilter();
     const newFilter: Filter = {
@@ -85,7 +83,6 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     return newFilter;
   }
 
-  // Update an existing filter
   public updateFilter(filterId: string, newFilterValue: number): void {
     this.patchState((state) => {
       const updatedFilters = state.filters.map((filter) => {

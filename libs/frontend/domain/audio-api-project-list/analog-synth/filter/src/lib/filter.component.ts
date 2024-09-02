@@ -1,10 +1,10 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { Filter } from './filter.interface'; // Adjust the path if needed
+import { Observable, Subject } from 'rxjs';
+import { debounceTime, map } from 'rxjs/operators';
 import { AnalogSynthViewModel } from '../../../src/viewmodel/analog-synth.viewmodel';
+import { Filter } from './filter.interface';
 
 @Component({
   selector: 'lib-filter',
@@ -13,9 +13,11 @@ import { AnalogSynthViewModel } from '../../../src/viewmodel/analog-synth.viewmo
   templateUrl: './filter.component.html',
   styleUrls: ['./filter.component.css'],
 })
-export class FilterComponent implements OnInit {
+export class FilterComponent {
+  public filterValues: { [key: string]: number } = {};
   public filters$: Observable<Filter[]>;
-  public filterValues: { [id: string]: number } = {};
+
+  private valueChangeSubject = new Subject<{ id: string, value: number }>();
 
   private analogSynthViewModel = inject(AnalogSynthViewModel);
 
@@ -23,19 +25,15 @@ export class FilterComponent implements OnInit {
     this.filters$ = this.analogSynthViewModel.vm$.pipe(
       map(state => state.filters)
     );
-  }
 
-  public ngOnInit(): void {
-    this.filters$.subscribe(filters => {
-      // Initialize filter values
-      filters.forEach(filter => {
-        this.filterValues[filter.id] = filter.frequency;
-      });
-    }).unsubscribe(); // Unsubscribe immediately after subscription to avoid memory leaks
+    // Subscribe to the debounced value changes
+    this.valueChangeSubject.pipe(debounceTime(50)).subscribe(({ id, value }) => {
+      this.analogSynthViewModel.updateFilter(id, value);
+    });
   }
 
   public onFilterValueChange(filterId: string): void {
-    const newValue = this.filterValues[filterId];
-    this.analogSynthViewModel.updateFilter(filterId, newValue);
+    const value = this.filterValues[filterId];
+    this.valueChangeSubject.next({ id: filterId, value });
   }
 }
