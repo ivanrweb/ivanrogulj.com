@@ -45,6 +45,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     this.patchState((state) => ({
       oscillators: [...state.oscillators, newOsc],
     }));
+
+    this.connectNodes([newOsc.node]);
   }
 
   // Method to stop an oscillator
@@ -103,6 +105,11 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
         filters: updatedFilters,
       };
     });
+  }
+
+  // Method to connect nodes
+  public connectNodes(nodes: AudioNode[]): void {
+    this.audioContextService.connectArrayOfAudioNodes(nodes);
   }
 
 }
