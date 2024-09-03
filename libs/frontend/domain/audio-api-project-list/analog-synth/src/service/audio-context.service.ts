@@ -78,11 +78,15 @@ export class AudioContextService {
 
   public updateVolumeEnvelope(adsr: ADSR): void {
     const now = this.context.currentTime;
-
+    // Cancel any existing scheduled values
     this.gainNode.gain.cancelScheduledValues(now);
+    // Set the initial value
     this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, now);
-    this.gainNode.gain.linearRampToValueAtTime(this.gainNode.gain.value, now + adsr.attack);
+    // Apply Attack
+    this.gainNode.gain.linearRampToValueAtTime(1, now + adsr.attack);
+    // Apply Decay and Sustain
     this.gainNode.gain.linearRampToValueAtTime(adsr.sustain, now + adsr.attack + adsr.decay);
-    this.gainNode.gain.linearRampToValueAtTime(0, now + adsr.attack + adsr.decay + adsr.release)
+    // Apply Release
+    //this.gainNode.gain.linearRampToValueAtTime(0, now + adsr.attack + adsr.decay + adsr.release);
   }
 }

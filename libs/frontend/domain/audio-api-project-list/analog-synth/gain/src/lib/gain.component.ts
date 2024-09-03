@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { AnalogSynthViewModel } from '../../../src/viewmodel/analog-synth.viewmodel';
@@ -12,23 +12,18 @@ import { ADSR } from './gain.interface';
   templateUrl: './gain.component.html',
   styleUrl: './gain.component.css',
 })
-export class GainComponent {
+export class GainComponent{
   public gain = 0.5;
-  public adsrVolumeEnvelope: ADSR = {
-    attack: 0.1,
-    decay: 0,
-    sustain: 1,
-    release: 0,
-  };
 
-  private analogSynthViewModel = inject(AnalogSynthViewModel);
+  protected analogSynthViewModel = inject(AnalogSynthViewModel);
 
+  public onVolumeEnvelopeChange(param: keyof ADSR, value: number): void {
+    this.analogSynthViewModel.updateVolumeEnvelope({
+      [param]: value
+    });
+  }
 
   public onGainChange(): void {
     this.analogSynthViewModel.updateGain(this.gain);
-  }
-
-  public onVolumeEnvelopeChange(): void {
-    this.analogSynthViewModel.updateVolumeEnvelope(this.adsrVolumeEnvelope);
   }
 }

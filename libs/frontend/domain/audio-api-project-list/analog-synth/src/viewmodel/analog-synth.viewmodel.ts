@@ -2,8 +2,6 @@ import { ComponentStore } from '@ngrx/component-store';
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { Filter } from '@ivanrogulj.com/filter';
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import { Oscillator } from '@ivanrogulj.com/oscillator';
 import { v7 as uuidv7 } from 'uuid';
 import { AudioContextService } from '../service/audio-context.service';
@@ -13,6 +11,7 @@ import { ADSR } from '@ivanrogulj.com/gain';
 
 export interface AnalogSynthState {
   oscillators: Oscillator[];
+  volumeEnvelope: ADSR;
 }
 
 @Injectable({
@@ -21,6 +20,7 @@ export interface AnalogSynthState {
 export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   public readonly vm$: Observable<AnalogSynthState> = this.select(state => ({
     oscillators: state.oscillators,
+    volumeEnvelope: state.volumeEnvelope,
   }));
 
   //Mapping to know which pressed key starts which oscillator
@@ -29,11 +29,17 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   constructor(private readonly audioContextService: AudioContextService, private readonly midiService: MidiService) {
     super({
       oscillators: [],
+      volumeEnvelope: {
+        attack: 0.5,
+        decay: 0.5,
+        sustain: 1,
+        release: 0
+      }
     });
 
     this.midiService.noteOn$.subscribe(({ note }) => {
       const frequency = this.midiService.getFrequency(note);
-      const oscillator = this.createOscillator(frequency);
+      const oscillator = this.createAndStartOscillator(frequency);
       this.midiNoteToOscillatorMap.set(note, oscillator);
     });
 
@@ -47,7 +53,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   }
 
   // Method to create and start a new oscillator
-  public createOscillator(frequency?: number): Oscillator {
+  public createAndStartOscillator(frequency?: number): Oscillator {
     const oscNode = this.audioContextService.createAndStartOsc();
     oscNode.frequency.value = frequency ?? 440;
 
@@ -63,7 +69,9 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     //Connect all nodes in chain
     this.audioContextService.connectArrayOfAudioNodes([newOsc.node]);
 
-    // Update state with the new oscillator and filter
+    this.updateVolumeEnvelope(this.get().volumeEnvelope);
+
+    // Update state with the new oscillator
     this.patchState((state) => ({
       oscillators: [...state.oscillators, newOsc],
     }));
@@ -96,7 +104,15 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     this.audioContextService.updateGain(gainValue);
   }
 
-  public updateVolumeEnvelope(adsrVolumeEnvelope: ADSR): void {
-    this.audioContextService.updateVolumeEnvelope(adsrVolumeEnvelope);
+  public updateVolumeEnvelope(partial: Partial<ADSR>): void {
+    this.patchState((state) => ({
+      volumeEnvelope: {
+        ...state.volumeEnvelope,
+        ...partial
+      }
+    }));
+
+    console.log('this is immediately called');
+    this.audioContextService.updateVolumeEnvelope(this.get().volumeEnvelope);
   }
 }

@@ -65,10 +65,6 @@ export class MidiService {
   }
 
   public getFrequency(note: number): number {
-    // Check if the note is within the valid MIDI range
-    if (note < 0 || note > 127) {
-      throw new Error('MIDI note out of range');
-    }
     return this.frequencyLookup[note];
   }
 }

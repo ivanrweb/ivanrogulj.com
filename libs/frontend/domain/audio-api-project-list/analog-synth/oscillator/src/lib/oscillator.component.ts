@@ -14,7 +14,7 @@ export class OscillatorComponent {
   protected analogSynthViewModel = inject(AnalogSynthViewModel);
 
   public createOscillator(): void {
-    this.analogSynthViewModel.createOscillator();
+    this.analogSynthViewModel.createAndStartOscillator();
   }
 
   public stopOscillator(oscId: string): void {
