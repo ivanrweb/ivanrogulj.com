@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { ADSR } from '@ivanrogulj.com/gain';
 
 @Injectable({ providedIn: 'root' })
@@ -20,10 +21,10 @@ export class AudioContextService {
     this._context = undefined;
   }
 
-  public createAndStartOsc(): OscillatorNode {
+  public createAndStartOsc(frequency?: number): OscillatorNode {
     const osc = this.context.createOscillator();
     this.setOscProperties(osc);
-    osc.frequency.value = 440;
+    osc.frequency.value = frequency ?? 440;
     osc.start();
     return osc;
   }

@@ -14,7 +14,7 @@ import { AnalogSynthViewModel } from '../../../src/viewmodel/analog-synth.viewmo
 export class FilterComponent {
   public frequency = 5000;
 
-  private analogSynthViewModel = inject(AnalogSynthViewModel);
+  protected analogSynthViewModel = inject(AnalogSynthViewModel);
 
   public onFilterValueChange(): void {
     this.analogSynthViewModel.updateFilter(this.frequency);

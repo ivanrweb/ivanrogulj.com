@@ -54,7 +54,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
 
   // Method to create and start a new oscillator
   public createAndStartOscillator(frequency?: number): Oscillator {
-    const oscNode = this.audioContextService.createAndStartOsc();
+    const oscNode = this.audioContextService.createAndStartOsc(frequency);
     oscNode.frequency.value = frequency ?? 440;
 
     const newOsc: Oscillator = {
@@ -121,7 +121,6 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       }
     }));
 
-    console.log('this is immediately called');
     this.audioContextService.updateVolumeEnvelope(this.get().volumeEnvelope);
   }
 }
