@@ -8,6 +8,7 @@ import { Oscillator } from '@ivanrogulj.com/oscillator';
 import { v7 as uuidv7 } from 'uuid';
 import { AudioContextService } from '../service/audio-context.service';
 import { MidiService } from '../service/midi.service';
+import { ADSR } from '@ivanrogulj.com/gain';
 
 export interface AnalogSynthState {
   oscillators: Oscillator[];
@@ -131,5 +132,9 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
 
   public updateGain(gainValue: number): void {
     this.audioContextService.updateGain(gainValue);
+  }
+
+  public updateVolumeEnvelope(adsrVolumeEnvelope: ADSR): void {
+    this.audioContextService.updateVolumeEnvelope(adsrVolumeEnvelope);
   }
 }

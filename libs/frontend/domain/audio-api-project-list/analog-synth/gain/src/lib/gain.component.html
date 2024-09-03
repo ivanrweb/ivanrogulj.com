@@ -1,3 +1,17 @@
+<h3>Volume envelope</h3>
+<input type="range" min="0" max="1" step="0.01" [(ngModel)]="adsrVolumeEnvelope.attack" (ngModelChange)="onVolumeEnvelopeChange()" />
+<span>Attack: {{ adsrVolumeEnvelope.attack }}</span>
+<br>
+<input type="range" min="0" max="1" step="0.01" [(ngModel)]="adsrVolumeEnvelope.decay" (ngModelChange)="onVolumeEnvelopeChange()" />
+<span>Decay: {{ adsrVolumeEnvelope.decay }}</span>
+<br>
+<input type="range" min="0" max="1" step="0.01" [(ngModel)]="adsrVolumeEnvelope.sustain" (ngModelChange)="onVolumeEnvelopeChange()" />
+<span>Sustain: {{ adsrVolumeEnvelope.sustain }}</span>
+<br>
+<input type="range" min="0" max="1" step="0.01" [(ngModel)]="adsrVolumeEnvelope.release" (ngModelChange)="onVolumeEnvelopeChange()" />
+<span>Release: {{ adsrVolumeEnvelope.release }}</span>
+<br>
+
 <h3>Gain</h3>
-<input type="range" min="0" max="1" step="0.01" [(ngModel)]="gain" (ngModelChange)="onGainChange($event)" />
+<input type="range" min="0" max="1" step="0.01" [(ngModel)]="gain" (ngModelChange)="onGainChange()" />
 <span>Gain: {{ gain }}</span>

@@ -63,8 +63,18 @@ export class AudioContextService {
     return gainNode;
   }
 
-  public updateGain(gainValue?: number, adsrEnvelope?: ADSR): GainNode {
-    this.gainNode.gain.value = gainValue ?? 0.5;
+  public updateGain(gainValue: number): GainNode {
+    this.gainNode.gain.value = gainValue;
     return this.gainNode;
+  }
+
+  public updateVolumeEnvelope(adsr: ADSR): void {
+    const now = this.context.currentTime;
+
+    this.gainNode.gain.cancelScheduledValues(now);
+    this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, now);
+    this.gainNode.gain.linearRampToValueAtTime(this.gainNode.gain.value, now + adsr.attack);
+    this.gainNode.gain.linearRampToValueAtTime(adsr.sustain, now + adsr.attack + adsr.decay);
+    this.gainNode.gain.linearRampToValueAtTime(0, now + adsr.attack + adsr.decay + adsr.release)
   }
 }

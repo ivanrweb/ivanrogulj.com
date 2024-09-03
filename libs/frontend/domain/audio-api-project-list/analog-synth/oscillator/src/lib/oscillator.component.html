@@ -3,7 +3,7 @@
   <ul>
     <li *ngFor="let osc of vm.oscillators">
       Oscillator ID: {{ osc.id }} - Frequency: {{ osc.frequency }}
-      <button (click)="stopOscillator(osc.id)">Stop</button>
+      <button (click)="stopOscillator(osc.id)">Destroy oscillator</button>
     </li>
   </ul>
 </div>
