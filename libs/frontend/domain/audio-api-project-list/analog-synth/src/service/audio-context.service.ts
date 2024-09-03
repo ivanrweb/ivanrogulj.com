@@ -89,4 +89,12 @@ export class AudioContextService {
     // Apply Release
     //this.gainNode.gain.linearRampToValueAtTime(0, now + adsr.attack + adsr.decay + adsr.release);
   }
+
+  // Apply release phase to the gain node
+  public releaseVolumeEnvelope(release: number): void {
+    const now = this.context.currentTime;
+    this.gainNode.gain.cancelScheduledValues(now);
+    this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, now);
+    this.gainNode.gain.linearRampToValueAtTime(0, now + release);
+  }
 }

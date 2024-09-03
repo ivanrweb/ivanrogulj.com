@@ -79,11 +79,20 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     return newOsc;
   }
 
+  private releaseOscillator(oscillator: Oscillator): void {
+    this.audioContextService.releaseVolumeEnvelope(this.get().volumeEnvelope.release);
+
+    // Stop oscillator after the release phase
+    setTimeout(() => {
+      this.audioContextService.stopAndDisconnect(oscillator.node);
+    }, this.get().volumeEnvelope.release * 1000);
+  }
+
   public stopOscillator(oscId: string): void {
     this.patchState((state) => {
       const updatedOscillators = state.oscillators.filter((osc) => {
         if (osc.id === oscId) {
-          this.audioContextService.stopAndDisconnect(osc.node);
+          this.releaseOscillator(osc);
           return false; // Exclude this oscillator from the list
         }
         return true;
