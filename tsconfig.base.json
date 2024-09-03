@@ -28,6 +28,9 @@
         "libs/frontend/domain/audio-api-project-list/analog-synth/filter/src/index.ts"
       ],
       "@ivanrogulj.com/footer": ["libs/frontend/shared/ui/footer/src/index.ts"],
+      "@ivanrogulj.com/gain": [
+        "libs/frontend/domain/audio-api-project-list/analog-synth/gain/src/index.ts"
+      ],
       "@ivanrogulj.com/juce-project-list": [
         "libs/frontend/domain/juce-project-list/src/index.ts"
       ],

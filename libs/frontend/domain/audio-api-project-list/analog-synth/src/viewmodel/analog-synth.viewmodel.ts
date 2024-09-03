@@ -63,6 +63,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
 
     // Create filter and connect to oscillator
     const filter = this.createFilter(newOsc.id); // Pass the oscillator ID
+
+    //Connect all nodes in chain
     this.audioContextService.connectArrayOfAudioNodes([newOsc.node, filter.node]);
 
     // Update state with the new oscillator and filter
@@ -111,8 +113,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     this.patchState((state) => {
       const updatedFilters = state.filters.map((filter) => {
         if (filter.id === filterId) {
-          // filter.node.frequency.value = newFilterValue; // Update filter node directly
-          filter.node.frequency.value = 4000;
+          filter.node.frequency.value = newFilterValue; // Update filter node directly
           return {
             ...filter,
             frequency: newFilterValue,
@@ -126,5 +127,9 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
         filters: updatedFilters,
       };
     });
+  }
+
+  public updateGain(gainValue: number): void {
+    this.audioContextService.updateGain(gainValue);
   }
 }

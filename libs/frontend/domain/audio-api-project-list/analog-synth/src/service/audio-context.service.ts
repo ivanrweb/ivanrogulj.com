@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
+import { ADSR } from '@ivanrogulj.com/gain';
 
 @Injectable({ providedIn: 'root' })
 export class AudioContextService {
   private _context?: AudioContext;
+  private gainNode: GainNode = this.createGain();
 
   private get context(): AudioContext {
     // Initialize context if not already done
@@ -30,7 +32,8 @@ export class AudioContextService {
     for(let i = 0; i < nodes.length; i++) {
       //connect the last node to destination
       if(i === nodes.length - 1){
-        nodes[nodes.length - 1].connect(this.context.destination);
+        nodes[nodes.length - 1].connect(this.gainNode);
+        this.gainNode.connect(this.context.destination);
         break;
       }
 
@@ -52,5 +55,16 @@ export class AudioContextService {
     const filterNode = this.context.createBiquadFilter();
     filterNode.frequency.value = 5000;
     return filterNode;
+  }
+
+  public createGain(): GainNode {
+    const gainNode= this.context.createGain();
+    gainNode.gain.value = 0.5;
+    return gainNode;
+  }
+
+  public updateGain(gainValue?: number, adsrEnvelope?: ADSR): GainNode {
+    this.gainNode.gain.value = gainValue ?? 0.5;
+    return this.gainNode;
   }
 }
