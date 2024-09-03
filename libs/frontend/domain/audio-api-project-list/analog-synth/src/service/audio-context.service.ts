@@ -4,6 +4,7 @@ import { ADSR } from '@ivanrogulj.com/gain';
 @Injectable({ providedIn: 'root' })
 export class AudioContextService {
   private _context?: AudioContext;
+  private filterNode: BiquadFilterNode = this.createFilter();
   private gainNode: GainNode = this.createGain();
 
   private get context(): AudioContext {
@@ -32,7 +33,9 @@ export class AudioContextService {
     for(let i = 0; i < nodes.length; i++) {
       //connect the last node to destination
       if(i === nodes.length - 1){
-        nodes[nodes.length - 1].connect(this.gainNode);
+        //create connections for single nodes common for all oscillators
+        nodes[nodes.length - 1].connect(this.filterNode);
+        this.filterNode.connect(this.gainNode);
         this.gainNode.connect(this.context.destination);
         break;
       }
@@ -54,7 +57,12 @@ export class AudioContextService {
   public createFilter(): BiquadFilterNode {
     const filterNode = this.context.createBiquadFilter();
     filterNode.frequency.value = 5000;
+    filterNode.type = 'lowpass';
     return filterNode;
+  }
+
+  public updateFilter(frequency: number): void {
+    this.filterNode.frequency.value = frequency;
   }
 
   public createGain(): GainNode {

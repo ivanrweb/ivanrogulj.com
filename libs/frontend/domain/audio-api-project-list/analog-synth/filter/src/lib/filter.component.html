@@ -1,15 +1,10 @@
-<div *ngFor="let filter of filters$ | async">
-  <label for="filter-slider-{{ filter.id }}">
-    Filter ID: {{ filter.id }}
-  </label>
-  <input
-    id="filter-slider-{{ filter.id }}"
-    type="range"
-    min="10"
-    max="10000"
-    step="0.1"
-    [(ngModel)]="filterValues[filter.id]"
-    (ngModelChange)="onFilterValueChange(filter.id)"
-  />
-  <span>Cutoff: {{ filter.frequency }}</span>
-</div>
+<h3>VCF</h3>
+<input
+  type="range"
+  min="10"
+  max="10000"
+  step="0.02"
+  [(ngModel)]="frequency"
+  (ngModelChange)="onFilterValueChange()"
+/>
+<span>Cutoff: {{ frequency }}</span>

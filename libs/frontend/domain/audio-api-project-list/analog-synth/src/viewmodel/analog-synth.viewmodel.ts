@@ -8,11 +8,11 @@ import { Oscillator } from '@ivanrogulj.com/oscillator';
 import { v7 as uuidv7 } from 'uuid';
 import { AudioContextService } from '../service/audio-context.service';
 import { MidiService } from '../service/midi.service';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { ADSR } from '@ivanrogulj.com/gain';
 
 export interface AnalogSynthState {
   oscillators: Oscillator[];
-  filters: Filter[];
 }
 
 @Injectable({
@@ -21,7 +21,6 @@ export interface AnalogSynthState {
 export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   public readonly vm$: Observable<AnalogSynthState> = this.select(state => ({
     oscillators: state.oscillators,
-    filters: state.filters,
   }));
 
   //Mapping to know which pressed key starts which oscillator
@@ -30,7 +29,6 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   constructor(private readonly audioContextService: AudioContextService, private readonly midiService: MidiService) {
     super({
       oscillators: [],
-      filters: [],
     });
 
     this.midiService.noteOn$.subscribe(({ note }) => {
@@ -62,16 +60,12 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       node: oscNode,
     };
 
-    // Create filter and connect to oscillator
-    const filter = this.createFilter(newOsc.id); // Pass the oscillator ID
-
     //Connect all nodes in chain
-    this.audioContextService.connectArrayOfAudioNodes([newOsc.node, filter.node]);
+    this.audioContextService.connectArrayOfAudioNodes([newOsc.node]);
 
     // Update state with the new oscillator and filter
     this.patchState((state) => ({
       oscillators: [...state.oscillators, newOsc],
-      filters: [...state.filters, filter],
     }));
 
     return newOsc;
@@ -87,47 +81,15 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
         return true;
       });
 
-      // Remove the filters associated with the stopped oscillator
-      const updatedFilters = state.filters.filter(filter => filter.id !== oscId);
-
       return {
         ...state,
-        oscillators: updatedOscillators,
-        filters: updatedFilters,
+        oscillators: updatedOscillators
       };
     });
   }
 
-  public createFilter(oscillatorId: string): Filter {
-    const filterNode = this.audioContextService.createFilter();
-    const newFilter: Filter = {
-      id: oscillatorId, // Associate filter with oscillator by using the oscillator ID
-      frequency: 5000,
-      type: 'lowpass',
-      node: filterNode,
-    };
-
-    return newFilter;
-  }
-
-  public updateFilter(filterId: string, newFilterValue: number): void {
-    this.patchState((state) => {
-      const updatedFilters = state.filters.map((filter) => {
-        if (filter.id === filterId) {
-          filter.node.frequency.value = newFilterValue; // Update filter node directly
-          return {
-            ...filter,
-            frequency: newFilterValue,
-          };
-        }
-        return filter;
-      });
-
-      return {
-        ...state,
-        filters: updatedFilters,
-      };
-    });
+  public updateFilter(frequency: number): void {
+    this.audioContextService.updateFilter(frequency);
   }
 
   public updateGain(gainValue: number): void {
