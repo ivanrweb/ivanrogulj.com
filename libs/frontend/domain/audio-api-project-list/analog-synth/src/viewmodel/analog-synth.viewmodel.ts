@@ -68,7 +68,6 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       node: oscNode,
     };
 
-    // Connect oscillator to gain node
     this.audioContextService.connectNodes(oscNode, gainNode);
     this.audioContextService.updateVolumeEnvelope(gainNode, this.get().volumeEnvelope);
 
@@ -117,7 +116,16 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   }
 
   public updateGain(gainValue: number): void {
-    this.audioContextService.updateGain(gainValue);
+    this.patchState((state) => ({
+      gains: state.gains.map(gain => {
+        // Update the gain value for each GainNode
+        gain.gainNode.gain.value = gainValue;
+        return {
+          ...gain,
+          gainValue
+        };
+      }),
+    }));
   }
 
   public updateVolumeEnvelope(partial: Partial<ADSR>): void {

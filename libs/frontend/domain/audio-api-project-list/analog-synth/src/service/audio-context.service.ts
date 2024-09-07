@@ -56,9 +56,6 @@ export class AudioContextService {
     gainNode.disconnect();
   }
 
-  public updateGain(gainValue: number): void {
-  }
-
   public updateVolumeEnvelope(gainNode: GainNode, adsr: ADSR): void {
     const now = this.context.currentTime;
     gainNode.gain.cancelScheduledValues(now);
