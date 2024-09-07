@@ -1,19 +1,27 @@
-<h3>Volume envelope</h3>
+<h3>Volume Envelope</h3>
 <div *ngIf="analogSynthViewModel.vm$ | async as vm">
+  <!-- Attack Slider -->
   <input type="range" min="0" max="1" step="0.01" [(ngModel)]="vm.volumeEnvelope.attack" (ngModelChange)="onVolumeEnvelopeChange('attack', $event)" />
   <span>Attack: {{ vm.volumeEnvelope.attack }}</span>
   <br>
+
+  <!-- Decay Slider -->
   <input type="range" min="0" max="1" step="0.01" [(ngModel)]="vm.volumeEnvelope.decay" (ngModelChange)="onVolumeEnvelopeChange('decay', $event)" />
   <span>Decay: {{ vm.volumeEnvelope.decay }}</span>
   <br>
+
+  <!-- Sustain Slider -->
   <input type="range" min="0" max="1" step="0.01" [(ngModel)]="vm.volumeEnvelope.sustain" (ngModelChange)="onVolumeEnvelopeChange('sustain', $event)" />
   <span>Sustain: {{ vm.volumeEnvelope.sustain }}</span>
   <br>
+
+  <!-- Release Slider -->
   <input type="range" min="0" max="1" step="0.01" [(ngModel)]="vm.volumeEnvelope.release" (ngModelChange)="onVolumeEnvelopeChange('release', $event)" />
   <span>Release: {{ vm.volumeEnvelope.release }}</span>
   <br>
 
   <h3>Gain</h3>
+  <!-- Gain Slider -->
   <input type="range" min="0" max="1" step="0.01" [(ngModel)]="gain" (ngModelChange)="onGainChange()" />
   <span>Gain: {{ gain }}</span>
 </div>

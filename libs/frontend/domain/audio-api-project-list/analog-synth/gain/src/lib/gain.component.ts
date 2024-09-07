@@ -1,6 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import { AnalogSynthViewModel } from '../../../src/viewmodel/analog-synth.viewmodel';
 import { FormsModule } from '@angular/forms';
 import { ADSR } from './gain.interface';
@@ -10,16 +9,16 @@ import { ADSR } from './gain.interface';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './gain.component.html',
-  styleUrl: './gain.component.css',
+  styleUrls: ['./gain.component.css'],
 })
-export class GainComponent{
+export class GainComponent {
   public gain = 0.5;
 
   protected analogSynthViewModel = inject(AnalogSynthViewModel);
 
   public onVolumeEnvelopeChange(param: keyof ADSR, value: number): void {
     this.analogSynthViewModel.updateVolumeEnvelope({
-      [param]: value
+      [param]: value,
     });
   }
 

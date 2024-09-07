@@ -7,11 +7,12 @@ import { v7 as uuidv7 } from 'uuid';
 import { AudioContextService } from '../service/audio-context.service';
 import { MidiService } from '../service/midi.service';
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { ADSR } from '@ivanrogulj.com/gain';
+import { ADSR, Gain } from '@ivanrogulj.com/gain';
 
 export interface AnalogSynthState {
   oscillators: Oscillator[];
   volumeEnvelope: ADSR;
+  gains: Gain[];
 }
 
 @Injectable({
@@ -21,10 +22,10 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   public readonly vm$: Observable<AnalogSynthState> = this.select(state => ({
     oscillators: state.oscillators,
     volumeEnvelope: state.volumeEnvelope,
+    gains: state.gains,
   }));
 
-  //Mapping to know which pressed key starts which oscillator
-  private midiNoteToOscillatorMap = new Map<number, Oscillator>();
+  private midiNoteToOscillatorMap = new Map<number, string>(); // Maps MIDI note to oscillator ID
 
   constructor(private readonly audioContextService: AudioContextService, private readonly midiService: MidiService) {
     super({
@@ -33,32 +34,33 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
         attack: 0.5,
         decay: 0.5,
         sustain: 1,
-        release: 0
-      }
+        release: 0.5,
+      },
+      gains: [],
     });
 
     this.midiService.noteOn$.subscribe(({ note }) => {
       const frequency = this.midiService.getFrequency(note);
       const oscillator = this.createAndStartOscillator(frequency);
-      this.midiNoteToOscillatorMap.set(note, oscillator);
+      this.midiNoteToOscillatorMap.set(note, oscillator.id);
     });
 
     this.midiService.noteOff$.subscribe(({ note }) => {
-      const oscillator = this.midiNoteToOscillatorMap.get(note);
-      if (oscillator) {
-        this.stopOscillator(oscillator.id);
+      const oscId = this.midiNoteToOscillatorMap.get(note);
+      if (oscId) {
+        this.stopOscillator(oscId);
         this.midiNoteToOscillatorMap.delete(note);
       }
     });
   }
 
-  // Method to create and start a new oscillator
   public createAndStartOscillator(frequency?: number): Oscillator {
     const oscNode = this.audioContextService.createAndStartOsc(frequency);
-    oscNode.frequency.value = frequency ?? 440;
+    const gainNode = this.audioContextService.createGain();
+    const oscId = uuidv7(); // Unique ID for the oscillator and gain
 
     const newOsc: Oscillator = {
-      id: uuidv7(),
+      id: oscId,
       type: oscNode.type,
       frequency: oscNode.frequency.value,
       detune: oscNode.detune.value,
@@ -66,41 +68,46 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       node: oscNode,
     };
 
-    //Connect all nodes in chain
-    this.audioContextService.connectArrayOfAudioNodes([newOsc.node]);
+    // Connect oscillator to gain node
+    this.audioContextService.connectOscillatorToGain(oscNode, gainNode);
+    this.audioContextService.updateVolumeEnvelope(gainNode, this.get().volumeEnvelope);
 
-    this.updateVolumeEnvelope(this.get().volumeEnvelope);
-
-    // Update state with the new oscillator
+    // Update state
     this.patchState((state) => ({
       oscillators: [...state.oscillators, newOsc],
+      gains: [...state.gains, { id: oscId, gainNode }],
     }));
 
-    return newOsc;
+    return newOsc; // Return the oscillator object
   }
 
   private releaseOscillator(oscillator: Oscillator): void {
-    this.audioContextService.releaseVolumeEnvelope(this.get().volumeEnvelope.release);
+    const gainNodeEntry = this.get().gains.find(entry => entry.id === oscillator.id);
 
-    // Stop oscillator after the release phase
-    setTimeout(() => {
-      this.audioContextService.stopAndDisconnect(oscillator.node);
-    }, this.get().volumeEnvelope.release * 1000);
+    if (gainNodeEntry) {
+      this.audioContextService.releaseVolumeEnvelope(gainNodeEntry.gainNode, this.get().volumeEnvelope.release);
+
+      setTimeout(() => {
+        this.audioContextService.stopAndDisconnect(oscillator.node, gainNodeEntry.gainNode);
+        this.patchState((state) => ({
+          gains: state.gains.filter(entry => entry.id !== oscillator.id),
+        }));
+      }, this.get().volumeEnvelope.release * 1000);
+    }
   }
 
   public stopOscillator(oscId: string): void {
     this.patchState((state) => {
-      const updatedOscillators = state.oscillators.filter((osc) => {
+      const updatedOscillators = state.oscillators.filter(osc => {
         if (osc.id === oscId) {
           this.releaseOscillator(osc);
-          return false; // Exclude this oscillator from the list
+          return false;
         }
         return true;
       });
-
       return {
         ...state,
-        oscillators: updatedOscillators
+        oscillators: updatedOscillators,
       };
     });
   }
@@ -117,10 +124,12 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     this.patchState((state) => ({
       volumeEnvelope: {
         ...state.volumeEnvelope,
-        ...partial
-      }
+        ...partial,
+      },
     }));
 
-    this.audioContextService.updateVolumeEnvelope(this.get().volumeEnvelope);
+    this.get().gains.forEach(({ gainNode }) => {
+      this.audioContextService.updateVolumeEnvelope(gainNode, this.get().volumeEnvelope);
+    });
   }
 }

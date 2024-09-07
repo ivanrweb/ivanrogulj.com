@@ -1,6 +1,6 @@
 export interface Gain {
-  gainValue: number;
-  node: GainNode;
+  id: string;
+  gainNode: GainNode;
 }
 
 export interface ADSR {
