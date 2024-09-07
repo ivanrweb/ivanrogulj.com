@@ -44,8 +44,9 @@ export class AudioContextService {
     return gainNode;
   }
 
-  public connectOscillatorToGain(osc: OscillatorNode, gainNode: GainNode): void {
-    osc.connect(gainNode);
+  public connectNodes(osc: OscillatorNode, gainNode: GainNode): void {
+    osc.connect(this.filterNode);
+    this.filterNode.connect(gainNode);
     gainNode.connect(this.context.destination);
   }
 

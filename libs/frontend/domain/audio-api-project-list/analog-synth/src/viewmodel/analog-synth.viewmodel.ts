@@ -69,7 +69,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     };
 
     // Connect oscillator to gain node
-    this.audioContextService.connectOscillatorToGain(oscNode, gainNode);
+    this.audioContextService.connectNodes(oscNode, gainNode);
     this.audioContextService.updateVolumeEnvelope(gainNode, this.get().volumeEnvelope);
 
     // Update state
