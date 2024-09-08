@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { AnalogSynthViewModel } from '../../../src/viewmodel/analog-synth.viewmodel';
 import { FormsModule } from '@angular/forms';
 import { ADSR } from './gain.interface';
@@ -12,7 +13,7 @@ import { ADSR } from './gain.interface';
   styleUrls: ['./gain.component.css'],
 })
 export class GainComponent {
-  public gain = 0.5;
+  public gain = 0.2;
 
   protected analogSynthViewModel = inject(AnalogSynthViewModel);
 

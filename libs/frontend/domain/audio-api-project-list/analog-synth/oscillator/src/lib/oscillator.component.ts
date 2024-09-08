@@ -13,9 +13,9 @@ import { AnalogSynthViewModel } from '../../../src/viewmodel/analog-synth.viewmo
 export class OscillatorComponent {
   protected analogSynthViewModel = inject(AnalogSynthViewModel);
 
-  public createOscillator(): void {
-    this.analogSynthViewModel.createAndStartOscillator();
-  }
+  // public createOscillator(): void {
+  //   this.analogSynthViewModel.createAndStartOscillator();
+  // }
 
   public stopOscillator(oscId: string): void {
     this.analogSynthViewModel.stopOscillator(oscId);

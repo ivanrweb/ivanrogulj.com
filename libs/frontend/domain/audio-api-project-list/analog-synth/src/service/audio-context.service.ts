@@ -6,10 +6,12 @@ import { ADSR } from '@ivanrogulj.com/gain';
 export class AudioContextService {
   private _context?: AudioContext;
   private filterNode: BiquadFilterNode = this.createFilter();
+  private oscillatorCount = 0;
 
   private get context(): AudioContext {
     if (!this._context) {
       this._context = new ((window as any).AudioContext || (window as any).webkitAudioContext)();
+      console.log('started audio context...');
     }
     return this._context!;
   }
@@ -19,12 +21,21 @@ export class AudioContextService {
     this._context = undefined;
   }
 
-  public createAndStartOsc(frequency?: number): OscillatorNode {
+  public createOsc(frequency: number): OscillatorNode {
     const osc = this.context.createOscillator();
-    osc.type = 'sawtooth';
-    osc.frequency.value = frequency ?? 440;
-    osc.start();
+    osc.type = 'sine';
+    osc.frequency.value = frequency;
+    osc.detune.value = Math.random() * 10 - 5; //Slightly detune every new one to make it sound more analog
     return osc;
+  }
+
+  public startOsc(oscNode: OscillatorNode): void {
+    oscNode.start();
+  }
+
+  public setOscCount(oscCount: number): void {
+    console.log('osc count: ', this.oscillatorCount);
+    this.oscillatorCount = oscCount
   }
 
   public updateFilter(frequency: number): void {
@@ -40,7 +51,7 @@ export class AudioContextService {
 
   public createGain(): GainNode {
     const gainNode = this.context.createGain();
-    gainNode.gain.value = 0.5;
+    gainNode.gain.value = 0.2;
     return gainNode;
   }
 

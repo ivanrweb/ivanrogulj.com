@@ -54,8 +54,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     });
   }
 
-  public createAndStartOscillator(frequency?: number): Oscillator {
-    const oscNode = this.audioContextService.createAndStartOsc(frequency);
+  public createAndStartOscillator(frequency: number): Oscillator {
+    const oscNode = this.audioContextService.createOsc(frequency);
     const gainNode = this.audioContextService.createGain();
     const oscId = uuidv7(); // Unique ID for the oscillator and gain
 
@@ -64,12 +64,12 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       type: oscNode.type,
       frequency: oscNode.frequency.value,
       detune: oscNode.detune.value,
-      isPlaying: true,
       node: oscNode,
     };
 
     this.audioContextService.connectNodes(oscNode, gainNode);
     this.audioContextService.updateVolumeEnvelope(gainNode, this.get().volumeEnvelope);
+    this.audioContextService.startOsc(oscNode);
 
     // Update state
     this.patchState((state) => ({
