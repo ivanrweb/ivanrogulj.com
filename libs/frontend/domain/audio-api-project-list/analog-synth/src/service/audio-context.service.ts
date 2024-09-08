@@ -6,7 +6,6 @@ import { ADSR } from '@ivanrogulj.com/gain';
 export class AudioContextService {
   private _context?: AudioContext;
   private filterNode: BiquadFilterNode = this.createFilter();
-  private oscillatorCount = 0;
 
   private get context(): AudioContext {
     if (!this._context) {
@@ -21,9 +20,9 @@ export class AudioContextService {
     this._context = undefined;
   }
 
-  public createOsc(frequency: number): OscillatorNode {
+  public createOsc(oscType: string, frequency: number): OscillatorNode {
     const osc = this.context.createOscillator();
-    osc.type = 'sine';
+    osc.type = oscType as OscillatorType;
     osc.frequency.value = frequency;
     osc.detune.value = Math.random() * 10 - 5; //Slightly detune every new one to make it sound more analog
     return osc;
@@ -31,11 +30,6 @@ export class AudioContextService {
 
   public startOsc(oscNode: OscillatorNode): void {
     oscNode.start();
-  }
-
-  public setOscCount(oscCount: number): void {
-    console.log('osc count: ', this.oscillatorCount);
-    this.oscillatorCount = oscCount
   }
 
   public updateFilter(frequency: number): void {
@@ -61,10 +55,11 @@ export class AudioContextService {
     gainNode.connect(this.context.destination);
   }
 
-  public stopAndDisconnect(osc: OscillatorNode, gainNode: GainNode): void {
+  public stopAndDisconnectSound(osc: OscillatorNode, gainNode: GainNode): void {
     osc.stop();
     osc.disconnect();
     gainNode.disconnect();
+    this.filterNode.disconnect();
   }
 
   public updateVolumeEnvelope(gainNode: GainNode, adsr: ADSR): void {

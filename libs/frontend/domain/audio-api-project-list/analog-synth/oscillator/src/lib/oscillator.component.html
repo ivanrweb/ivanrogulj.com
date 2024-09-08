@@ -1,4 +1,4 @@
-<!--<div *ngIf="analogSynthViewModel.vm$ | async as vm">-->
+<div *ngIf="analogSynthViewModel.vm$ | async as vm">
 <!--  <button (click)="createOscillator()">Create oscillator</button>-->
 <!--  <ul>-->
 <!--    <li *ngFor="let osc of vm.oscillators">-->
@@ -6,4 +6,9 @@
 <!--      <button (click)="stopOscillator(osc.id)">Destroy oscillator</button>-->
 <!--    </li>-->
 <!--  </ul>-->
-<!--</div>-->
+
+  <label for="options">Choose oscillator wavetype:</label>
+  <select id="options" name="options" [(ngModel)]="vm.selectedOscType" (change)="analogSynthViewModel.onOscillatorTypeChange($event)">
+    <option *ngFor="let oscType of oscTypes" [value]="oscType">{{ oscType }}</option>
+  </select>
+</div>

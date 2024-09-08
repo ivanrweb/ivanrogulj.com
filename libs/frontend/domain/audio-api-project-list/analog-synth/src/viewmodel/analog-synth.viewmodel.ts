@@ -11,6 +11,7 @@ import { ADSR, Gain } from '@ivanrogulj.com/gain';
 
 export interface AnalogSynthState {
   oscillators: Oscillator[];
+  selectedOscType: string;
   volumeEnvelope: ADSR;
   gains: Gain[];
 }
@@ -21,6 +22,7 @@ export interface AnalogSynthState {
 export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   public readonly vm$: Observable<AnalogSynthState> = this.select(state => ({
     oscillators: state.oscillators,
+    selectedOscType: state.selectedOscType,
     volumeEnvelope: state.volumeEnvelope,
     gains: state.gains,
   }));
@@ -30,6 +32,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   constructor(private readonly audioContextService: AudioContextService, private readonly midiService: MidiService) {
     super({
       oscillators: [],
+      selectedOscType: 'sine',
       volumeEnvelope: {
         attack: 0.5,
         decay: 0.5,
@@ -39,12 +42,14 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       gains: [],
     });
 
+    //Note on event
     this.midiService.noteOn$.subscribe(({ note }) => {
       const frequency = this.midiService.getFrequency(note);
-      const oscillator = this.createAndStartOscillator(frequency);
+      const oscillator = this.createAndStartSound(frequency);
       this.midiNoteToOscillatorMap.set(note, oscillator.id);
     });
 
+    //Note off event
     this.midiService.noteOff$.subscribe(({ note }) => {
       const oscId = this.midiNoteToOscillatorMap.get(note);
       if (oscId) {
@@ -54,10 +59,11 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     });
   }
 
-  public createAndStartOscillator(frequency: number): Oscillator {
-    const oscNode = this.audioContextService.createOsc(frequency);
+  public createAndStartSound(frequency: number): Oscillator {
+    const oscNode = this.audioContextService.createOsc(this.get().selectedOscType, frequency);
     const gainNode = this.audioContextService.createGain();
-    const oscId = uuidv7(); // Unique ID for the oscillator and gain
+    this.audioContextService.startOsc(oscNode);
+    const oscId = uuidv7(); // Unique ID for the oscillator
 
     const newOsc: Oscillator = {
       id: oscId,
@@ -69,7 +75,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
 
     this.audioContextService.connectNodes(oscNode, gainNode);
     this.audioContextService.updateVolumeEnvelope(gainNode, this.get().volumeEnvelope);
-    this.audioContextService.startOsc(oscNode);
+
 
     // Update state
     this.patchState((state) => ({
@@ -87,7 +93,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       this.audioContextService.releaseVolumeEnvelope(gainNodeEntry.gainNode, this.get().volumeEnvelope.release);
 
       setTimeout(() => {
-        this.audioContextService.stopAndDisconnect(oscillator.node, gainNodeEntry.gainNode);
+        this.audioContextService.stopAndDisconnectSound(oscillator.node, gainNodeEntry.gainNode);
         this.patchState((state) => ({
           gains: state.gains.filter(entry => entry.id !== oscillator.id),
         }));
@@ -139,5 +145,11 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     this.get().gains.forEach(({ gainNode }) => {
       this.audioContextService.updateVolumeEnvelope(gainNode, this.get().volumeEnvelope);
     });
+  }
+
+  public onOscillatorTypeChange(event$: Event): void {
+    const selectElement = event$.target as HTMLSelectElement;
+    const selectedValue = selectElement.value;
+    this.patchState({ selectedOscType: selectedValue as OscillatorType });
   }
 }
