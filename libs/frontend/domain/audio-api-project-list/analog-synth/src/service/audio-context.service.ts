@@ -96,6 +96,5 @@ export class AudioContextService {
     osc.stop();
     osc.disconnect();
     gainNode.disconnect();
-    this.filterNode.disconnect();
   }
 }
