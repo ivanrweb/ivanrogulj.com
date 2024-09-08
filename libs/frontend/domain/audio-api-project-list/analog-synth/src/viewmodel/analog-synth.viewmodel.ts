@@ -11,7 +11,7 @@ import { ADSR, Gain } from '@ivanrogulj.com/gain';
 
 export interface AnalogSynthState {
   oscillators: Oscillator[];
-  selectedOscType: string;
+  selectedOscType: OscillatorType;
   volumeEnvelope: ADSR;
   gains: Gain[];
 }
@@ -62,7 +62,6 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   public createAndStartSound(frequency: number): Oscillator {
     const oscNode = this.audioContextService.createOsc(this.get().selectedOscType, frequency);
     const gainNode = this.audioContextService.createGain();
-    this.audioContextService.startOsc(oscNode);
     const oscId = uuidv7(); // Unique ID for the oscillator
 
     const newOsc: Oscillator = {
@@ -75,9 +74,9 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
 
     this.audioContextService.connectNodes(oscNode, gainNode);
     this.audioContextService.updateVolumeEnvelope(gainNode, this.get().volumeEnvelope);
+    this.audioContextService.startOsc(oscNode);
 
-
-    // Update state
+    //Update oscillators and gains states
     this.patchState((state) => ({
       oscillators: [...state.oscillators, newOsc],
       gains: [...state.gains, { id: oscId, gainNode }],

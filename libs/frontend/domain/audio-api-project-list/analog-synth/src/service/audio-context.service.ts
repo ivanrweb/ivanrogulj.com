@@ -7,6 +7,9 @@ export class AudioContextService {
   private _context?: AudioContext;
   private filterNode: BiquadFilterNode = this.createFilter();
 
+  /*
+    Initialize AudioContext
+   */
   private get context(): AudioContext {
     if (!this._context) {
       this._context = new ((window as any).AudioContext || (window as any).webkitAudioContext)();
@@ -15,14 +18,21 @@ export class AudioContextService {
     return this._context!;
   }
 
+  /*
+    Destroy AudioContext
+   */
   public async destroyContext(): Promise<void> {
     await this.context.close();
     this._context = undefined;
   }
 
-  public createOsc(oscType: string, frequency: number): OscillatorNode {
+  /*
+    1. Oscillator Node
+   */
+
+  public createOsc(oscType: OscillatorType, frequency: number): OscillatorNode {
     const osc = this.context.createOscillator();
-    osc.type = oscType as OscillatorType;
+    osc.type = oscType;
     osc.frequency.value = frequency;
     osc.detune.value = Math.random() * 10 - 5; //Slightly detune every new one to make it sound more analog
     return osc;
@@ -32,9 +42,9 @@ export class AudioContextService {
     oscNode.start();
   }
 
-  public updateFilter(frequency: number): void {
-    this.filterNode.frequency.value = frequency;
-  }
+  /*
+    2. Filter Node
+   */
 
   public createFilter(): BiquadFilterNode {
     const filterNode = this.context.createBiquadFilter();
@@ -43,23 +53,18 @@ export class AudioContextService {
     return filterNode;
   }
 
+  public updateFilter(frequency: number): void {
+    this.filterNode.frequency.value = frequency;
+  }
+
+  /*
+    3. Gain Node
+   */
+
   public createGain(): GainNode {
     const gainNode = this.context.createGain();
     gainNode.gain.value = 0.2;
     return gainNode;
-  }
-
-  public connectNodes(osc: OscillatorNode, gainNode: GainNode): void {
-    osc.connect(this.filterNode);
-    this.filterNode.connect(gainNode);
-    gainNode.connect(this.context.destination);
-  }
-
-  public stopAndDisconnectSound(osc: OscillatorNode, gainNode: GainNode): void {
-    osc.stop();
-    osc.disconnect();
-    gainNode.disconnect();
-    this.filterNode.disconnect();
   }
 
   public updateVolumeEnvelope(gainNode: GainNode, adsr: ADSR): void {
@@ -75,5 +80,22 @@ export class AudioContextService {
     gainNode.gain.cancelScheduledValues(now);
     gainNode.gain.setValueAtTime(gainNode.gain.value, now);
     gainNode.gain.linearRampToValueAtTime(0, now + release);
+  }
+
+  /*
+    4. Connect and disconnect Nodes
+   */
+
+  public connectNodes(osc: OscillatorNode, gainNode: GainNode): void {
+    osc.connect(this.filterNode);
+    this.filterNode.connect(gainNode);
+    gainNode.connect(this.context.destination);
+  }
+
+  public stopAndDisconnectSound(osc: OscillatorNode, gainNode: GainNode): void {
+    osc.stop();
+    osc.disconnect();
+    gainNode.disconnect();
+    this.filterNode.disconnect();
   }
 }
