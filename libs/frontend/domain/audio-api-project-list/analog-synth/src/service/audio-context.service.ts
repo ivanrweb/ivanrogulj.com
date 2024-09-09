@@ -8,6 +8,9 @@ export class AudioContextService {
   private filterNode: BiquadFilterNode = this.createFilter();
   private masterGainNode: GainNode = this.createMasterGain();
 
+  //Visual nodes
+  private analyserNode = this.context.createAnalyser();
+
   /*
     Initialize AudioContext
    */
@@ -98,12 +101,23 @@ export class AudioContextService {
   /*
     5. Connect and disconnect Nodes
    */
+  public getAnalyserNode(): AnalyserNode {
+    this.analyserNode.fftSize = 2048;
+    return this.analyserNode;
+  }
+
+  /*
+    5. Connect and disconnect Nodes
+   */
 
   public connectNodes(osc: OscillatorNode, gainNode: GainNode): void {
     osc.connect(this.filterNode);
     this.filterNode.connect(gainNode);
     gainNode.connect(this.masterGainNode);
     this.masterGainNode.connect(this.context.destination);
+
+    //Visual oscilloscope representation of total output
+    this.masterGainNode.connect(this.analyserNode);
   }
 
   public stopAndDisconnectSound(osc: OscillatorNode, gainNode: GainNode): void {

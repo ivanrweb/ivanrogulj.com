@@ -48,6 +48,9 @@
       "@ivanrogulj.com/oscillator": [
         "libs/frontend/domain/audio-api-project-list/analog-synth/oscillator/src/index.ts"
       ],
+      "@ivanrogulj.com/oscilloscope": [
+        "libs/frontend/domain/audio-api-project-list/ui/oscilloscope/src/index.ts"
+      ],
       "@ivanrogulj.com/tile-item": [
         "libs/frontend/shared/ui/tile-item/src/index.ts"
       ],

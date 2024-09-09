@@ -1,11 +1,13 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { OscillatorComponent } from '@ivanrogulj.com/oscillator';
 import { AudioContextService } from '../service/audio-context.service';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { FilterComponent } from '@ivanrogulj.com/filter';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { GainComponent } from '@ivanrogulj.com/gain';
+import { AnalogSynthViewModel } from '../viewmodel/analog-synth.viewmodel';
 @Component({
   selector: 'lib-analog-synth',
   standalone: true,
@@ -14,6 +16,20 @@ import { GainComponent } from '@ivanrogulj.com/gain';
   templateUrl: './analog-synth.component.html',
   styleUrl: './analog-synth.component.css',
 })
-export class AnalogSynthComponent {
+export class AnalogSynthComponent implements AfterViewInit {
+  @ViewChild('oscilloscope', { static: false })
+  public oscilloscopeCanvas!: ElementRef<HTMLCanvasElement>;
+
+  private analogSynthViewModel = inject(AnalogSynthViewModel);
+
+  public ngAfterViewInit(): void {
+    if (this.oscilloscopeCanvas) {
+      // Initialize the oscilloscope by passing the canvas element
+      this.analogSynthViewModel.initializeOscilloscope(this.oscilloscopeCanvas);
+    } else {
+      console.error('Oscilloscope canvas not found');
+    }
+  }
+
 }
 

@@ -1,6 +1,6 @@
 import { ComponentStore } from '@ngrx/component-store';
 import { Observable } from 'rxjs';
-import { Injectable } from '@angular/core';
+import { ElementRef, Injectable } from '@angular/core';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { Oscillator } from '@ivanrogulj.com/oscillator';
 import { v7 as uuidv7 } from 'uuid';
@@ -8,6 +8,7 @@ import { AudioContextService } from '../service/audio-context.service';
 import { MidiService } from '../service/midi.service';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { ADSR, Gain } from '@ivanrogulj.com/gain';
+import { OscilloscopeService } from '../service/oscilloscope.service';
 
 export interface AnalogSynthState {
   oscillators: Oscillator[];
@@ -17,19 +18,21 @@ export interface AnalogSynthState {
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   public readonly vm$: Observable<AnalogSynthState> = this.select(state => ({
     oscillators: state.oscillators,
     selectedOscType: state.selectedOscType,
     volumeEnvelope: state.volumeEnvelope,
-    gains: state.gains,
+    gains: state.gains
   }));
 
   private midiNoteToOscillatorMap = new Map<number, string>(); // Maps MIDI note to oscillator ID
 
-  constructor(private readonly audioContextService: AudioContextService, private readonly midiService: MidiService) {
+  constructor(private readonly audioContextService: AudioContextService,
+              private readonly midiService: MidiService,
+              private readonly oscilloscopeService: OscilloscopeService) {
     super({
       oscillators: [],
       selectedOscType: 'sine',
@@ -37,9 +40,9 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
         attack: 0.5,
         decay: 0.5,
         sustain: 1,
-        release: 0.5,
+        release: 0.5
       },
-      gains: [],
+      gains: []
     });
 
     //Note on event
@@ -69,7 +72,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       type: oscNode.type,
       frequency: oscNode.frequency.value,
       detune: oscNode.detune.value,
-      node: oscNode,
+      node: oscNode
     };
 
     this.audioContextService.connectNodes(oscNode, gainNode);
@@ -79,7 +82,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     //Update oscillators and gains states
     this.patchState((state) => ({
       oscillators: [...state.oscillators, newOsc],
-      gains: [...state.gains, { id: oscId, gainNode }],
+      gains: [...state.gains, { id: oscId, gainNode }]
     }));
 
     return newOsc; // Return the oscillator object
@@ -94,7 +97,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       setTimeout(() => {
         this.audioContextService.stopAndDisconnectSound(oscillator.node, gainNodeEntry.gainNode);
         this.patchState((state) => ({
-          gains: state.gains.filter(entry => entry.id !== oscillator.id),
+          gains: state.gains.filter(entry => entry.id !== oscillator.id)
         }));
       }, this.get().volumeEnvelope.release * 1000);
     }
@@ -111,7 +114,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       });
       return {
         ...state,
-        oscillators: updatedOscillators,
+        oscillators: updatedOscillators
       };
     });
   }
@@ -129,7 +132,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
           ...gain,
           gainValue
         };
-      }),
+      })
     }));
   }
 
@@ -137,8 +140,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     this.patchState((state) => ({
       volumeEnvelope: {
         ...state.volumeEnvelope,
-        ...partial,
-      },
+        ...partial
+      }
     }));
 
     this.get().gains.forEach(({ gainNode }) => {
@@ -150,5 +153,11 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     const selectElement = event$.target as HTMLSelectElement;
     const selectedValue = selectElement.value;
     this.patchState({ selectedOscType: selectedValue as OscillatorType });
+  }
+
+  // Method to start the oscilloscope visualization
+  public initializeOscilloscope(canvas: ElementRef<HTMLCanvasElement>): void {
+    const analyserNode = this.audioContextService.getAnalyserNode();
+    this.oscilloscopeService.draw(analyserNode, canvas.nativeElement);
   }
 }
