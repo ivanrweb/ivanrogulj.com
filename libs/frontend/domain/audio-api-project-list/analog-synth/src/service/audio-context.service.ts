@@ -6,6 +6,7 @@ import { ADSR } from '@ivanrogulj.com/gain';
 export class AudioContextService {
   private _context?: AudioContext;
   private filterNode: BiquadFilterNode = this.createFilter();
+  private masterGainNode: GainNode = this.createMasterGain();
 
   /*
     Initialize AudioContext
@@ -34,7 +35,8 @@ export class AudioContextService {
     const osc = this.context.createOscillator();
     osc.type = oscType;
     osc.frequency.value = frequency;
-    osc.detune.value = Math.random() * 10 - 5; //Slightly detune every new one to make it sound more analog
+    osc.detune.value = Math.random() * 5 - 2.5;  //Slightly detune every new one to make it sound more analog
+
     return osc;
   }
 
@@ -58,12 +60,12 @@ export class AudioContextService {
   }
 
   /*
-    3. Gain Node
+    3. Gain Nodes
    */
 
   public createGain(): GainNode {
     const gainNode = this.context.createGain();
-    gainNode.gain.value = 0.2;
+    gainNode.gain.value = 0.33;
     return gainNode;
   }
 
@@ -83,13 +85,25 @@ export class AudioContextService {
   }
 
   /*
-    4. Connect and disconnect Nodes
+    4. Master Gain Node
+   */
+
+  public createMasterGain(): GainNode {
+    const gainNode = this.context.createGain();
+    gainNode.gain.value = 0.1;
+    gainNode.connect(this.context.destination);
+    return gainNode;
+  }
+
+  /*
+    5. Connect and disconnect Nodes
    */
 
   public connectNodes(osc: OscillatorNode, gainNode: GainNode): void {
     osc.connect(this.filterNode);
     this.filterNode.connect(gainNode);
-    gainNode.connect(this.context.destination);
+    gainNode.connect(this.masterGainNode);
+    this.masterGainNode.connect(this.context.destination);
   }
 
   public stopAndDisconnectSound(osc: OscillatorNode, gainNode: GainNode): void {
