@@ -5,11 +5,9 @@ import { ADSR } from '@ivanrogulj.com/gain';
 @Injectable({ providedIn: 'root' })
 export class AudioContextService {
   private _context?: AudioContext;
-  private filterNode: BiquadFilterNode = this.createFilter();
-  private masterGain: GainNode = this.context.createGain();
-
-  //Visual nodes
-  private analyserNode = this.context.createAnalyser();
+  private filterNode?: BiquadFilterNode;
+  private masterGain?: GainNode;
+  private analyserNode?: AnalyserNode;
 
   /*
     Initialize AudioContext
@@ -17,9 +15,25 @@ export class AudioContextService {
   private get context(): AudioContext {
     if (!this._context) {
       this._context = new ((window as any).AudioContext || (window as any).webkitAudioContext)();
-      console.log('started audio context...');
+      console.log('Started audio context.');
     }
     return this._context!;
+  }
+
+  /*
+    Method to initialize the audio context and nodes
+   */
+  public initializeAudioNodes(): void {
+    if (!this.filterNode) {
+      this.filterNode = this.createFilter();
+    }
+    if (!this.masterGain) {
+      this.masterGain = this.context.createGain();
+    }
+    if (!this.analyserNode) {
+      this.analyserNode = this.context.createAnalyser();
+    }
+    console.log('Audio nodes initialized.');
   }
 
   /*
@@ -27,7 +41,13 @@ export class AudioContextService {
    */
   public async destroyContext(): Promise<void> {
     await this.context.close();
+    console.log('Closed audio context.');
     this._context = undefined;
+
+    // Clear nodes to avoid referencing the old context
+    this.filterNode = undefined;
+    this.masterGain = undefined;
+    this.analyserNode = undefined;
   }
 
   /*
@@ -64,7 +84,7 @@ export class AudioContextService {
   }
 
   public updateFilter(frequency: number): void {
-    this.filterNode.frequency.value = frequency;
+    this.filterNode!.frequency.value = frequency;
   }
 
   /*
@@ -80,7 +100,7 @@ export class AudioContextService {
   }
 
   public setMasterGain(value: number): void {
-    this.masterGain.gain.value = value;
+    this.masterGain!.gain.value = value;
   }
 
   public updateVolumeEnvelope(gainNode: GainNode, adsr: ADSR): void {
@@ -103,8 +123,8 @@ export class AudioContextService {
     5. Connect and disconnect Nodes
    */
   public getAnalyserNode(): AnalyserNode {
-    this.analyserNode.fftSize = 2048;
-    return this.analyserNode;
+    this.analyserNode!.fftSize = 2048;
+    return this.analyserNode!;
   }
 
   /*
@@ -112,13 +132,13 @@ export class AudioContextService {
    */
 
   public connectNodes(osc: OscillatorNode, gainNode: GainNode): void {
-    osc.connect(this.filterNode);
-    this.filterNode.connect(gainNode);
-    gainNode.connect(this.masterGain);
-    this.masterGain.connect(this.context.destination);
+    osc.connect(this.filterNode!);
+    this.filterNode!.connect(gainNode);
+    gainNode.connect(this.masterGain!);
+    this.masterGain!.connect(this.context.destination);
 
     //Visual oscilloscope representation of total output
-    this.masterGain.connect(this.analyserNode);
+    this.masterGain!.connect(this.analyserNode!);
   }
 
   public stopAndDisconnectSound(osc: OscillatorNode, gainNode: GainNode): void {

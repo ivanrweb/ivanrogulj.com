@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { OscillatorComponent } from '@ivanrogulj.com/oscillator';
@@ -16,11 +16,15 @@ import { AnalogSynthViewModel } from '../viewmodel/analog-synth.viewmodel';
   templateUrl: './analog-synth.component.html',
   styleUrl: './analog-synth.component.css',
 })
-export class AnalogSynthComponent implements AfterViewInit {
+export class AnalogSynthComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('oscilloscope', { static: false })
   public oscilloscopeCanvas!: ElementRef<HTMLCanvasElement>;
 
   private analogSynthViewModel = inject(AnalogSynthViewModel);
+
+  public ngOnInit(): void {
+    this.analogSynthViewModel.startAudioContext();
+  }
 
   public ngAfterViewInit(): void {
     if (this.oscilloscopeCanvas) {
@@ -29,6 +33,10 @@ export class AnalogSynthComponent implements AfterViewInit {
     } else {
       console.error('Oscilloscope canvas not found');
     }
+  }
+
+  public ngOnDestroy(): void {
+    this.analogSynthViewModel.destroyAudioContext();
   }
 
 }

@@ -65,6 +65,14 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     });
   }
 
+  public startAudioContext(): void {
+    this.audioContextService.initializeAudioNodes();
+  }
+
+  public destroyAudioContext(): void {
+    this.audioContextService.destroyContext();
+  }
+
   public createAndStartSound(frequency: number): Oscillator {
     const oscNode = this.audioContextService.createOsc(this.get().selectedOscType, frequency);
     const gainNode = this.audioContextService.createGain();
@@ -96,11 +104,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   private recalculateMasterGain(): void {
     const totalOscillators = this.get().oscillators.length;
 
-    // Normalize the master gain to maintain consistent overall volume
-    this.patchState({ masterGain: 0.2 });
-
     //square root scaling for every new oscillator to make total output gain quieter when multiple oscillators
-    //const normalizedGain = totalOscillators > 0 ? maxGain / Math.sqrt(totalOscillators) : maxGain;
+    //const normalizedGain = totalOscillators > 0 ? this.get().masterGain / Math.sqrt(totalOscillators) : this.get().masterGain;
 
     //pow technique for the same thing, a little bit quieter on polyphony than square root scaling approach
     const normalizedGain = totalOscillators > 0 ? this.get().masterGain / Math.pow(totalOscillators, 0.8) : this.get().masterGain;
@@ -145,6 +150,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
 
   public updateGain(gainValue: number): void {
     this.patchState({ masterGain: gainValue });
+
+    this.recalculateMasterGain();
   }
 
   public updateVolumeEnvelope(partial: Partial<ADSR>): void {
@@ -160,8 +167,10 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     //   this.audioContextService.updateVolumeEnvelope(gainNode, this.get().volumeEnvelope);
     // });
 
-    const lastGainNode = this.get().gains[this.get().gains.length - 1].gainNode;
-    this.audioContextService.updateVolumeEnvelope(lastGainNode, this.get().volumeEnvelope);
+    if(this.get().gains.length) {
+      const lastGainNode = this.get().gains[this.get().gains.length - 1].gainNode;
+      this.audioContextService.updateVolumeEnvelope(lastGainNode, this.get().volumeEnvelope);
+    }
   }
 
   public onOscillatorTypeChange(event$: Event): void {
