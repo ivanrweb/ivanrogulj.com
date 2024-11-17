@@ -6,7 +6,7 @@ import { ADSR } from '@ivanrogulj.com/gain';
 export class AudioContextService {
   private _context?: AudioContext;
   private filterNode: BiquadFilterNode = this.createFilter();
-  private masterGainNode: GainNode = this.createMasterGain();
+  private masterGain: GainNode = this.context.createGain();
 
   //Visual nodes
   private analyserNode = this.context.createAnalyser();
@@ -38,13 +38,18 @@ export class AudioContextService {
     const osc = this.context.createOscillator();
     osc.type = oscType;
     osc.frequency.value = frequency;
-    osc.detune.value = Math.random() * 5 - 2.5;  //Slightly detune every new one to make it sound more analog
+    osc.detune.value = this.detuneOscillator(5);
 
     return osc;
   }
 
   public startOsc(oscNode: OscillatorNode): void {
     oscNode.start();
+  }
+
+  public detuneOscillator(detuneValue: number): number {
+    //Slightly detune every new one to make it sound more analog
+    return Math.random() * detuneValue - (detuneValue / 2);
   }
 
   /*
@@ -68,8 +73,14 @@ export class AudioContextService {
 
   public createGain(): GainNode {
     const gainNode = this.context.createGain();
-    gainNode.gain.value = 0.33;
+
+    const maxGainForSingleNode = 0.33;
+    gainNode.gain.value = maxGainForSingleNode;
     return gainNode;
+  }
+
+  public setMasterGain(value: number): void {
+    this.masterGain.gain.value = value;
   }
 
   public updateVolumeEnvelope(gainNode: GainNode, adsr: ADSR): void {
@@ -87,16 +98,6 @@ export class AudioContextService {
     gainNode.gain.linearRampToValueAtTime(0, now + release);
   }
 
-  /*
-    4. Master Gain Node
-   */
-
-  public createMasterGain(): GainNode {
-    const gainNode = this.context.createGain();
-    gainNode.gain.value = 0.1;
-    gainNode.connect(this.context.destination);
-    return gainNode;
-  }
 
   /*
     5. Connect and disconnect Nodes
@@ -113,11 +114,11 @@ export class AudioContextService {
   public connectNodes(osc: OscillatorNode, gainNode: GainNode): void {
     osc.connect(this.filterNode);
     this.filterNode.connect(gainNode);
-    gainNode.connect(this.masterGainNode);
-    this.masterGainNode.connect(this.context.destination);
+    gainNode.connect(this.masterGain);
+    this.masterGain.connect(this.context.destination);
 
     //Visual oscilloscope representation of total output
-    this.masterGainNode.connect(this.analyserNode);
+    this.masterGain.connect(this.analyserNode);
   }
 
   public stopAndDisconnectSound(osc: OscillatorNode, gainNode: GainNode): void {

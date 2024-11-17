@@ -13,8 +13,6 @@ import { ADSR } from './gain.interface';
   styleUrls: ['./gain.component.css'],
 })
 export class GainComponent {
-  public gain = 0.2;
-
   protected analogSynthViewModel = inject(AnalogSynthViewModel);
 
   public onVolumeEnvelopeChange(param: keyof ADSR, value: number): void {
@@ -23,7 +21,7 @@ export class GainComponent {
     });
   }
 
-  public onGainChange(): void {
-    this.analogSynthViewModel.updateGain(this.gain);
+  public onGainChange(value$: number): void {
+    this.analogSynthViewModel.updateGain(value$);
   }
 }

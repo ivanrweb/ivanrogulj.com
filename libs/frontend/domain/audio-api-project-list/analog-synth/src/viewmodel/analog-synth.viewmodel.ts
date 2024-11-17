@@ -15,6 +15,7 @@ export interface AnalogSynthState {
   selectedOscType: OscillatorType;
   volumeEnvelope: ADSR;
   gains: Gain[];
+  masterGain: number;
 }
 
 @Injectable({
@@ -25,7 +26,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     oscillators: state.oscillators,
     selectedOscType: state.selectedOscType,
     volumeEnvelope: state.volumeEnvelope,
-    gains: state.gains
+    gains: state.gains,
+    masterGain: state.masterGain,
   }));
 
   private midiNoteToOscillatorMap = new Map<number, string>(); // Maps MIDI note to oscillator ID
@@ -35,14 +37,15 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
               private readonly oscilloscopeService: OscilloscopeService) {
     super({
       oscillators: [],
-      selectedOscType: 'sine',
+      selectedOscType: 'sawtooth',
       volumeEnvelope: {
-        attack: 0.5,
-        decay: 0.5,
-        sustain: 1,
-        release: 0.5
+        attack: 0.05,
+        decay: 0.6,
+        sustain: 0.8,
+        release: 0.3
       },
-      gains: []
+      gains: [],
+      masterGain: 0.2
     });
 
     //Note on event
@@ -75,7 +78,6 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       node: oscNode
     };
 
-    this.audioContextService.connectNodes(oscNode, gainNode);
     this.audioContextService.updateVolumeEnvelope(gainNode, this.get().volumeEnvelope);
     this.audioContextService.startOsc(oscNode);
 
@@ -85,7 +87,25 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       gains: [...state.gains, { id: oscId, gainNode }]
     }));
 
+    this.recalculateMasterGain();
+    this.audioContextService.connectNodes(oscNode, gainNode);
+
     return newOsc; // Return the oscillator object
+  }
+
+  private recalculateMasterGain(): void {
+    const totalOscillators = this.get().oscillators.length;
+
+    // Normalize the master gain to maintain consistent overall volume
+    this.patchState({ masterGain: 0.2 });
+
+    //square root scaling for every new oscillator to make total output gain quieter when multiple oscillators
+    //const normalizedGain = totalOscillators > 0 ? maxGain / Math.sqrt(totalOscillators) : maxGain;
+
+    //pow technique for the same thing, a little bit quieter on polyphony than square root scaling approach
+    const normalizedGain = totalOscillators > 0 ? this.get().masterGain / Math.pow(totalOscillators, 0.8) : this.get().masterGain;
+
+    this.audioContextService.setMasterGain(normalizedGain);
   }
 
   private releaseOscillator(oscillator: Oscillator): void {
@@ -124,16 +144,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   }
 
   public updateGain(gainValue: number): void {
-    this.patchState((state) => ({
-      gains: state.gains.map(gain => {
-        // Update the gain value for each GainNode
-        gain.gainNode.gain.value = gainValue;
-        return {
-          ...gain,
-          gainValue
-        };
-      })
-    }));
+    this.patchState({ masterGain: gainValue });
   }
 
   public updateVolumeEnvelope(partial: Partial<ADSR>): void {
@@ -144,9 +155,13 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       }
     }));
 
-    this.get().gains.forEach(({ gainNode }) => {
-      this.audioContextService.updateVolumeEnvelope(gainNode, this.get().volumeEnvelope);
-    });
+    //in case you need to update all gains, not only the latest one
+    // this.get().gains.forEach(({ gainNode }) => {
+    //   this.audioContextService.updateVolumeEnvelope(gainNode, this.get().volumeEnvelope);
+    // });
+
+    const lastGainNode = this.get().gains[this.get().gains.length - 1].gainNode;
+    this.audioContextService.updateVolumeEnvelope(lastGainNode, this.get().volumeEnvelope);
   }
 
   public onOscillatorTypeChange(event$: Event): void {
