@@ -111,8 +111,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     //pow technique for the same thing, a little bit quieter on polyphony than square root scaling approach
     const normalizedGain = totalOscillators > 0 ? this.get().masterGain / Math.pow(totalOscillators, 0.8) : this.get().masterGain;
 
-    // Apply a non-linear scaling to the key velocity to make it less aggressive
-    const scaledVelocity = keyVelocity ? Math.pow(keyVelocity, 0.5) : 1;
+    // Apply a quadratic easing function with a minimum offset
+    const scaledVelocity = keyVelocity ? (0.2 + 0.6 * keyVelocity + 0.2 * Math.pow(keyVelocity, 2)) : 1;
 
     // Adjust gain based on the key velocity (if it exists). If not, just return gain
     const finalGain = keyVelocity ? normalizedGain * scaledVelocity : normalizedGain;
