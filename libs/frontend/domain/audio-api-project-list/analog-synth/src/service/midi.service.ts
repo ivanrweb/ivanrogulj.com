@@ -67,4 +67,14 @@ export class MidiService {
   public getFrequency(note: number): number {
     return this.frequencyLookup[note];
   }
+
+  public getVelocityBetweenZeroAndOne(velocity: number): number {
+    // Ensure the velocity is within the valid range
+    if (velocity < 0 || velocity > 128) {
+      throw new Error('Velocity must be in the range 0-128.');
+    }
+
+    // Rescale the velocity to a 0-1 range
+    return velocity / 128;
+  }
 }

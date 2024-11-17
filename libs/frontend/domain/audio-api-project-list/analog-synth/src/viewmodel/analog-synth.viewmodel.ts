@@ -49,9 +49,10 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     });
 
     //Note on event
-    this.midiService.noteOn$.subscribe(({ note }) => {
+    this.midiService.noteOn$.subscribe(({ note, velocity }) => {
       const frequency = this.midiService.getFrequency(note);
-      const oscillator = this.createAndStartSound(frequency);
+      const adjustedVelocity = this.midiService.getVelocityBetweenZeroAndOne(velocity);
+      const oscillator = this.createAndStartSound(frequency, adjustedVelocity);
       this.midiNoteToOscillatorMap.set(note, oscillator.id);
     });
 
@@ -73,7 +74,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     this.audioContextService.destroyContext();
   }
 
-  public createAndStartSound(frequency: number): Oscillator {
+  public createAndStartSound(frequency: number, keyVelocity: number): Oscillator {
     const oscNode = this.audioContextService.createOsc(this.get().selectedOscType, frequency);
     const gainNode = this.audioContextService.createGain();
     const oscId = uuidv7(); // Unique ID for the oscillator
@@ -95,13 +96,13 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       gains: [...state.gains, { id: oscId, gainNode }]
     }));
 
-    this.recalculateMasterGain();
+    this.recalculateMasterGain(keyVelocity);
     this.audioContextService.connectNodes(oscNode, gainNode);
 
     return newOsc; // Return the oscillator object
   }
 
-  private recalculateMasterGain(): void {
+  private recalculateMasterGain(keyVelocity?: number): void {
     const totalOscillators = this.get().oscillators.length;
 
     //square root scaling for every new oscillator to make total output gain quieter when multiple oscillators
@@ -110,7 +111,13 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     //pow technique for the same thing, a little bit quieter on polyphony than square root scaling approach
     const normalizedGain = totalOscillators > 0 ? this.get().masterGain / Math.pow(totalOscillators, 0.8) : this.get().masterGain;
 
-    this.audioContextService.setMasterGain(normalizedGain);
+    // Apply a non-linear scaling to the key velocity to make it less aggressive
+    const scaledVelocity = keyVelocity ? Math.pow(keyVelocity, 0.5) : 1;
+
+    // Adjust gain based on the key velocity (if it exists). If not, just return gain
+    const finalGain = keyVelocity ? normalizedGain * scaledVelocity : normalizedGain;
+
+    this.audioContextService.setMasterGain(finalGain);
   }
 
   private releaseOscillator(oscillator: Oscillator): void {
