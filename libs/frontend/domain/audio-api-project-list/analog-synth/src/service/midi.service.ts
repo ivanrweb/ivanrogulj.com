@@ -41,6 +41,8 @@ export class MidiService {
   }
 
   public handleInput(event: any): void {
+    console.log('MIDI event:', event);
+
     if (!(event.data[0] === 248)) {
       const cc = event.data[0];
       const note = event.data[1];
@@ -69,7 +71,6 @@ export class MidiService {
   }
 
   public getVelocityBetweenZeroAndOne(velocity: number): number {
-    // Ensure the velocity is within the valid range
     if (velocity < 0 || velocity > 128) {
       throw new Error('Velocity must be in the range 0-128.');
     }

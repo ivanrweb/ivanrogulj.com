@@ -6,8 +6,10 @@ import { ADSR } from '@ivanrogulj.com/gain';
 export class AudioContextService {
   private _context?: AudioContext;
   private filterNode?: BiquadFilterNode;
+  private compressorNode?: DynamicsCompressorNode;
   private masterGain?: GainNode;
   private analyserNode?: AnalyserNode;
+  private maxGainForSingleNode = 0.3;
 
   /*
     Initialize AudioContext
@@ -24,15 +26,10 @@ export class AudioContextService {
     Method to initialize the audio context and nodes
    */
   public initializeAudioNodes(): void {
-    if (!this.filterNode) {
-      this.filterNode = this.createFilter();
-    }
-    if (!this.masterGain) {
-      this.masterGain = this.context.createGain();
-    }
-    if (!this.analyserNode) {
-      this.analyserNode = this.context.createAnalyser();
-    }
+    this.filterNode = this.createFilter();
+    this.masterGain = this.context.createGain();
+    this.analyserNode = this.context.createAnalyser();
+
     console.log('Audio nodes initialized.');
   }
 
@@ -87,15 +84,35 @@ export class AudioContextService {
     this.filterNode!.frequency.value = frequency;
   }
 
+  /**
+    4. Compressor Node
+   @param threshold - starts compressing above that value (db), must be a negative number
+   @param kneeValue - ease of compression - gradually/abruptly - values below 50 are considered more gradual
+   @param ratio - Compression ratio (higher = more aggressive compression). For every 12 dB above the threshold, the output will only increase by only 1 dB
+   */
+  public createCompressor(threshold: number, kneeValue: number, ratio: number): DynamicsCompressorNode {
+    if(threshold >= 0) {
+      throw Error();
+    }
+
+    this.compressorNode = this.context.createDynamicsCompressor();
+    // Set compressor parameters
+    this.compressorNode.threshold.setValueAtTime(threshold, this.context.currentTime);
+    this.compressorNode.knee.setValueAtTime(kneeValue, this.context.currentTime);
+    this.compressorNode.ratio.setValueAtTime(ratio, this.context.currentTime);
+
+    return this.compressorNode;
+  }
+
+
   /*
-    3. Gain Nodes
+    4. Gain Nodes
    */
 
   public createGain(): GainNode {
     const gainNode = this.context.createGain();
 
-    const maxGainForSingleNode = 0.33;
-    gainNode.gain.value = maxGainForSingleNode;
+    gainNode.gain.value = this.maxGainForSingleNode;
     return gainNode;
   }
 
@@ -132,11 +149,14 @@ export class AudioContextService {
    */
 
   public connectNodes(osc: OscillatorNode, gainNode: GainNode): void {
+    //TODO: make compressor component and make this parameters changeable on UI from user side
+    const compressor = this.createCompressor(-25, 30, 12);
+
     osc.connect(this.filterNode!);
     this.filterNode!.connect(gainNode);
-    gainNode.connect(this.masterGain!);
+    gainNode.connect(compressor);
+    compressor.connect(this.masterGain!);
     this.masterGain!.connect(this.context.destination);
-
     //Visual oscilloscope representation of total output
     this.masterGain!.connect(this.analyserNode!);
   }

@@ -30,7 +30,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     masterGain: state.masterGain,
   }));
 
-  private midiNoteToOscillatorMap = new Map<number, string>(); // Maps MIDI note to oscillator ID
+  private midiNoteToVoiceMap = new Map<number, string>(); // Maps MIDI note to oscillator ID
 
   constructor(private readonly audioContextService: AudioContextService,
               private readonly midiService: MidiService,
@@ -52,16 +52,16 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     this.midiService.noteOn$.subscribe(({ note, velocity }) => {
       const frequency = this.midiService.getFrequency(note);
       const adjustedVelocity = this.midiService.getVelocityBetweenZeroAndOne(velocity);
-      const oscillator = this.createAndStartSound(frequency, adjustedVelocity);
-      this.midiNoteToOscillatorMap.set(note, oscillator.id);
+      const voice = this.createAndStartVoice(frequency, adjustedVelocity);
+      this.midiNoteToVoiceMap.set(note, voice.id);
     });
 
     //Note off event
     this.midiService.noteOff$.subscribe(({ note }) => {
-      const oscId = this.midiNoteToOscillatorMap.get(note);
+      const oscId = this.midiNoteToVoiceMap.get(note);
       if (oscId) {
         this.stopOscillator(oscId);
-        this.midiNoteToOscillatorMap.delete(note);
+        this.midiNoteToVoiceMap.delete(note);
       }
     });
   }
@@ -74,7 +74,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     this.audioContextService.destroyContext();
   }
 
-  public createAndStartSound(frequency: number, keyVelocity: number): Oscillator {
+  public createAndStartVoice(frequency: number, keyVelocity: number): Oscillator {
     const oscNode = this.audioContextService.createOsc(this.get().selectedOscType, frequency);
     const gainNode = this.audioContextService.createGain();
     const oscId = uuidv7(); // Unique ID for the oscillator
@@ -105,14 +105,16 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   private recalculateMasterGain(keyVelocity?: number): void {
     const totalOscillators = this.get().oscillators.length;
 
-    //square root scaling for every new oscillator to make total output gain quieter when multiple oscillators
-    //const normalizedGain = totalOscillators > 0 ? this.get().masterGain / Math.sqrt(totalOscillators) : this.get().masterGain;
+    //TODO: delete later (value between 0 and 1) - while this line exists, key velocity is the same for all notes playing
+    keyVelocity = 0.7;
 
-    //pow technique for the same thing, a little bit quieter on polyphony than square root scaling approach
+    //1. square root scaling for every new oscillator to make total output gain quieter when multiple oscillators
+    //const normalizedGain = totalOscillators > 0 ? this.get().masterGain / Math.sqrt(totalOscillators) : this.get().masterGain;
+    //2. pow technique for the same thing, a little bit quieter on polyphony than square root scaling approach
     const normalizedGain = totalOscillators > 0 ? this.get().masterGain / Math.pow(totalOscillators, 0.8) : this.get().masterGain;
 
-    // Apply a quadratic easing function with a minimum offset
-    const scaledVelocity = keyVelocity ? (0.2 + 0.6 * keyVelocity + 0.2 * Math.pow(keyVelocity, 2)) : 1;
+    // Apply a quadratic easing function (adjust so that total is max 1 when combined)
+    const scaledVelocity = keyVelocity ? (0.15 + 0.35 * keyVelocity + 0.5 * Math.pow(keyVelocity, 2)) : 1;
 
     // Adjust gain based on the key velocity (if it exists). If not, just return gain
     const finalGain = keyVelocity ? normalizedGain * scaledVelocity : normalizedGain;
