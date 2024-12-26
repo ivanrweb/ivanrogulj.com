@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { OrmModule } from './db/typeorm.module';
+import { OrmModule } from '../../db/typeorm.module';
 @Module({
   imports: [OrmModule]
 })

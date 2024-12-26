@@ -24,6 +24,9 @@
       "@ivanrogulj.com/backend/core/config": [
         "libs/backend/core/config/src/index.ts"
       ],
+      "@ivanrogulj.com/backend/core/open-ai/api": [
+        "libs/backend/core/open-ai/api/src/index.ts"
+      ],
       "@ivanrogulj.com/backend/domain/analog-synth-patch/data-access": [
         "libs/backend/domain/analog-synth-patch/data-access/src/index.ts"
       ],

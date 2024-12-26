@@ -3,12 +3,14 @@ import { BackendCoreConfigModule } from '@ivanrogulj.com/backend/core/config';
 import {
   BackendDomainAnalogSynthPatchDataAccessModule
 } from '@ivanrogulj.com/backend/domain/analog-synth-patch/data-access';
+import { OpenAiApiModule } from '@ivanrogulj.com/backend/core/open-ai/api';
 
 @Global()
 @Module({
   imports: [
     BackendCoreConfigModule,
-    BackendDomainAnalogSynthPatchDataAccessModule
+    BackendDomainAnalogSynthPatchDataAccessModule,
+    OpenAiApiModule
   ],
   controllers: [],
   providers: [],
