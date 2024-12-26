@@ -21,6 +21,10 @@
       "@ivanrogulj.com/audio-api-project-list": [
         "libs/frontend/domain/audio-api-project-list/src/index.ts"
       ],
+      "@ivanrogulj.com/backend/core/config": [
+        "libs/backend/core/config/src/index.ts"
+      ],
+      "@ivanrogulj.com/backend/shell": ["libs/backend/shell/src/index.ts"],
       "@ivanrogulj.com/dashboard": [
         "libs/frontend/shared/ui/dashboard/src/index.ts"
       ],

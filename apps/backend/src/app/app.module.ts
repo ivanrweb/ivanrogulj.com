@@ -1,11 +1,7 @@
 import { Module } from '@nestjs/common';
-
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { BackendShellModule } from '@ivanrogulj.com/backend/shell';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [BackendShellModule],
 })
 export class AppModule {}
