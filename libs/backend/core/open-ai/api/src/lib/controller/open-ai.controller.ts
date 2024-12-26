@@ -1,13 +1,13 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { OpenAiApiService } from '../service/open-ai-api.service';
 
-@Controller('open-ai')
+@Controller('synth-patch')
 export class OpenAiController {
   constructor(private openAiApiService: OpenAiApiService) {
   }
 
-  @Get('get-message')
-  public async testCommunication(): Promise<string> {
-    return this.openAiApiService.createSynthPatch();
+  @Post('generate-ai-patch')
+  public async generateSynthPatch(@Body() patchDescription: string): Promise<void> {
+    return this.openAiApiService.generateSynthPatch(patchDescription);
   }
 }

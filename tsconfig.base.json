@@ -38,6 +38,9 @@
         "libs/frontend/domain/audio-api-project-list/analog-synth/filter/src/index.ts"
       ],
       "@ivanrogulj.com/footer": ["libs/frontend/shared/ui/footer/src/index.ts"],
+      "@ivanrogulj.com/frontend/shared/data-access/api": [
+        "libs/frontend/shared/data-access/api/src/index.ts"
+      ],
       "@ivanrogulj.com/gain": [
         "libs/frontend/domain/audio-api-project-list/analog-synth/gain/src/index.ts"
       ],
@@ -60,6 +63,9 @@
       ],
       "@ivanrogulj.com/oscilloscope": [
         "libs/frontend/domain/audio-api-project-list/ui/oscilloscope/src/index.ts"
+      ],
+      "@ivanrogulj.com/shared/data-access/model": [
+        "libs/shared/data-access/model/src/index.ts"
       ],
       "@ivanrogulj.com/tile-item": [
         "libs/frontend/shared/ui/tile-item/src/index.ts"

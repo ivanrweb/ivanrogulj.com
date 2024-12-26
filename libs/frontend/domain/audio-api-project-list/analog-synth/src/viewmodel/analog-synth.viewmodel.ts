@@ -9,6 +9,9 @@ import { MidiService } from '../service/midi.service';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { ADSR, Gain } from '@ivanrogulj.com/gain';
 import { OscilloscopeService } from '../service/oscilloscope.service';
+import {
+  SynthPatchApiService
+} from '../../../../../shared/data-access/api/src/lib/analog-synth/synth-patch-api.service';
 
 export interface AnalogSynthState {
   oscillators: Oscillator[];
@@ -34,7 +37,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
 
   constructor(private readonly audioContextService: AudioContextService,
               private readonly midiService: MidiService,
-              private readonly oscilloscopeService: OscilloscopeService) {
+              private readonly oscilloscopeService: OscilloscopeService,
+              private readonly synthPatchApiService: SynthPatchApiService) {
     super({
       oscillators: [],
       selectedOscType: 'sawtooth',
@@ -192,5 +196,11 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   public initializeOscilloscope(canvas: ElementRef<HTMLCanvasElement>): void {
     const analyserNode = this.audioContextService.getAnalyserNode();
     this.oscilloscopeService.draw(analyserNode, canvas.nativeElement);
+  }
+
+
+  //TODO: this is just a test, this should be in a separate viewmodel
+  public generateNewPatchAI(patchDescription: string): void {
+    this.synthPatchApiService.generateAIPatch(patchDescription).subscribe();
   }
 }
