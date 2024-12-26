@@ -1,0 +1,16 @@
+{
+  "name": "backend-domain-analog-synth-patch-data-access",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/backend/domain/analog-synth-patch/data-access/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/backend/domain/analog-synth-patch/data-access/jest.config.ts"
+      }
+    }
+  }
+}
