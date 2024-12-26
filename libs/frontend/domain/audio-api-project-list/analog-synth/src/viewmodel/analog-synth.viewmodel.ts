@@ -12,6 +12,7 @@ import { OscilloscopeService } from '../service/oscilloscope.service';
 import {
   SynthPatchApiService
 } from '../../../../../shared/data-access/api/src/lib/analog-synth/synth-patch-api.service';
+import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 
 export interface AnalogSynthState {
   oscillators: Oscillator[];
@@ -201,6 +202,19 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
 
   //TODO: this is just a test, this should be in a separate viewmodel
   public generateNewPatchAI(patchDescription: string): void {
-    this.synthPatchApiService.generateAIPatch(patchDescription).subscribe();
+    this.synthPatchApiService.generateAIPatch(patchDescription).subscribe(synthPatch => {
+      this.patchState({ volumeEnvelope: this.mapToADSR(synthPatch) });
+    });
+
+    console.log('Volume envelope: ', this.get().volumeEnvelope);
+  }
+
+  public mapToADSR(synthPatch: AnalogSynthApi.SynthPatch): ADSR {
+    return {
+      attack: synthPatch.attack,
+      decay: synthPatch.decay,
+      sustain: synthPatch.sustain,
+      release: synthPatch.release
+    };
   }
 }
