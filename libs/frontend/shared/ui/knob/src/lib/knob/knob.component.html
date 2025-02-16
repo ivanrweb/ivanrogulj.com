@@ -1,0 +1,8 @@
+<div class="knob-container" (mouseup)="stopDragging()">
+  <div
+    class="knob"
+    [ngStyle]="{'transform': 'rotate(' + (rotation - 135) + 'deg)'}"
+    (mousedown)="startDragging($event)">
+    <div class="knob-indicator"></div>
+  </div>
+</div>

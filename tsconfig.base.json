@@ -47,6 +47,7 @@
       "@ivanrogulj.com/juce-project-list": [
         "libs/frontend/domain/juce-project-list/src/index.ts"
       ],
+      "@ivanrogulj.com/knob": ["libs/frontend/shared/ui/knob/src/index.ts"],
       "@ivanrogulj.com/layout": ["libs/frontend/shared/ui/layout/src/index.ts"],
       "@ivanrogulj.com/modular-synth": [
         "libs/frontend/domain/audio-api-project-list/modular-synth/src/index.ts"

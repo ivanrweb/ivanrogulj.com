@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { AnalogSynthViewModel } from '../../../src/viewmodel/analog-synth.viewmodel';
+import { KnobComponent } from '@ivanrogulj.com/knob';
 
 @Component({
   selector: 'lib-filter',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, KnobComponent],
   templateUrl: './filter.component.html',
-  styleUrls: ['./filter.component.css'],
+  styleUrls: ['./filter.component.scss'],
 })
 export class FilterComponent {
   public frequency = 5000;

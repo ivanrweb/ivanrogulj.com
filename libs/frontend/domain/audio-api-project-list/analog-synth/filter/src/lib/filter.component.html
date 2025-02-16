@@ -1,13 +1,10 @@
 <div *ngIf="analogSynthViewModel.vm$ | async as vm">
   <h3>VCF</h3>
-  <!-- Frequency Slider -->
-  <input
-    type="range"
-    min="10"
-    max="10000"
-    step="0.01"
-    [(ngModel)]="frequency"
-    (ngModelChange)="onFilterValueChange()"
-  />
-  <span>Cutoff: {{ frequency }} Hz</span>
+  <lib-knob
+    [minValue]="10"
+    [maxValue]="10000"
+    [value]="frequency"
+    (valueChange)="frequency = $event; onFilterValueChange()">
+  </lib-knob>
+  <span>Cutoff: {{ frequency | number:'1.0-0' }} Hz</span>
 </div>
