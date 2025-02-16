@@ -21,6 +21,16 @@
       "@ivanrogulj.com/audio-api-project-list": [
         "libs/frontend/domain/audio-api-project-list/src/index.ts"
       ],
+      "@ivanrogulj.com/backend/core/config": [
+        "libs/backend/core/config/src/index.ts"
+      ],
+      "@ivanrogulj.com/backend/core/open-ai/api": [
+        "libs/backend/core/open-ai/api/src/index.ts"
+      ],
+      "@ivanrogulj.com/backend/domain/analog-synth-patch/data-access": [
+        "libs/backend/domain/analog-synth-patch/data-access/src/index.ts"
+      ],
+      "@ivanrogulj.com/backend/shell": ["libs/backend/shell/src/index.ts"],
       "@ivanrogulj.com/dashboard": [
         "libs/frontend/shared/ui/dashboard/src/index.ts"
       ],
@@ -28,6 +38,9 @@
         "libs/frontend/domain/audio-api-project-list/analog-synth/filter/src/index.ts"
       ],
       "@ivanrogulj.com/footer": ["libs/frontend/shared/ui/footer/src/index.ts"],
+      "@ivanrogulj.com/frontend/shared/data-access/api": [
+        "libs/frontend/shared/data-access/api/src/index.ts"
+      ],
       "@ivanrogulj.com/gain": [
         "libs/frontend/domain/audio-api-project-list/analog-synth/gain/src/index.ts"
       ],
@@ -50,6 +63,9 @@
       ],
       "@ivanrogulj.com/oscilloscope": [
         "libs/frontend/domain/audio-api-project-list/ui/oscilloscope/src/index.ts"
+      ],
+      "@ivanrogulj.com/shared/data-access/model": [
+        "libs/shared/data-access/model/src/index.ts"
       ],
       "@ivanrogulj.com/tile-item": [
         "libs/frontend/shared/ui/tile-item/src/index.ts"

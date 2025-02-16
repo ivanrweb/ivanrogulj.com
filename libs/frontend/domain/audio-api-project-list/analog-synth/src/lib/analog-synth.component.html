@@ -1,5 +1,10 @@
-<h3>Analog Synth</h3>
-<lib-oscillator></lib-oscillator>
-<lib-filter></lib-filter>
-<lib-gain></lib-gain>
-<canvas #oscilloscope width="1500" height="300"></canvas>
+<div *ngIf="analogSynthViewModel.vm$ | async as vm">
+  <h3>Analog Synth</h3>
+  <lib-oscillator></lib-oscillator>
+  <lib-filter></lib-filter>
+  <lib-gain></lib-gain>
+  <canvas #oscilloscope width="1500" height="300"></canvas>
+
+  <textarea [(ngModel)]="patchAIDescription">What kind of patch do you want?</textarea>
+  <button (click)="analogSynthViewModel.generateAIPatch(patchAIDescription)">Generate new AI patch</button>
+</div>

@@ -9,6 +9,10 @@ import { MidiService } from '../service/midi.service';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { ADSR, Gain } from '@ivanrogulj.com/gain';
 import { OscilloscopeService } from '../service/oscilloscope.service';
+import {
+  SynthPatchApiService
+} from '../../../../../shared/data-access/api/src/lib/analog-synth/synth-patch-api.service';
+import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 
 export interface AnalogSynthState {
   oscillators: Oscillator[];
@@ -34,7 +38,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
 
   constructor(private readonly audioContextService: AudioContextService,
               private readonly midiService: MidiService,
-              private readonly oscilloscopeService: OscilloscopeService) {
+              private readonly oscilloscopeService: OscilloscopeService,
+              private readonly synthPatchApiService: SynthPatchApiService) {
     super({
       oscillators: [],
       selectedOscType: 'sawtooth',
@@ -192,5 +197,22 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   public initializeOscilloscope(canvas: ElementRef<HTMLCanvasElement>): void {
     const analyserNode = this.audioContextService.getAnalyserNode();
     this.oscilloscopeService.draw(analyserNode, canvas.nativeElement);
+  }
+
+
+  //TODO: this is just a test, this should be in a separate viewmodel
+  public generateAIPatch(patchDescription: string): void {
+    this.synthPatchApiService.generateAIPatch(patchDescription).subscribe(synthPatch => {
+      this.patchState({ volumeEnvelope: this.mapToADSR(synthPatch) });
+    });
+  }
+
+  public mapToADSR(synthPatch: AnalogSynthApi.SynthPatch): ADSR {
+    return {
+      attack: synthPatch.attack,
+      decay: synthPatch.decay,
+      sustain: synthPatch.sustain,
+      release: synthPatch.release
+    };
   }
 }
