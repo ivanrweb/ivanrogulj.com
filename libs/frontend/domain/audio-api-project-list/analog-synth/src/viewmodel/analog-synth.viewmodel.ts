@@ -201,12 +201,10 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
 
 
   //TODO: this is just a test, this should be in a separate viewmodel
-  public generateNewPatchAI(patchDescription: string): void {
+  public generateAIPatch(patchDescription: string): void {
     this.synthPatchApiService.generateAIPatch(patchDescription).subscribe(synthPatch => {
       this.patchState({ volumeEnvelope: this.mapToADSR(synthPatch) });
     });
-
-    console.log('Volume envelope: ', this.get().volumeEnvelope);
   }
 
   public mapToADSR(synthPatch: AnalogSynthApi.SynthPatch): ADSR {
