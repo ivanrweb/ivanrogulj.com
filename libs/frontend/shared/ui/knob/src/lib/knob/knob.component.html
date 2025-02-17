@@ -1,8 +1,11 @@
-<div class="knob-container" (mouseup)="stopDragging()">
-  <div
-    class="knob"
-    [ngStyle]="{'transform': 'rotate(' + (rotation - 135) + 'deg)'}"
-    (mousedown)="startDragging($event)">
-    <div class="knob-indicator"></div>
+<div class="knob-wrapper">
+  <div class="knob-container" (mouseup)="stopDragging()">
+    <div
+      class="knob"
+      [ngStyle]="{'transform': 'rotate(' + (rotation - 135) + 'deg)'}"
+      (mousedown)="startDragging($event)">
+      <div class="knob-indicator"></div>
+    </div>
   </div>
+  <span>{{ label }}: {{ value | number:'1.1-1' }} {{ measureUnit }}</span>
 </div>

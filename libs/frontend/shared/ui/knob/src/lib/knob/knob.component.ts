@@ -9,14 +9,20 @@ import { CommonModule } from '@angular/common';
   styleUrl: './knob.component.scss',
 })
 export class KnobComponent {
-  @Output()
-  public valueChange = new EventEmitter<number>();
-
   @Input()
   public minValue = 0;
 
   @Input()
   public maxValue = 100;
+
+  @Input()
+  public label = '';
+
+  @Input()
+  public amount = 0;
+
+  @Input()
+  public measureUnit?: string;
 
   private _value = 0;
 
@@ -29,6 +35,9 @@ export class KnobComponent {
   public get value(): number {
     return this._value;
   }
+
+  @Output()
+  public valueChange = new EventEmitter<number>();
 
   public rotation = 135; // Default position
 

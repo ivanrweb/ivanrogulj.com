@@ -3,8 +3,9 @@
   <lib-knob
     [minValue]="10"
     [maxValue]="10000"
+    [label]="'Cutoff'"
     [value]="frequency"
+    [measureUnit]="'Hz'"
     (valueChange)="frequency = $event; onFilterValueChange()">
   </lib-knob>
-  <span>Cutoff: {{ frequency | number:'1.0-0' }} Hz</span>
 </div>
