@@ -11,7 +11,7 @@ import { KnobComponent } from '@ivanrogulj.com/knob';
   standalone: true,
   imports: [CommonModule, FormsModule, KnobComponent],
   templateUrl: './gain.component.html',
-  styleUrls: ['./gain.component.css'],
+  styleUrls: ['./gain.component.scss'],
 })
 export class GainComponent {
   protected analogSynthViewModel = inject(AnalogSynthViewModel);

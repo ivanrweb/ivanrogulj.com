@@ -1,40 +1,42 @@
 <h3>Volume Envelope</h3>
 <div *ngIf="analogSynthViewModel.vm$ | async as vm">
-  <!-- Attack Knob -->
-  <lib-knob
-    [minValue]="0"
-    [maxValue]="1"
-    [value]="vm.volumeEnvelope.attack"
-    (valueChange)="vm.volumeEnvelope.attack = $event; onVolumeEnvelopeChange('attack', $event)">
-  </lib-knob>
-  <span>Attack: {{ vm.volumeEnvelope.attack }}</span>
+  <div class="adsr-container">
+    <!-- Attack Knob -->
+    <lib-knob
+      [minValue]="0"
+      [maxValue]="1"
+      [value]="vm.volumeEnvelope.attack"
+      (valueChange)="vm.volumeEnvelope.attack = $event; onVolumeEnvelopeChange('attack', $event)">
+    </lib-knob>
+    <span>Attack: {{ vm.volumeEnvelope.attack }}</span>
 
-  <!-- Decay Knob -->
-  <lib-knob
-    [minValue]="0"
-    [maxValue]="1"
-    [value]="vm.volumeEnvelope.decay"
-    (valueChange)="vm.volumeEnvelope.decay = $event; onVolumeEnvelopeChange('decay', $event)">
-  </lib-knob>
-  <span>Decay: {{ vm.volumeEnvelope.decay }}</span>
+    <!-- Decay Knob -->
+    <lib-knob
+      [minValue]="0"
+      [maxValue]="1"
+      [value]="vm.volumeEnvelope.decay"
+      (valueChange)="vm.volumeEnvelope.decay = $event; onVolumeEnvelopeChange('decay', $event)">
+    </lib-knob>
+    <span>Decay: {{ vm.volumeEnvelope.decay }}</span>
 
-  <!-- Sustain Knob -->
-  <lib-knob
-    [minValue]="0"
-    [maxValue]="1"
-    [value]="vm.volumeEnvelope.sustain"
-    (valueChange)="vm.volumeEnvelope.sustain = $event; onVolumeEnvelopeChange('sustain', $event)">
-  </lib-knob>
-  <span>Sustain: {{ vm.volumeEnvelope.sustain }}</span>
+    <!-- Sustain Knob -->
+    <lib-knob
+      [minValue]="0"
+      [maxValue]="1"
+      [value]="vm.volumeEnvelope.sustain"
+      (valueChange)="vm.volumeEnvelope.sustain = $event; onVolumeEnvelopeChange('sustain', $event)">
+    </lib-knob>
+    <span>Sustain: {{ vm.volumeEnvelope.sustain }}</span>
 
-  <!-- Release Knob -->
-  <lib-knob
-    [minValue]="0"
-    [maxValue]="1"
-    [value]="vm.volumeEnvelope.release"
-    (valueChange)="vm.volumeEnvelope.release = $event; onVolumeEnvelopeChange('release', $event)">
-  </lib-knob>
-  <span>Release: {{ vm.volumeEnvelope.release }}</span>
+    <!-- Release Knob -->
+    <lib-knob
+      [minValue]="0"
+      [maxValue]="1"
+      [value]="vm.volumeEnvelope.release"
+      (valueChange)="vm.volumeEnvelope.release = $event; onVolumeEnvelopeChange('release', $event)">
+    </lib-knob>
+    <span>Release: {{ vm.volumeEnvelope.release }}</span>
+  </div>
 
   <h3>Gain</h3>
   <!-- Gain Knob -->

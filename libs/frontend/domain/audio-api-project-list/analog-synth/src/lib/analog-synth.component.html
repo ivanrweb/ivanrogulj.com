@@ -3,7 +3,7 @@
   <lib-oscillator></lib-oscillator>
   <lib-filter></lib-filter>
   <lib-gain></lib-gain>
-  <canvas #oscilloscope width="1500" height="300"></canvas>
+  <lib-oscilloscope></lib-oscilloscope>
 
   <textarea [(ngModel)]="patchAIDescription">What kind of patch do you want?</textarea>
   <button (click)="analogSynthViewModel.generateAIPatch(patchAIDescription)">Generate new AI patch</button>

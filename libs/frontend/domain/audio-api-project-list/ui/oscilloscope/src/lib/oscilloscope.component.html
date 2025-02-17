@@ -1,1 +1,3 @@
-<p>oscilloscope works!</p>
+<div *ngIf="analogSynthViewModel.vm$ | async as vm">
+  <canvas #oscilloscope></canvas>
+</div>
