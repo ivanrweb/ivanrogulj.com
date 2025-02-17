@@ -9,6 +9,7 @@ import { FilterComponent } from '@ivanrogulj.com/filter';
 import { GainComponent } from '@ivanrogulj.com/gain';
 import { AnalogSynthViewModel } from '../viewmodel/analog-synth.viewmodel';
 import { FormsModule } from '@angular/forms';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { OscilloscopeComponent } from '@ivanrogulj.com/oscilloscope';
 @Component({
   selector: 'lib-analog-synth',

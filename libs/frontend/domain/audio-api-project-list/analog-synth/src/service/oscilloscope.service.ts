@@ -26,11 +26,11 @@ export class OscilloscopeService {
     }
 
     // Clear the canvas before drawing the next frame
-    canvasCtx.fillStyle = 'rgb(200, 200, 200)';
+    canvasCtx.fillStyle = '#F5F5F5';
     canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Set stroke style for the waveform
-    canvasCtx.lineWidth = 2;
+    canvasCtx.lineWidth = 1;
     canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
 
     // Begin the drawing path
