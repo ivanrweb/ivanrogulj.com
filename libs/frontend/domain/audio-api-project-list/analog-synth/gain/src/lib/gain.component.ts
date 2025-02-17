@@ -4,13 +4,14 @@ import { CommonModule } from '@angular/common';
 import { AnalogSynthViewModel } from '../../../src/viewmodel/analog-synth.viewmodel';
 import { FormsModule } from '@angular/forms';
 import { ADSR } from './gain.interface';
+import { KnobComponent } from '@ivanrogulj.com/knob';
 
 @Component({
   selector: 'lib-gain',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, KnobComponent],
   templateUrl: './gain.component.html',
-  styleUrls: ['./gain.component.css'],
+  styleUrls: ['./gain.component.scss'],
 })
 export class GainComponent {
   protected analogSynthViewModel = inject(AnalogSynthViewModel);

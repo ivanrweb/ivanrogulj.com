@@ -1,27 +1,48 @@
-<h3>Volume Envelope</h3>
 <div *ngIf="analogSynthViewModel.vm$ | async as vm">
-  <!-- Attack Slider -->
-  <input type="range" min="0" max="1" step="0.01" [(ngModel)]="vm.volumeEnvelope.attack" (ngModelChange)="onVolumeEnvelopeChange('attack', $event)" />
-  <span>Attack: {{ vm.volumeEnvelope.attack }}</span>
-  <br>
+  <div class="adsr-container">
+    <!-- Attack Knob -->
+    <lib-knob
+      [minValue]="0"
+      [maxValue]="1"
+      [value]="vm.volumeEnvelope.attack"
+      [label]="'Attack'"
+      (valueChange)="vm.volumeEnvelope.attack = $event; onVolumeEnvelopeChange('attack', $event)">
+    </lib-knob>
 
-  <!-- Decay Slider -->
-  <input type="range" min="0" max="1" step="0.01" [(ngModel)]="vm.volumeEnvelope.decay" (ngModelChange)="onVolumeEnvelopeChange('decay', $event)" />
-  <span>Decay: {{ vm.volumeEnvelope.decay }}</span>
-  <br>
+    <!-- Decay Knob -->
+    <lib-knob
+      [minValue]="0"
+      [maxValue]="1"
+      [value]="vm.volumeEnvelope.decay"
+      [label]="'Decay'"
+      (valueChange)="vm.volumeEnvelope.decay = $event; onVolumeEnvelopeChange('decay', $event)">
+    </lib-knob>
 
-  <!-- Sustain Slider -->
-  <input type="range" min="0" max="1" step="0.01" [(ngModel)]="vm.volumeEnvelope.sustain" (ngModelChange)="onVolumeEnvelopeChange('sustain', $event)" />
-  <span>Sustain: {{ vm.volumeEnvelope.sustain }}</span>
-  <br>
+    <!-- Sustain Knob -->
+    <lib-knob
+      [minValue]="0"
+      [maxValue]="1"
+      [value]="vm.volumeEnvelope.sustain"
+      [label]="'Sustain'"
+      (valueChange)="vm.volumeEnvelope.sustain = $event; onVolumeEnvelopeChange('sustain', $event)">
+    </lib-knob>
 
-  <!-- Release Slider -->
-  <input type="range" min="0" max="1" step="0.01" [(ngModel)]="vm.volumeEnvelope.release" (ngModelChange)="onVolumeEnvelopeChange('release', $event)" />
-  <span>Release: {{ vm.volumeEnvelope.release }}</span>
-  <br>
+    <!-- Release Knob -->
+    <lib-knob
+      [minValue]="0"
+      [maxValue]="1"
+      [value]="vm.volumeEnvelope.release"
+      [label]="'Release'"
+      (valueChange)="vm.volumeEnvelope.release = $event; onVolumeEnvelopeChange('release', $event)">
+    </lib-knob>
+  </div>
 
-  <h3>Gain</h3>
-  <!-- Gain Slider -->
-  <input type="range" min="0" max="1" step="0.01" [(ngModel)]="vm.masterGain" (ngModelChange)="onGainChange($event)" />
-  <span>Gain: {{ vm.masterGain }}</span>
+  <!-- Gain Knob -->
+  <lib-knob
+    [minValue]="0"
+    [maxValue]="1"
+    [value]="vm.masterGain"
+    [label]="'Gain'"
+    (valueChange)="onGainChange($event)">
+  </lib-knob>
 </div>

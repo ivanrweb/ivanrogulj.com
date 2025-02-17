@@ -9,7 +9,7 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './oscillator.component.html',
-  styleUrl: './oscillator.component.css',
+  styleUrl: './oscillator.component.scss',
 })
 export class OscillatorComponent {
   public oscTypes = ['sine', 'triangle', 'square', 'sawtooth'];
