@@ -1,10 +1,9 @@
 <div *ngIf="analogSynthViewModel.vm$ | async as vm">
   <h3>Analog Synth</h3>
-  <lib-oscillator></lib-oscillator>
-  <lib-filter></lib-filter>
-  <lib-gain></lib-gain>
-  <lib-oscilloscope></lib-oscilloscope>
+  <lib-oscillator/>
+  <lib-filter/>
+  <lib-gain/>
+  <lib-oscilloscope/>
 
-  <textarea [(ngModel)]="patchAIDescription">What kind of patch do you want?</textarea>
-  <button (click)="analogSynthViewModel.generateAIPatch(patchAIDescription)">Generate new AI patch</button>
+  <lib-textarea/>
 </div>

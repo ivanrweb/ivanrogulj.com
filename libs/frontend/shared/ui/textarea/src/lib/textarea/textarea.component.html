@@ -1,0 +1,4 @@
+<div *ngIf="analogSynthViewModel.vm$ | async as vm">
+  <textarea [(ngModel)]="patchAIDescription">What kind of patch do you want?</textarea>
+  <button (click)="analogSynthViewModel.generateAIPatch(patchAIDescription)">Generate new AI patch</button>
+</div>
