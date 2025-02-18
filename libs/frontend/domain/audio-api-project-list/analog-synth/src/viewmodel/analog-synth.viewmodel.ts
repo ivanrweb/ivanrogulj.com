@@ -9,10 +9,8 @@ import { MidiService } from '../service/midi.service';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { ADSR, Gain } from '@ivanrogulj.com/gain';
 import { OscilloscopeService } from '../service/oscilloscope.service';
-import {
-  SynthPatchApiService
-} from '../../../../../shared/data-access/api/src/lib/analog-synth/synth-patch-api.service';
 import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
+import { SynthPatchApiService } from '@ivanrogulj.com/frontend/shared/data-access/api';
 
 export interface AnalogSynthState {
   oscillators: Oscillator[];
@@ -20,6 +18,7 @@ export interface AnalogSynthState {
   volumeEnvelope: ADSR;
   gains: Gain[];
   masterGain: number;
+  isPromptOpen: boolean;
 }
 
 @Injectable({
@@ -32,6 +31,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     volumeEnvelope: state.volumeEnvelope,
     gains: state.gains,
     masterGain: state.masterGain,
+    isPromptOpen: state.isPromptOpen,
   }));
 
   private midiNoteToVoiceMap = new Map<number, string>(); // Maps MIDI note to oscillator ID
@@ -50,7 +50,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
         release: 0.3
       },
       gains: [],
-      masterGain: 0.2
+      masterGain: 0.2,
+      isPromptOpen: false,
     });
 
     //Note on event
@@ -200,7 +201,6 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   }
 
 
-  //TODO: this is just a test, this should be in a separate viewmodel
   public generateAIPatch(patchDescription: string): void {
     this.synthPatchApiService.generateAIPatch(patchDescription).subscribe(synthPatch => {
       this.patchState({ volumeEnvelope: this.mapToADSR(synthPatch) });
@@ -214,5 +214,9 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       sustain: synthPatch.sustain,
       release: synthPatch.release
     };
+  }
+
+  public togglePrompt(): void {
+    this.patchState({ isPromptOpen: !this.get().isPromptOpen});
   }
 }

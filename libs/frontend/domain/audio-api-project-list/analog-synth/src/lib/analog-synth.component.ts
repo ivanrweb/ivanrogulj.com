@@ -11,16 +11,16 @@ import { AnalogSynthViewModel } from '../viewmodel/analog-synth.viewmodel';
 import { FormsModule } from '@angular/forms';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { OscilloscopeComponent } from '@ivanrogulj.com/oscilloscope';
+import { TextareaComponent } from '@ivanrogulj.com/textarea';
 @Component({
   selector: 'lib-analog-synth',
   standalone: true,
-  imports: [CommonModule, OscillatorComponent, FilterComponent, GainComponent, FormsModule, OscilloscopeComponent],
+  imports: [CommonModule, OscillatorComponent, FilterComponent, GainComponent, FormsModule, OscilloscopeComponent, TextareaComponent],
   providers: [AudioContextService],
   templateUrl: './analog-synth.component.html',
   styleUrl: './analog-synth.component.scss',
 })
 export class AnalogSynthComponent implements OnInit, AfterViewInit, OnDestroy {
-  public patchAIDescription = '';
   @ViewChild('oscilloscope', { static: false })
   public oscilloscopeCanvas!: ElementRef<HTMLCanvasElement>;
 

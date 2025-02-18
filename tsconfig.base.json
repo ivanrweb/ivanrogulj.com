@@ -68,6 +68,9 @@
       "@ivanrogulj.com/shared/data-access/model": [
         "libs/shared/data-access/model/src/index.ts"
       ],
+      "@ivanrogulj.com/textarea": [
+        "libs/frontend/shared/ui/textarea/src/index.ts"
+      ],
       "@ivanrogulj.com/tile-item": [
         "libs/frontend/shared/ui/tile-item/src/index.ts"
       ],
