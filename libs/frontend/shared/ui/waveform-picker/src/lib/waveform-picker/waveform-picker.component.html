@@ -1,0 +1,8 @@
+<div class="wave-selector">
+  <div *ngFor="let waveform of waveforms"
+       class="wave-option"
+       [class.selected]="selectedWaveform === waveform"
+       (click)="selectWaveform(waveform)"
+       [style.backgroundImage]="'url(/assets/wavetypes/' + waveform + '.png)'">
+  </div>
+</div>

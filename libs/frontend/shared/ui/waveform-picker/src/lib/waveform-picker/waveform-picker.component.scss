@@ -4,23 +4,17 @@
 }
 
 .wave-option {
-  width: 120px;  /* Adjust based on your image size */
-  height: 120px;
+  width: 60px;
+  height: 60px;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
   border: 2px solid transparent;
   cursor: pointer;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding: 5px;
-  font-size: 12px;
-  color: white;
-  text-shadow: 1px 1px 2px black;
+  transition: border-color 0.1s ease-in-out;
 }
 
 .wave-option.selected {
-  border-color: #007bff;
+  border-color: #343a40;
   border-radius: 5px;
 }

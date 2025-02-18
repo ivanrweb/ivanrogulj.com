@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { AnalogSynthViewModel } from '../../../src/viewmodel/analog-synth.viewmodel';
 import { FormsModule } from '@angular/forms';
+import { WaveformPickerComponent } from '@ivanrogulj.com/waveform-picker';
 
 @Component({
   selector: 'lib-oscillator',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, WaveformPickerComponent],
   templateUrl: './oscillator.component.html',
   styleUrl: './oscillator.component.scss',
 })
