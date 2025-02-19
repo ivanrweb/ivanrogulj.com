@@ -18,6 +18,7 @@
       "@ivanrogulj.com/analog-synth": [
         "libs/frontend/domain/audio-api-project-list/analog-synth/src/index.ts"
       ],
+      "@ivanrogulj.com/assets": ["libs/frontend/shared/ui/assets/src/index.ts"],
       "@ivanrogulj.com/audio-api-project-list": [
         "libs/frontend/domain/audio-api-project-list/src/index.ts"
       ],

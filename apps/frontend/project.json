@@ -19,7 +19,7 @@
         "assets": [
           {
             "glob": "**/*",
-            "input": "apps/frontend/public"
+            "input": "libs/frontend/shared/ui/assets/src/lib/image"
           }
         ],
         "styles": ["apps/frontend/src/styles.scss"],
