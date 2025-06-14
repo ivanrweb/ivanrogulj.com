@@ -188,10 +188,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     }
   }
 
-  public onOscillatorTypeChange(event$: Event): void {
-    const selectElement = event$.target as HTMLSelectElement;
-    const selectedValue = selectElement.value;
-    this.patchState({ selectedOscType: selectedValue as OscillatorType });
+  public onOscillatorTypeChange(selectedValue: OscillatorType): void {
+    this.patchState({ selectedOscType: selectedValue });
   }
 
   // Method to start the oscilloscope visualization

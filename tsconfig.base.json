@@ -18,6 +18,7 @@
       "@ivanrogulj.com/analog-synth": [
         "libs/frontend/domain/audio-api-project-list/analog-synth/src/index.ts"
       ],
+      "@ivanrogulj.com/assets": ["libs/frontend/shared/ui/assets/src/index.ts"],
       "@ivanrogulj.com/audio-api-project-list": [
         "libs/frontend/domain/audio-api-project-list/src/index.ts"
       ],
@@ -78,6 +79,9 @@
         "libs/frontend/shared/ui/tile-list/src/index.ts"
       ],
       "@ivanrogulj.com/ui": ["apps/frontend/shared/ui/src/index.ts"],
+      "@ivanrogulj.com/waveform-picker": [
+        "libs/frontend/shared/ui/waveform-picker/src/index.ts"
+      ],
       "@ivanrogulj.com/wrapper": [
         "libs/frontend/shared/ui/wrapper/src/index.ts"
       ]

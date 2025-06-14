@@ -7,8 +7,10 @@
 <!--    </li>-->
 <!--  </ul>-->
 
-  <label for="options">Choose oscillator wavetype:</label>
-  <select id="options" name="options" [(ngModel)]="vm.selectedOscType" (change)="analogSynthViewModel.onOscillatorTypeChange($event)">
-    <option *ngFor="let oscType of oscTypes" [value]="oscType">{{ oscType }}</option>
-  </select>
+  <lib-waveform-picker
+    [waveforms]="oscTypes"
+    [selectedWaveform]="vm.selectedOscType"
+    (waveformChange)="analogSynthViewModel.onOscillatorTypeChange($event)">
+  </lib-waveform-picker>
+
 </div>
