@@ -5,12 +5,14 @@ import { Subject } from 'rxjs';
 export class MidiService {
   private frequencyLookup: number[] = [];
 
+  private activeNotes = new Set<number>();
   public noteOn$ = new Subject<{ note: number, velocity: number }>();
   public noteOff$ = new Subject<{ note: number }>();
 
   constructor() {
+    //provided by the Web MIDI API, asks the browser for access to MIDI devices
     if (navigator.requestMIDIAccess) {
-      navigator.requestMIDIAccess().then(this.successMIDI.bind(this), this.failMIDI);
+      navigator.requestMIDIAccess().then(this.successMIDI, this.failMIDI);
     }
 
     // Precompute frequencies for MIDI notes 0 to 127
@@ -19,48 +21,48 @@ export class MidiService {
     }
   }
 
-  public successMIDI(midiAccess: any): void {
-    midiAccess.onstatechange = this.updateDevices.bind(this);
+  public successMIDI = (midiAccess: any): void => {
+    midiAccess.onstatechange = this.updateDevices;
 
-    const inputs = midiAccess.inputs;
-    inputs.forEach((input: any) => {
-      input.addEventListener('midimessage', this.handleInput.bind(this));
+    midiAccess.inputs.forEach((input: any) => {
+      input.addEventListener('midimessage', this.handleInput);
     });
-  }
+  };
 
-  public failMIDI(): void {
+  public failMIDI = (): void => {
     console.log('No MIDI devices connected.');
-  }
+  };
 
-  public updateDevices(event: any): void {
+  public updateDevices = (event: any): void => {
     if (event.port.state === 'connected') {
       window.alert('Connected device: ' + event.port.name + ', IN/OUT type: ' + event.port.type);
     } else if (event.port.state === 'disconnected') {
       window.alert('Disconnected device: ' + event.port.name + ', IN/OUT type: ' + event.port.type);
     }
-  }
+  };
 
-  public handleInput(event: any): void {
+  public handleInput = (event: any): void => {
     console.log('MIDI event:', event);
 
-    if (!(event.data[0] === 248)) {
-      const cc = event.data[0];
-      const note = event.data[1];
-      const velocity = event.data[2];
+    const [cc, note, velocity] = event.data;
 
-      switch (cc) {
-        case 144: // Note on message
-          this.noteOn$.next({ note, velocity });
-          break;
-        case 128: // Note off message
-          this.noteOff$.next({ note });
-          break;
-        default:
-          // Handle other messages if needed
-          break;
+    // Ignore MIDI timing clock
+    if (cc === 248) return;
+
+    if (cc === 144 && velocity > 0) {
+      // Note ON
+      if (!this.activeNotes.has(note)) {
+        this.activeNotes.add(note);
+        this.noteOn$.next({ note, velocity });
+      }
+    } else if ((cc === 128) || (cc === 144 && velocity === 0)) {
+      // Note OFF
+      if (this.activeNotes.has(note)) {
+        this.activeNotes.delete(note);
+        this.noteOff$.next({ note });
       }
     }
-  }
+  };
 
   public midiToFreq(note: number): number {
     return 440 * Math.pow(2, (note - 69) / 12);
