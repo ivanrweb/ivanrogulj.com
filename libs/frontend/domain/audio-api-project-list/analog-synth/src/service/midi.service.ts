@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
+import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 
 @Injectable({ providedIn: 'root' })
 export class MidiService {
@@ -64,8 +65,19 @@ export class MidiService {
     }
   };
 
-  public midiToFreq(note: number): number {
-    return 440 * Math.pow(2, (note - 69) / 12);
+  public midiToFreq(midiNote: number): number {
+    /**
+     * Converts a MIDI note number to its corresponding frequency in Hz.
+     *
+     * Two approaches are possible:
+     * 1. Calculate frequency using the formula: 440 * 2^((midiNote - 69) / 12)
+     * 2. Lookup precomputed frequencies from a map of 88 piano keys (AnalogSynthApi.KeyboardFrequencies)
+     *
+     * The lookup method is typically faster for real-time use cases like key presses,
+     * avoiding repeated calculations.
+     */
+    //return 440 * Math.pow(2, (note - 69) / 12);
+    return AnalogSynthApi.KeyboardFrequencies[midiNote];
   }
 
   public getFrequency(note: number): number {
