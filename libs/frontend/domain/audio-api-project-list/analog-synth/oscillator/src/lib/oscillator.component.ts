@@ -13,7 +13,7 @@ import { WaveformPickerComponent } from '@ivanrogulj.com/waveform-picker';
   styleUrl: './oscillator.component.scss',
 })
 export class OscillatorComponent {
-  public oscTypes = ['sine', 'triangle', 'square', 'sawtooth'];
+  public oscTypes: OscillatorType[] = ['sine', 'triangle', 'square', 'sawtooth'];
 
   protected analogSynthViewModel = inject(AnalogSynthViewModel);
 

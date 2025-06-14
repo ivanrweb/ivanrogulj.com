@@ -10,14 +10,13 @@ import { CommonModule } from '@angular/common';
 })
 export class WaveformPickerComponent {
   @Input()
-  public waveforms: string[] = [];
+  public waveforms: OscillatorType[] = [];
   @Input()
   public selectedWaveform = '';
   @Output()
   public waveformChange = new EventEmitter<OscillatorType>();
 
-  public selectWaveform(waveform: string): void {
-    const mappedWaveform = waveform as OscillatorType;
-    this.waveformChange.emit(mappedWaveform);
+  public selectWaveform(waveform: OscillatorType): void {
+    this.waveformChange.emit(waveform);
   }
 }
