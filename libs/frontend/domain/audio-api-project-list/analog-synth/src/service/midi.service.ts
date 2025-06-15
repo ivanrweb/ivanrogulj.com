@@ -5,27 +5,30 @@ import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 @Injectable({ providedIn: 'root' })
 export class MidiService {
   private frequencyLookup: number[] = [];
-
   private activeNotes = new Set<number>();
-  public noteOn$ = new Subject<{ note: number, velocity: number }>();
+  public noteOn$ = new Subject<{ note: number; velocity: number }>();
   public noteOff$ = new Subject<{ note: number }>();
+  private midiAccess: MIDIAccess | null = null;
 
   constructor() {
-    //provided by the Web MIDI API, asks the browser for access to MIDI devices
-    if (navigator.requestMIDIAccess) {
-      navigator.requestMIDIAccess().then(this.successMIDI, this.failMIDI);
-    }
-
     // Precompute frequencies for MIDI notes 0 to 127
     for (let note = 0; note <= 127; note++) {
       this.frequencyLookup[note] = this.midiToFreq(note);
     }
+
+    // Provided by the Web MIDI API, asks the browser for access to MIDI devices
+    if (navigator.requestMIDIAccess) {
+      navigator.requestMIDIAccess()
+        .then(this.successMIDI)
+        .catch(this.failMIDI);
+    }
   }
 
-  public successMIDI = (midiAccess: any): void => {
+  public successMIDI = (midiAccess: MIDIAccess): void => {
+    this.midiAccess = midiAccess;
     midiAccess.onstatechange = this.updateDevices;
 
-    midiAccess.inputs.forEach((input: any) => {
+    midiAccess.inputs.forEach((input) => {
       input.addEventListener('midimessage', this.handleInput);
     });
   };
@@ -34,17 +37,21 @@ export class MidiService {
     console.log('No MIDI devices connected.');
   };
 
-  public updateDevices = (event: any): void => {
-    if (event.port.state === 'connected') {
-      window.alert('Connected device: ' + event.port.name + ', IN/OUT type: ' + event.port.type);
-    } else if (event.port.state === 'disconnected') {
-      window.alert('Disconnected device: ' + event.port.name + ', IN/OUT type: ' + event.port.type);
+  public updateDevices = (event: MIDIConnectionEvent): void => {
+    const port = event.port;
+    if (!port) return;
+
+    if (port.state === 'connected') {
+      window.alert('Connected device: ' + port.name + ', IN/OUT type: ' + port.type);
+    } else if (port.state === 'disconnected') {
+      window.alert('Disconnected device: ' + port.name + ', IN/OUT type: ' + port.type);
     }
   };
 
-  public handleInput = (event: any): void => {
-    console.log('MIDI event:', event);
+  public handleInput = (event: MIDIMessageEvent): void => {
+    if (!event.data) return;
 
+    console.log('MIDI event:', event);
     const [cc, note, velocity] = event.data;
 
     // Ignore MIDI timing clock
@@ -76,7 +83,7 @@ export class MidiService {
      * The lookup method is typically faster for real-time use cases like key presses,
      * avoiding repeated calculations.
      */
-    //return 440 * Math.pow(2, (note - 69) / 12);
+    //return 440 * Math.pow(2, (midiNote - 69) / 12);
     return AnalogSynthApi.KeyboardFrequencies[midiNote];
   }
 
@@ -88,7 +95,6 @@ export class MidiService {
     if (velocity < 0 || velocity > 128) {
       throw new Error('Velocity must be in the range 0-128.');
     }
-
     // Rescale the velocity to a 0-1 range
     return velocity / 128;
   }

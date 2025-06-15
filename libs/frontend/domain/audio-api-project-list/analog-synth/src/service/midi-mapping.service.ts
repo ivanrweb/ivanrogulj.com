@@ -10,20 +10,16 @@ export interface MidiMapping {
 export interface MidiMappingState {
   mappings: Map<number, MidiMapping>;
   learningMode: boolean;
-  selectedComponent: MidiMapping | null;
+  selectedComponent: Omit<MidiMapping, 'cc'> | null;
 }
 
 @Injectable({ providedIn: 'root' })
 export class MidiMappingStore extends ComponentStore<MidiMappingState> {
-  readonly mappings$ = this.select(state => state.mappings);
-  readonly learningMode$ = this.select(state => state.learningMode);
-  readonly selectedComponent$ = this.select(state => state.selectedComponent);
-
-  private midiAccess: WebMidi.MIDIAccess | null = null;
+  private midiAccess: MIDIAccess | null = null;
 
   constructor() {
     super({
-      mappings: new Map<number, MidiMapping>(),
+      mappings: new Map(),
       learningMode: false,
       selectedComponent: null,
     });
@@ -31,7 +27,6 @@ export class MidiMappingStore extends ComponentStore<MidiMappingState> {
     this.initMIDI();
   }
 
-  // 🔹 INIT MIDI
   private async initMIDI(): Promise<void> {
     try {
       this.midiAccess = await navigator.requestMIDIAccess();
@@ -43,10 +38,12 @@ export class MidiMappingStore extends ComponentStore<MidiMappingState> {
     }
   }
 
-  // 🔹 HANDLING MIDI MESSAGES
-  private handleMIDIMessage(event: WebMidi.MIDIMessageEvent): void {
-    const [status, cc, value] = event.data;
-    if (status !== 0xB0) return;
+  private handleMIDIMessage(event: MIDIMessageEvent): void {
+    const data = event.data;
+    if (!data) return;
+
+    const [status, cc, value] = data;
+    if (status !== 0xb0) return; // Only handle CC messages
 
     const { learningMode, selectedComponent, mappings } = this.get();
 
@@ -63,22 +60,26 @@ export class MidiMappingStore extends ComponentStore<MidiMappingState> {
     }
   }
 
-  // 🔹 PUBLIC API
-
   public readonly startLearning = this.updater((state, mapping: Omit<MidiMapping, 'cc'>) => ({
     ...state,
     learningMode: true,
-    selectedComponent: { ...mapping, cc: -1 },
+    selectedComponent: mapping,
   }));
 
   public readonly deleteMapping = this.updater((state, cc: number) => {
     const newMap = new Map(state.mappings);
     newMap.delete(cc);
-    return { ...state, mappings: newMap };
+    return {
+      ...state,
+      mappings: newMap,
+    };
   });
 
   public readonly resetMappings = this.updater(state => ({
     ...state,
     mappings: new Map(),
   }));
+
+  // Expose mappings as Observable if needed
+  public readonly mappings$ = this.select(state => Array.from(state.mappings.values()));
 }
