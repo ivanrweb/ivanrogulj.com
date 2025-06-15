@@ -1,9 +1,10 @@
-<div *ngIf="analogSynthViewModel.vm$ | async as vm">
-  <h3>Analog Synth</h3>
-  <lib-oscillator/>
-  <lib-filter/>
-  <lib-gain/>
-  <lib-oscilloscope/>
-
-  <lib-textarea/>
-</div>
+@if (analogSynthViewModel.vm$ | async; as vm) {
+  <div>
+    <h3>Analog Synth</h3>
+    <lib-oscillator/>
+    <lib-filter/>
+    <lib-gain/>
+    <lib-oscilloscope/>
+    <lib-textarea/>
+  </div>
+}

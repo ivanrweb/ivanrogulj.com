@@ -1,10 +1,12 @@
-<div *ngIf="analogSynthViewModel.vm$ | async as vm">
-  <lib-knob
-    [minValue]="10"
-    [maxValue]="10000"
-    [label]="'Cutoff'"
-    [value]="frequency"
-    [measureUnit]="'Hz'"
-    (valueChange)="frequency = $event; onFilterValueChange()">
-  </lib-knob>
-</div>
+@if (analogSynthViewModel.vm$ | async; as vm) {
+  <div>
+    <lib-knob
+      [minValue]="10"
+      [maxValue]="10000"
+      [label]="'Cutoff'"
+      [value]="frequency"
+      [measureUnit]="'Hz'"
+      (valueChange)="frequency = $event; onFilterValueChange()">
+    </lib-knob>
+  </div>
+}

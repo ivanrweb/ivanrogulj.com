@@ -1,5 +1,5 @@
 import { Component, inject, Input } from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 
 export interface TileItem {
@@ -12,7 +12,7 @@ export interface TileItem {
 @Component({
   selector: 'lib-tile-item',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage],
+  imports: [NgOptimizedImage],
   templateUrl: './tile-item.component.html',
   styleUrl: './tile-item.component.css',
 })

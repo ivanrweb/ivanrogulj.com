@@ -48,6 +48,9 @@
     },
     "server": {
       "cache": true
+    },
+    "e2e-ci--**/**": {
+      "dependsOn": ["^frontend:build"]
     }
   },
   "plugins": [
@@ -89,5 +92,6 @@
     "@nx/angular:component": {
       "style": "scss"
     }
-  }
+  },
+  "useLegacyCache": true
 }

@@ -1,3 +1,5 @@
-<div *ngIf="analogSynthViewModel.vm$ | async as vm">
-  <canvas #oscilloscope></canvas>
-</div>
+@if (analogSynthViewModel.vm$ | async; as vm) {
+  <div>
+    <canvas #oscilloscope></canvas>
+  </div>
+}

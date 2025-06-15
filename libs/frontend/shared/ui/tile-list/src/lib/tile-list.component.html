@@ -1,6 +1,7 @@
 <div class="tile-list">
-  <lib-tile-item
-    *ngFor="let item of items"
-    [item]="item">
-  </lib-tile-item>
+  @for (item of items; track item) {
+    <lib-tile-item
+      [item]="item">
+    </lib-tile-item>
+  }
 </div>
