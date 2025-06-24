@@ -1,6 +1,12 @@
 @if (analogSynthViewModel.vm$ | async; as vm) {
   <div>
     <h3>Analog Synth</h3>
+
+    <!-- Global MIDI Learn toggle -->
+    <button (click)="analogSynthViewModel.toggleMidiLearn()">
+      {{ vm.learnMode ? 'Disable MIDI Learn' : 'Enable MIDI Learn' }}
+    </button>
+
     <lib-oscillator/>
     <lib-filter/>
     <lib-gain/>

@@ -6,7 +6,10 @@
       [label]="'Cutoff'"
       [value]="frequency"
       [measureUnit]="'Hz'"
-      (valueChange)="frequency = $event; onFilterValueChange()">
+      [isLearningMode]="vm.learnMode"
+      (valueChange)="frequency = $event; onFilterValueChange()"
+      (learn)="analogSynthViewModel.startLearning('filterFrequency')">
+    >
     </lib-knob>
   </div>
 }

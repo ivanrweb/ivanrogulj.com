@@ -1,5 +1,5 @@
 import { ComponentStore } from '@ngrx/component-store';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { ElementRef, inject, Injectable } from '@angular/core';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { Oscillator } from '@ivanrogulj.com/oscillator';
@@ -18,7 +18,11 @@ export interface AnalogSynthState {
   volumeEnvelope: ADSR;
   gains: Gain[];
   masterGain: number;
+  filterFrequency: number;
+  filterResonance: number;
   isPromptOpen: boolean;
+  learnMode: boolean;
+  learnTarget: keyof ADSR | 'masterGain' | null;
 }
 
 @Injectable({
@@ -31,7 +35,11 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     volumeEnvelope: state.volumeEnvelope,
     gains: state.gains,
     masterGain: state.masterGain,
+    filterFrequency: state.filterFrequency,
+    filterResonance: state.filterResonance,
     isPromptOpen: state.isPromptOpen,
+    learnMode: state.learnMode,
+    learnTarget: state.learnTarget
   }));
 
   private midiNoteToVoiceMap = new Map<number, string>(); // Maps MIDI note to oscillator ID
@@ -40,6 +48,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   private readonly midiService = inject(MidiService);
   private readonly oscilloscopeService = inject(OscilloscopeService);
   private readonly synthPatchApiService = inject(SynthPatchApiService);
+
+  private readonly paramControl$ = this.midiService.paramControl$;
 
   constructor() {
     super({
@@ -53,10 +63,13 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       },
       gains: [],
       masterGain: 0.2,
+      filterFrequency: 5000,
+      filterResonance: 1.0,
       isPromptOpen: false,
+      learnMode: false,
+      learnTarget: null
     });
 
-    //Note on event
     this.midiService.noteOn$.subscribe(({ note, velocity }) => {
       const frequency = this.midiService.getFrequency(note);
       const adjustedVelocity = this.midiService.getVelocityBetweenZeroAndOne(velocity);
@@ -64,7 +77,6 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       this.midiNoteToVoiceMap.set(note, voice.id);
     });
 
-    //Note off event
     this.midiService.noteOff$.subscribe(({ note }) => {
       const oscId = this.midiNoteToVoiceMap.get(note);
       if (oscId) {
@@ -72,6 +84,30 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
         this.midiNoteToVoiceMap.delete(note);
       }
     });
+
+    //paramControl$ subscriber
+    this.effect(
+      (paramControl$: Observable<{ param: keyof ADSR | 'masterGain' | 'filterFrequency' | 'filterResonance'; value: number }>) =>
+        paramControl$.pipe(
+          tap(({ param, value }) => {
+            const { learnMode, learnTarget } = this.get();
+
+            if (learnMode && learnTarget) {
+              // Write mapping
+              this.midiService.mapControlToParam(param);
+              this.disableMidiLearn();
+            } else {
+              // Normal control of parameter, when not in learn mode
+              if (param === 'masterGain') {
+                this.updateGain(value);
+              } else {
+                this.updateVolumeEnvelope({ [param]: value });
+              }
+            }
+          })
+        )
+    )(this.paramControl$);
+
   }
 
   public startAudioContext(): void {
@@ -161,6 +197,16 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     });
   }
 
+  public updateFilterFrequency(frequency: number): void {
+    this.patchState({ filterFrequency: frequency });
+    this.audioContextService.updateFilter(frequency);
+  }
+
+  public updateFilterResonance(resonance: number): void {
+    this.patchState({ filterResonance: resonance });
+    //this.audioContextService.updateFilterResonance(resonance); // implement this in audio service
+  }
+
   public updateFilter(frequency: number): void {
     this.audioContextService.updateFilter(frequency);
   }
@@ -179,14 +225,15 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       }
     }));
 
-    //in case you need to update all gains, not only the latest one
-    // this.get().gains.forEach(({ gainNode }) => {
-    //   this.audioContextService.updateVolumeEnvelope(gainNode, this.get().volumeEnvelope);
-    // });
-
     if(this.get().gains.length) {
-      const lastGainNode = this.get().gains[this.get().gains.length - 1].gainNode;
-      this.audioContextService.updateVolumeEnvelope(lastGainNode, this.get().volumeEnvelope);
+      //in case only the latest gain needs to be updated
+      // const lastGainNode = this.get().gains[this.get().gains.length - 1].gainNode;
+      // this.audioContextService.updateVolumeEnvelope(lastGainNode, this.get().volumeEnvelope);
+
+      //in case all gains need to be updated, not only the latest one
+      this.get().gains.forEach(({ gainNode }) => {
+        this.audioContextService.updateVolumeEnvelope(gainNode, this.get().volumeEnvelope);
+      });
     }
   }
 
@@ -199,7 +246,6 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     const analyserNode = this.audioContextService.getAnalyserNode();
     this.oscilloscopeService.draw(analyserNode, canvas.nativeElement);
   }
-
 
   public generateAIPatch(patchDescription: string): void {
     this.synthPatchApiService.generateAIPatch(patchDescription).subscribe(synthPatch => {
@@ -219,4 +265,28 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   public togglePrompt(): void {
     this.patchState({ isPromptOpen: !this.get().isPromptOpen});
   }
+
+  public enableMidiLearn(param: keyof ADSR | 'masterGain'): void {
+    this.patchState({
+      learnMode: true,
+      learnTarget: param
+    });
+  }
+
+  public disableMidiLearn(): void {
+    this.patchState({
+      learnMode: false,
+      learnTarget: null
+    });
+  }
+
+  public toggleMidiLearn(): void {
+    this.patchState({ learnMode: !this.get().learnMode});
+  }
+
+  public startLearning(param: 'filterFrequency' | 'filterResonance' | 'masterGain' | keyof ADSR): void {
+    console.log('midi mapping for: ', param);
+    this.midiService.startMapping(param);
+  }
+
 }

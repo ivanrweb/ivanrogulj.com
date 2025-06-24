@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -24,6 +24,9 @@ export class KnobComponent {
   @Input()
   public measureUnit?: string;
 
+  @Input()
+  public isLearningMode = false;
+
   private _value = 0;
 
   @Input()
@@ -38,6 +41,10 @@ export class KnobComponent {
 
   @Output()
   public valueChange = new EventEmitter<number>();
+
+  @Output()
+  public learn = new EventEmitter<void>();
+
 
   public rotation = 135; // Default position
 
@@ -85,5 +92,13 @@ export class KnobComponent {
 
   private mapValueToRotation(value: number): number {
     return ((value - this.minValue) / (this.maxValue - this.minValue)) * 270;
+  }
+
+  @HostListener('contextmenu', ['$event'])
+  public onRightClick(event: MouseEvent): void {
+    if (this.isLearningMode) {
+      event.preventDefault();
+      this.learn.emit();
+    }
   }
 }

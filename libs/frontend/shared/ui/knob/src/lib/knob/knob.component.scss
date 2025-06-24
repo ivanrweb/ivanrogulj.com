@@ -12,6 +12,12 @@
   align-items: center;
   justify-content: center;
   user-select: none;
+
+  &.learning-mode {
+    border: 2px solid #2978ff;
+    box-shadow: 0 0 8px #2978ff;
+    border-radius: 8px;
+  }
 }
 
 .knob {
