@@ -274,7 +274,11 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   }
 
   public toggleMidiLearn(): void {
-    this.patchState({ learnMode: !this.get().learnMode, learnTarget: this.get().learnTarget });
+    const { learnMode, learnTarget } = this.get();
+    this.patchState({
+      learnMode: !learnMode,
+      learnTarget: !learnMode ? learnTarget : null,
+    });
   }
 
   public startLearning(param: 'filterFrequency' | 'filterResonance' | 'masterGain' | keyof ADSR): void {
