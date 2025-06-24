@@ -1,6 +1,6 @@
 import { ComponentStore } from '@ngrx/component-store';
 import { Observable } from 'rxjs';
-import { ElementRef, Injectable } from '@angular/core';
+import { ElementRef, inject, Injectable } from '@angular/core';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { Oscillator } from '@ivanrogulj.com/oscillator';
 import { v7 as uuidv7 } from 'uuid';
@@ -36,10 +36,12 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
 
   private midiNoteToVoiceMap = new Map<number, string>(); // Maps MIDI note to oscillator ID
 
-  constructor(private readonly audioContextService: AudioContextService,
-              private readonly midiService: MidiService,
-              private readonly oscilloscopeService: OscilloscopeService,
-              private readonly synthPatchApiService: SynthPatchApiService) {
+  private readonly audioContextService = inject(AudioContextService);
+  private readonly midiService = inject(MidiService);
+  private readonly oscilloscopeService = inject(OscilloscopeService);
+  private readonly synthPatchApiService = inject(SynthPatchApiService);
+
+  constructor() {
     super({
       oscillators: [],
       selectedOscType: 'sawtooth',

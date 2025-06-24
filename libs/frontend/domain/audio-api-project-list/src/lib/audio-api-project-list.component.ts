@@ -2,12 +2,11 @@ import { Component } from '@angular/core';
 
 import { TileListComponent } from '@ivanrogulj.com/tile-list';
 import { TileItem } from '@ivanrogulj.com/tile-item';
-import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'lib-audio-api-project-list',
   standalone: true,
-  imports: [TileListComponent, RouterOutlet],
+  imports: [TileListComponent],
   templateUrl: './audio-api-project-list.component.html',
   styleUrl: './audio-api-project-list.component.scss',
 })
