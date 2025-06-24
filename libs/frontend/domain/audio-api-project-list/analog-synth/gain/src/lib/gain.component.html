@@ -8,7 +8,9 @@
         [value]="vm.volumeEnvelope.attack"
         [label]="'Attack'"
         [isLearningMode]="vm.learnMode"
-        (valueChange)="vm.volumeEnvelope.attack = $event; onVolumeEnvelopeChange('attack', $event)">
+        (valueChange)="vm.volumeEnvelope.attack = $event; onVolumeEnvelopeChange('attack', $event)"
+        (learn)="analogSynthViewModel.startLearning('attack')"
+      >
       </lib-knob>
       <!-- Decay Knob -->
       <lib-knob
@@ -17,7 +19,9 @@
         [value]="vm.volumeEnvelope.decay"
         [label]="'Decay'"
         [isLearningMode]="vm.learnMode"
-        (valueChange)="vm.volumeEnvelope.decay = $event; onVolumeEnvelopeChange('decay', $event)">
+        (valueChange)="vm.volumeEnvelope.decay = $event; onVolumeEnvelopeChange('decay', $event)"
+        (learn)="analogSynthViewModel.startLearning('decay')"
+      >
       </lib-knob>
       <!-- Sustain Knob -->
       <lib-knob
@@ -26,7 +30,9 @@
         [value]="vm.volumeEnvelope.sustain"
         [label]="'Sustain'"
         [isLearningMode]="vm.learnMode"
-        (valueChange)="vm.volumeEnvelope.sustain = $event; onVolumeEnvelopeChange('sustain', $event)">
+        (valueChange)="vm.volumeEnvelope.sustain = $event; onVolumeEnvelopeChange('sustain', $event)"
+        (learn)="analogSynthViewModel.startLearning('sustain')"
+      >
       </lib-knob>
       <!-- Release Knob -->
       <lib-knob
@@ -35,7 +41,9 @@
         [value]="vm.volumeEnvelope.release"
         [label]="'Release'"
         [isLearningMode]="vm.learnMode"
-        (valueChange)="vm.volumeEnvelope.release = $event; onVolumeEnvelopeChange('release', $event)">
+        (valueChange)="vm.volumeEnvelope.release = $event; onVolumeEnvelopeChange('release', $event)"
+        (learn)="analogSynthViewModel.startLearning('release')"
+      >
       </lib-knob>
     </div>
     <!-- Gain Knob -->
@@ -45,7 +53,9 @@
       [value]="vm.masterGain"
       [label]="'Gain'"
       [isLearningMode]="vm.learnMode"
-      (valueChange)="onGainChange($event)">
+      (valueChange)="onGainChange($event)"
+      (learn)="analogSynthViewModel.startLearning('masterGain')"
+    >
     </lib-knob>
   </div>
 }
