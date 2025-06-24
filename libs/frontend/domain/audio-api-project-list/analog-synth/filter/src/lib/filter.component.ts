@@ -13,11 +13,9 @@ import { KnobComponent } from '@ivanrogulj.com/knob';
   styleUrls: ['./filter.component.scss'],
 })
 export class FilterComponent {
-  public frequency = 5000;
-
   protected analogSynthViewModel = inject(AnalogSynthViewModel);
 
-  public onFilterValueChange(): void {
-    this.analogSynthViewModel.updateFilter(this.frequency);
+  public onFilterValueChange(value$: number): void {
+    this.analogSynthViewModel.updateFilterFrequency(value$);
   }
 }

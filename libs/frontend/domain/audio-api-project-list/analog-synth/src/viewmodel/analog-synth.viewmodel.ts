@@ -100,7 +100,10 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
               // Normal control of parameter, when not in learn mode
               if (param === 'masterGain') {
                 this.updateGain(value);
-              } else {
+              } else if (param === 'filterFrequency') {
+                this.updateFilterFrequency(value);
+              }
+              else {
                 this.updateVolumeEnvelope({ [param]: value });
               }
             }
@@ -205,10 +208,6 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   public updateFilterResonance(resonance: number): void {
     this.patchState({ filterResonance: resonance });
     //this.audioContextService.updateFilterResonance(resonance); // implement this in audio service
-  }
-
-  public updateFilter(frequency: number): void {
-    this.audioContextService.updateFilter(frequency);
   }
 
   public updateGain(gainValue: number): void {

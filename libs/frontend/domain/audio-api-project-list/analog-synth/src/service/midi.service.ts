@@ -115,7 +115,7 @@ export class MidiService {
 
 
 
-  public startMapping(param: keyof ADSR | 'filterFrequency' | 'filterResonance' | 'masterGain' | null): void {
+  public startMapping(param: keyof ADSR| 'masterGain' | 'filterFrequency' | 'filterResonance' | null): void {
     if (!this.midiAccess) {
       console.warn('MIDI access not available');
       return;

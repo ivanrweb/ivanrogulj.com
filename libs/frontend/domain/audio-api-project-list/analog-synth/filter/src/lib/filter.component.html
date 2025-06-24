@@ -4,10 +4,10 @@
       [minValue]="10"
       [maxValue]="10000"
       [label]="'Cutoff'"
-      [value]="frequency"
+      [value]="vm.filterFrequency"
       [measureUnit]="'Hz'"
       [isLearningMode]="vm.learnMode"
-      (valueChange)="frequency = $event; onFilterValueChange()"
+      (valueChange)="onFilterValueChange($event)"
       (learn)="analogSynthViewModel.startLearning('filterFrequency')">
     >
     </lib-knob>
