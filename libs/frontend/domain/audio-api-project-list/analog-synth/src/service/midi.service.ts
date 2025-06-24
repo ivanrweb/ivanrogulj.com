@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject, Observable } from 'rxjs';
+import { Subject, Observable, fromEventPattern, filter, take, tap } from 'rxjs';
 import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { ADSR } from '@ivanrogulj.com/gain';
@@ -19,7 +19,6 @@ export class MidiService {
 
   private midiAccess: MIDIAccess | null = null;
 
-  private ccToParamDynamicMap = new Map<number, keyof ADSR | 'masterGain' | 'filterFrequency' | 'filterResonance'>();
   private mappingInProgress = false;
   private pendingParam: keyof ADSR | 'masterGain' | 'filterFrequency' | 'filterResonance' | null = null;
 
@@ -61,11 +60,12 @@ export class MidiService {
   };
 
   public handleInput = (event: MIDIMessageEvent): void => {
-    if (!event.data) return;
+    const data = event.data;
+    if (!data) return;
 
-    const [status, data1, data2] = event.data;
+    const [status, data1, data2] = data;
 
-    // Ignore MIDI timing clock
+    // Ignore MIDI timing clock messages
     if (status === 0xF8) return;
 
     const messageType = status & 0xF0;
@@ -97,14 +97,13 @@ export class MidiService {
         this.lastReceivedCC = data1;
 
         if (this.mappingInProgress && this.pendingParam) {
-          this.ccToParamDynamicMap.set(data1, this.pendingParam);
-          this.mappingInProgress = false;
-          this.pendingParam = null;
+          this.mapControlToParam(this.pendingParam);
           return;
         }
 
-        if (this.ccToParamDynamicMap.has(data1)) {
-          const param = this.ccToParamDynamicMap.get(data1)!;
+        // eslint-disable-next-line no-case-declarations
+        const param = this.controlToParamMap.get(data1);
+        if (param) {
           this.paramControlSubject.next({ param, value: data2 / 127 });
         }
         break;
@@ -114,36 +113,42 @@ export class MidiService {
     }
   };
 
+
+
   public startMapping(param: keyof ADSR | 'filterFrequency' | 'filterResonance' | 'masterGain' | null): void {
+    if (!this.midiAccess) {
+      console.warn('MIDI access not available');
+      return;
+    }
+
     this.mappingInProgress = true;
     this.pendingParam = param;
 
-    // Single-time listen to CC which is emmited so you can map controller to parameter
-    const listener = (event: MIDIMessageEvent): void => {
-      if (event.data) {
-        const [status, ccNumber, value] = event.data;
-
-        // CC message status range: 0xB0 - 0xBF
-        if ((status & 0xF0) === 0xB0 && this.mappingInProgress && this.pendingParam) {
-          this.controlToParamMap.set(ccNumber, this.pendingParam);
-          this.mappingInProgress = false;
-          this.pendingParam = null;
-
-          console.log(`Mapped CC ${ccNumber} to param ${this.pendingParam}`);
-
-          // remove listener
-          this.midiAccess?.inputs.forEach(input => {
-            input.removeEventListener('midimessage', listener);
-          });
-        }
-      }
+    const addHandler = (handler: (event: MIDIMessageEvent) => void): void => {
+      this.midiAccess!.inputs.forEach(input => input.addEventListener('midimessage', handler));
     };
 
-    this.midiAccess?.inputs.forEach(input => {
-      input.addEventListener('midimessage', listener);
-    });
-  }
+    const removeHandler = (handler: (event: MIDIMessageEvent) => void): void => {
+      this.midiAccess!.inputs.forEach(input => input.removeEventListener('midimessage', handler));
+    };
 
+    fromEventPattern<MIDIMessageEvent>(addHandler, removeHandler).pipe(
+      filter(event => !!event.data && (event.data[0] & 0xf0) === 0xb0), // Only CC messages
+      take(1),
+      tap(event => {
+        if (!event.data) return;
+
+        const ccNumber = event.data[1];
+
+        this.controlToParamMap.set(ccNumber, this.pendingParam!);
+
+        console.log(`Mapped CC ${ccNumber} to pendingParam ${this.pendingParam}`);
+
+        this.mappingInProgress = false;
+        this.pendingParam = null;
+      }),
+    ).subscribe();
+  }
 
   public midiToFreq(midiNote: number): number {
     // Precomputed frequencies from AnalogSynthApi.KeyboardFrequencies
@@ -162,10 +167,10 @@ export class MidiService {
   }
 
   public mapControlToParam(param: keyof ADSR | 'masterGain' | 'filterFrequency' | 'filterResonance'): void {
-    // The last received MIDI CC control is the one that needs to be mapped
-    const lastCC = this.lastReceivedCC;
-    if (lastCC != null) {
-      this.controlToParamMap.set(lastCC, param);
+    if (this.lastReceivedCC !== null) {
+      this.controlToParamMap.set(this.lastReceivedCC, param);
     }
+
+    console.log('controlToParamMap: ', this.controlToParamMap);
   }
 }
