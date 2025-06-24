@@ -124,7 +124,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   public createAndStartVoice(frequency: number, keyVelocity: number): Oscillator {
     const oscNode = this.audioContextService.createOsc(this.get().selectedOscType, frequency);
     const gainNode = this.audioContextService.createGain();
-    const oscId = uuidv7(); // Unique ID for the oscillator
+    const oscId = uuidv7();
 
     const newOsc: Oscillator = {
       id: oscId,
@@ -146,7 +146,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     this.recalculateMasterGain(keyVelocity);
     this.audioContextService.connectNodes(oscNode, gainNode);
 
-    return newOsc; // Return the oscillator object
+    return newOsc;
   }
 
   private recalculateMasterGain(keyVelocity?: number): void {
@@ -200,7 +200,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     });
   }
 
-  public updateFilterFrequency(frequency: number): void {
+  public updateFilterFrequency(normalizedFreq: number): void {
+    const frequency = this.audioContextService.normalizedToFrequency(normalizedFreq);
     this.patchState({ filterFrequency: frequency });
     this.audioContextService.updateFilter(frequency);
   }
@@ -284,5 +285,4 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     console.log('midi mapping for: ', param);
     this.midiService.startMapping(param);
   }
-
 }
