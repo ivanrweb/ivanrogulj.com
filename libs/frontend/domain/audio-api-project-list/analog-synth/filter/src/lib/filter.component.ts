@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { AnalogSynthViewModel } from '../../../src/viewmodel/analog-synth.viewmodel';
 import { KnobComponent } from '@ivanrogulj.com/knob';
+import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 
 @Component({
   selector: 'lib-filter',
@@ -18,4 +19,6 @@ export class FilterComponent {
   public onFilterValueChange(value$: number): void {
     this.analogSynthViewModel.updateFilterFrequency(value$);
   }
+
+  protected readonly AnalogSynthApi = AnalogSynthApi;
 }

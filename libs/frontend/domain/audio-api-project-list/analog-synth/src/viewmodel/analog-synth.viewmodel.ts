@@ -22,7 +22,7 @@ export interface AnalogSynthState {
   filterResonance: number;
   isPromptOpen: boolean;
   learnMode: boolean;
-  learnTarget: keyof ADSR | 'masterGain' | null;
+  learnTarget: AnalogSynthApi.MidiMap | null;
   mappedParams: Record<string, boolean>;
 }
 
@@ -94,7 +94,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
 
     //paramControl$ subscriber
     this.effect(
-      (paramControl$: Observable<{ param: keyof ADSR | 'masterGain' | 'filterFrequency' | 'filterResonance'; value: number }>) =>
+      (paramControl$: Observable<{ param: AnalogSynthApi.MidiMap; value: number }>) =>
         paramControl$.pipe(
           tap(({ param, value }) => {
             const { learnMode, learnTarget } = this.get();
@@ -105,9 +105,9 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
               this.disableMidiLearn();
             } else {
               // Normal control of parameter, when not in learn mode
-              if (param === 'masterGain') {
+              if (param === AnalogSynthApi.MidiMap.MASTER_GAIN) {
                 this.updateGain(value);
-              } else if (param === 'filterFrequency') {
+              } else if (param === AnalogSynthApi.MidiMap.FILTER_FREQUENCY) {
                 this.updateFilterFrequency(value);
               }
               else {
@@ -288,7 +288,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     });
   }
 
-  public startLearning(param: 'filterFrequency' | 'filterResonance' | 'masterGain' | keyof ADSR): void {
+  public startLearning(param: AnalogSynthApi.MidiMap): void {
     console.log('midi mapping for: ', param);
     this.midiService.startMapping(param);
   }

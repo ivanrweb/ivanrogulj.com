@@ -9,13 +9,13 @@ export class MidiService {
   private frequencyLookup: number[] = [];
   private activeNotes = new Set<number>();
 
-  private paramControlSubject = new Subject<{ param: keyof ADSR | 'masterGain' | 'filterFrequency' | 'filterResonance'; value: number }>();
-  public paramControl$: Observable<{ param: keyof ADSR | 'masterGain' | 'filterFrequency' | 'filterResonance'; value: number }> = this.paramControlSubject.asObservable();
-  private controlToParamMap = new Map<number, keyof ADSR | 'masterGain' | 'filterFrequency' | 'filterResonance'>();
+  private paramControlSubject = new Subject<{ param: AnalogSynthApi.MidiMap; value: number }>();
+  public paramControl$: Observable<{ param: AnalogSynthApi.MidiMap; value: number }> = this.paramControlSubject.asObservable();
+  private controlToParamMap = new Map<number, AnalogSynthApi.MidiMap>();
   private lastReceivedCC: number | null = null;
 
   //Subjects to emit when some value is mapped
-  private mappingChangedSubject = new Subject<keyof ADSR | 'masterGain' | 'filterFrequency' | 'filterResonance'>();
+  private mappingChangedSubject = new Subject<AnalogSynthApi.MidiMap>();
   public mappingChanged$ = this.mappingChangedSubject.asObservable();
 
   public noteOn$ = new Subject<{ note: number; velocity: number }>();
@@ -24,7 +24,7 @@ export class MidiService {
   private midiAccess: MIDIAccess | null = null;
 
   private mappingInProgress = false;
-  private pendingParam: keyof ADSR | 'masterGain' | 'filterFrequency' | 'filterResonance' | null = null;
+  private pendingParam: AnalogSynthApi.MidiMap | null = null;
 
 
   constructor() {
@@ -119,7 +119,7 @@ export class MidiService {
 
 
 
-  public startMapping(param: keyof ADSR| 'masterGain' | 'filterFrequency' | 'filterResonance' | null): void {
+  public startMapping(param: AnalogSynthApi.MidiMap): void {
     if (!this.midiAccess) {
       console.warn('MIDI access not available');
       return;
@@ -170,7 +170,7 @@ export class MidiService {
     return velocity / 128;
   }
 
-  public mapControlToParam(param: keyof ADSR | 'masterGain' | 'filterFrequency' | 'filterResonance'): void {
+  public mapControlToParam(param: AnalogSynthApi.MidiMap): void {
     if (this.lastReceivedCC !== null) {
       this.controlToParamMap.set(this.lastReceivedCC, param);
 

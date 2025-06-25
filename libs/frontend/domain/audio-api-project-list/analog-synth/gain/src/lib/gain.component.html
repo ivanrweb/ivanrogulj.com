@@ -8,8 +8,8 @@
         [value]="vm.volumeEnvelope.attack"
         [label]="'Attack'"
         [isLearningMode]="vm.learnMode"
-        (valueChange)="vm.volumeEnvelope.attack = $event; onVolumeEnvelopeChange('attack', $event)"
-        (learn)="analogSynthViewModel.startLearning('attack')"
+        (valueChange)="vm.volumeEnvelope.attack = $event; onVolumeEnvelopeChange(AnalogSynthApi.MidiMap.ATTACK, $event)"
+        (learn)="analogSynthViewModel.startLearning(AnalogSynthApi.MidiMap.ATTACK)"
       >
       </lib-knob>
       <!-- Decay Knob -->
@@ -19,8 +19,8 @@
         [value]="vm.volumeEnvelope.decay"
         [label]="'Decay'"
         [isLearningMode]="vm.learnMode"
-        (valueChange)="vm.volumeEnvelope.decay = $event; onVolumeEnvelopeChange('decay', $event)"
-        (learn)="analogSynthViewModel.startLearning('decay')"
+        (valueChange)="vm.volumeEnvelope.decay = $event; onVolumeEnvelopeChange(AnalogSynthApi.MidiMap.DECAY, $event)"
+        (learn)="analogSynthViewModel.startLearning(AnalogSynthApi.MidiMap.DECAY)"
       >
       </lib-knob>
       <!-- Sustain Knob -->
@@ -30,8 +30,8 @@
         [value]="vm.volumeEnvelope.sustain"
         [label]="'Sustain'"
         [isLearningMode]="vm.learnMode"
-        (valueChange)="vm.volumeEnvelope.sustain = $event; onVolumeEnvelopeChange('sustain', $event)"
-        (learn)="analogSynthViewModel.startLearning('sustain')"
+        (valueChange)="vm.volumeEnvelope.sustain = $event; onVolumeEnvelopeChange(AnalogSynthApi.MidiMap.SUSTAIN, $event)"
+        (learn)="analogSynthViewModel.startLearning(AnalogSynthApi.MidiMap.SUSTAIN)"
       >
       </lib-knob>
       <!-- Release Knob -->
@@ -41,8 +41,8 @@
         [value]="vm.volumeEnvelope.release"
         [label]="'Release'"
         [isLearningMode]="vm.learnMode"
-        (valueChange)="vm.volumeEnvelope.release = $event; onVolumeEnvelopeChange('release', $event)"
-        (learn)="analogSynthViewModel.startLearning('release')"
+        (valueChange)="vm.volumeEnvelope.release = $event; onVolumeEnvelopeChange(AnalogSynthApi.MidiMap.RELEASE, $event)"
+        (learn)="analogSynthViewModel.startLearning(AnalogSynthApi.MidiMap.RELEASE)"
       >
       </lib-knob>
     </div>
@@ -55,7 +55,7 @@
       [isLearningMode]="vm.learnMode"
       [isMapped]="vm.mappedParams['masterGain']"
       (valueChange)="onGainChange($event)"
-      (learn)="analogSynthViewModel.startLearning('masterGain')"
+      (learn)="analogSynthViewModel.startLearning(AnalogSynthApi.MidiMap.MASTER_GAIN)"
     >
     </lib-knob>
   </div>
