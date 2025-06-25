@@ -8,6 +8,7 @@
         [value]="vm.volumeEnvelope.attack"
         [label]="'Attack'"
         [isLearningMode]="vm.learnMode"
+        [isMapped]="vm.mappedParams[AnalogSynthApi.MidiMap.ATTACK]"
         (valueChange)="vm.volumeEnvelope.attack = $event; onVolumeEnvelopeChange(AnalogSynthApi.MidiMap.ATTACK, $event)"
         (learn)="analogSynthViewModel.startLearning(AnalogSynthApi.MidiMap.ATTACK)"
       >
@@ -19,6 +20,7 @@
         [value]="vm.volumeEnvelope.decay"
         [label]="'Decay'"
         [isLearningMode]="vm.learnMode"
+        [isMapped]="vm.mappedParams[AnalogSynthApi.MidiMap.DECAY]"
         (valueChange)="vm.volumeEnvelope.decay = $event; onVolumeEnvelopeChange(AnalogSynthApi.MidiMap.DECAY, $event)"
         (learn)="analogSynthViewModel.startLearning(AnalogSynthApi.MidiMap.DECAY)"
       >
@@ -30,6 +32,7 @@
         [value]="vm.volumeEnvelope.sustain"
         [label]="'Sustain'"
         [isLearningMode]="vm.learnMode"
+        [isMapped]="vm.mappedParams[AnalogSynthApi.MidiMap.SUSTAIN]"
         (valueChange)="vm.volumeEnvelope.sustain = $event; onVolumeEnvelopeChange(AnalogSynthApi.MidiMap.SUSTAIN, $event)"
         (learn)="analogSynthViewModel.startLearning(AnalogSynthApi.MidiMap.SUSTAIN)"
       >
@@ -41,6 +44,7 @@
         [value]="vm.volumeEnvelope.release"
         [label]="'Release'"
         [isLearningMode]="vm.learnMode"
+        [isMapped]="vm.mappedParams[AnalogSynthApi.MidiMap.RELEASE]"
         (valueChange)="vm.volumeEnvelope.release = $event; onVolumeEnvelopeChange(AnalogSynthApi.MidiMap.RELEASE, $event)"
         (learn)="analogSynthViewModel.startLearning(AnalogSynthApi.MidiMap.RELEASE)"
       >
@@ -53,7 +57,7 @@
       [value]="vm.masterGain"
       [label]="'Gain'"
       [isLearningMode]="vm.learnMode"
-      [isMapped]="vm.mappedParams['masterGain']"
+      [isMapped]="vm.mappedParams[AnalogSynthApi.MidiMap.MASTER_GAIN]"
       (valueChange)="onGainChange($event)"
       (learn)="analogSynthViewModel.startLearning(AnalogSynthApi.MidiMap.MASTER_GAIN)"
     >

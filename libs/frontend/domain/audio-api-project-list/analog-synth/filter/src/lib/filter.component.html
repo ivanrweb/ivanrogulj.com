@@ -7,6 +7,7 @@
       [value]="vm.filterFrequency"
       [measureUnit]="'Hz'"
       [isLearningMode]="vm.learnMode"
+      [isMapped]="vm.mappedParams[AnalogSynthApi.MidiMap.FILTER_FREQUENCY]"
       (valueChange)="onFilterValueChange($event)"
       (learn)="analogSynthViewModel.startLearning(AnalogSynthApi.MidiMap.FILTER_FREQUENCY)">
     >
