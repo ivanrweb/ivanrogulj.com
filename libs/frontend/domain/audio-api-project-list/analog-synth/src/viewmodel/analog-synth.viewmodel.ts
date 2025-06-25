@@ -23,6 +23,7 @@ export interface AnalogSynthState {
   isPromptOpen: boolean;
   learnMode: boolean;
   learnTarget: keyof ADSR | 'masterGain' | null;
+  mappedParams: Record<string, boolean>;
 }
 
 @Injectable({
@@ -39,7 +40,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     filterResonance: state.filterResonance,
     isPromptOpen: state.isPromptOpen,
     learnMode: state.learnMode,
-    learnTarget: state.learnTarget
+    learnTarget: state.learnTarget,
+    mappedParams: state.mappedParams,
   }));
 
   private midiNoteToVoiceMap = new Map<number, string>(); // Maps MIDI note to oscillator ID
@@ -67,7 +69,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       filterResonance: 1.0,
       isPromptOpen: false,
       learnMode: false,
-      learnTarget: null
+      learnTarget: null,
+      mappedParams: {},
     });
 
     this.midiService.noteOn$.subscribe(({ note, velocity }) => {
@@ -84,6 +87,10 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
         this.midiNoteToVoiceMap.delete(note);
       }
     });
+
+    this.midiService.mappingChanged$.pipe(tap(param => {
+      this.get().mappedParams[param] = true;
+    })).subscribe();
 
     //paramControl$ subscriber
     this.effect(
@@ -284,5 +291,15 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   public startLearning(param: 'filterFrequency' | 'filterResonance' | 'masterGain' | keyof ADSR): void {
     console.log('midi mapping for: ', param);
     this.midiService.startMapping(param);
+  }
+
+  public updateMapping(param: string, mapped: boolean): void {
+    this.patchState(state => ({
+      ...state,
+      mappedParams: {
+        ...state.mappedParams,
+        [param]: mapped,
+      }
+    }));
   }
 }

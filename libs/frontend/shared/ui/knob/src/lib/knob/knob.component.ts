@@ -27,6 +27,9 @@ export class KnobComponent {
   @Input()
   public isLearningMode = false;
 
+  @Input()
+  public isMapped = false;
+
   private _value = 0;
 
   @Input()

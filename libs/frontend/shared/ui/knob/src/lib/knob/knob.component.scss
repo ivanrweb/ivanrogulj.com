@@ -79,3 +79,13 @@
   transform: translateX(-50%);
   border-radius: 2px;
 }
+
+.is-mapped::after {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: #2978ff;
+  border-radius: 50%;
+  margin-left: 0.4em;
+}

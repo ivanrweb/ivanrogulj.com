@@ -53,6 +53,7 @@
       [value]="vm.masterGain"
       [label]="'Gain'"
       [isLearningMode]="vm.learnMode"
+      [isMapped]="vm.mappedParams['masterGain']"
       (valueChange)="onGainChange($event)"
       (learn)="analogSynthViewModel.startLearning('masterGain')"
     >

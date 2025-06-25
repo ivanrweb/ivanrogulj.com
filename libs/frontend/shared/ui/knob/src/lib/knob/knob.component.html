@@ -7,6 +7,8 @@
       <div class="knob-indicator"></div>
     </div>
   </div>
-  <span>{{ label }}</span>
+  <span>
+    <span [class.is-mapped]="isMapped">{{ label }}</span>
+  </span>
   <span>{{ value | number:'1.1-1' }} {{ measureUnit }}</span>
 </div>

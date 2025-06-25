@@ -14,6 +14,10 @@ export class MidiService {
   private controlToParamMap = new Map<number, keyof ADSR | 'masterGain' | 'filterFrequency' | 'filterResonance'>();
   private lastReceivedCC: number | null = null;
 
+  //Subjects to emit when some value is mapped
+  private mappingChangedSubject = new Subject<keyof ADSR | 'masterGain' | 'filterFrequency' | 'filterResonance'>();
+  public mappingChanged$ = this.mappingChangedSubject.asObservable();
+
   public noteOn$ = new Subject<{ note: number; velocity: number }>();
   public noteOff$ = new Subject<{ note: number }>();
 
@@ -169,6 +173,8 @@ export class MidiService {
   public mapControlToParam(param: keyof ADSR | 'masterGain' | 'filterFrequency' | 'filterResonance'): void {
     if (this.lastReceivedCC !== null) {
       this.controlToParamMap.set(this.lastReceivedCC, param);
+
+      this.mappingChangedSubject.next(param);
     }
 
     console.log('controlToParamMap: ', this.controlToParamMap);
