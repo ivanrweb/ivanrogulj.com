@@ -4,7 +4,6 @@ import { ElementRef, inject, Injectable } from '@angular/core';
 import { v7 as uuidv7 } from 'uuid';
 import { AudioContextService } from '../service/audio-context.service';
 import { MidiService } from '../service/midi.service';
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import { ADSR } from '@ivanrogulj.com/gain';
 import { OscilloscopeService } from '../service/oscilloscope.service';
 import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
@@ -13,6 +12,7 @@ import { SynthPatchApiService } from '@ivanrogulj.com/frontend/shared/data-acces
 export interface Voice {
   id: string;
   note: number;
+  velocity: number;
   oscNode: OscillatorNode;
   filterNode: BiquadFilterNode;
   adsrGainNode: GainNode;
@@ -63,7 +63,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     this.midiService.noteOn$.subscribe(({ note, velocity }) => {
       if (this.get().voices.some(v => v.note === note)) return;
       const frequency = this.midiService.getFrequency(note);
-      this.createAndStartVoice(note, frequency);
+      const adjustedVelocity = this.midiService.getVelocityBetweenZeroAndOne(velocity);
+      this.createAndStartVoice(note, frequency, adjustedVelocity);
     });
 
     this.midiService.noteOff$.subscribe(({ note }) => {
@@ -108,20 +109,26 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     this.audioContextService.destroyContext();
   }
 
+  // Incorporates each voice's individual velocity
   private updateAllVoiceLevels(): void {
     const { voices } = this.get();
     const totalVoices = voices.length;
     if (totalVoices === 0) return;
 
     const compensationFactor = Math.sqrt(totalVoices);
-    const targetGain = 1.0 / compensationFactor;
+    const baseTargetGain = 1.0 / compensationFactor;
 
     voices.forEach(voice => {
-      voice.levelGainNode.gain.setTargetAtTime(targetGain, this.audioContextService.currentTime, 0.01);
+      // The lower the exponent, the louder will low-velocity keys be
+      const velocityFactor = Math.pow(voice.velocity, 1.2);
+      // The final gain for this voice is the base gain modulated by its velocity
+      const finalTargetGain = baseTargetGain * velocityFactor;
+
+      voice.levelGainNode.gain.setTargetAtTime(finalTargetGain, this.audioContextService.currentTime, 0.015);
     });
   }
 
-  public createAndStartVoice(note: number, frequency: number): void {
+  public createAndStartVoice(note: number, frequency: number, velocity: number): void {
     const {
       selectedOscType, volumeEnvelope, filterEnvelope,
       filterFrequency, filterEnvelopeAmount, filterResonance
@@ -140,7 +147,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     this.audioContextService.connectVoiceNodes(oscNode, filterNode, adsrGainNode, levelGainNode);
     this.audioContextService.startOsc(oscNode);
 
-    const newVoice: Voice = { id: voiceId, note, oscNode, filterNode, adsrGainNode, levelGainNode };
+    const newVoice: Voice = { id: voiceId, note, velocity, oscNode, filterNode, adsrGainNode, levelGainNode };
 
     this.patchState(state => ({ voices: [...state.voices, newVoice] }));
     this.updateAllVoiceLevels();
