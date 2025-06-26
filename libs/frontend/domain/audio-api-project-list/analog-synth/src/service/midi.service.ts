@@ -9,13 +9,13 @@ export class MidiService {
   private frequencyLookup: number[] = [];
   private activeNotes = new Set<number>();
 
-  private paramControlSubject = new Subject<{ param: AnalogSynthApi.MidiMap; value: number }>();
-  public paramControl$: Observable<{ param: AnalogSynthApi.MidiMap; value: number }> = this.paramControlSubject.asObservable();
-  private controlToParamMap = new Map<number, AnalogSynthApi.MidiMap>();
+  private paramControlSubject = new Subject<{ param: AnalogSynthApi.Knob; value: number }>();
+  public paramControl$: Observable<{ param: AnalogSynthApi.Knob; value: number }> = this.paramControlSubject.asObservable();
+  private controlToParamMap = new Map<number, AnalogSynthApi.Knob>();
   private lastReceivedCC: number | null = null;
 
   //Subjects to emit when some value is mapped
-  private mappingChangedSubject = new Subject<AnalogSynthApi.MidiMap>();
+  private mappingChangedSubject = new Subject<AnalogSynthApi.Knob>();
   public mappingChanged$ = this.mappingChangedSubject.asObservable();
 
   public noteOn$ = new Subject<{ note: number; velocity: number }>();
@@ -24,7 +24,7 @@ export class MidiService {
   private midiAccess: MIDIAccess | null = null;
 
   private mappingInProgress = false;
-  private pendingParam: AnalogSynthApi.MidiMap | null = null;
+  private pendingParam: AnalogSynthApi.Knob | null = null;
 
 
   constructor() {
@@ -119,7 +119,7 @@ export class MidiService {
 
 
 
-  public startMapping(param: AnalogSynthApi.MidiMap): void {
+  public startMapping(param: AnalogSynthApi.Knob): void {
     if (!this.midiAccess) {
       console.warn('MIDI access not available');
       return;
@@ -170,7 +170,7 @@ export class MidiService {
     return velocity / 128;
   }
 
-  public mapControlToParam(param: AnalogSynthApi.MidiMap): void {
+  public mapControlToParam(param: AnalogSynthApi.Knob): void {
     if (this.lastReceivedCC !== null) {
       this.controlToParamMap.set(this.lastReceivedCC, param);
 

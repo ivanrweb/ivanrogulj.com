@@ -31,7 +31,7 @@ export interface AnalogSynthState {
   filterResonance: number;
   isPromptOpen: boolean;
   learnMode: boolean;
-  learnTarget: AnalogSynthApi.MidiMap | null;
+  learnTarget: AnalogSynthApi.Knob | null;
   mappedParams: Record<string, boolean>;
 }
 
@@ -49,9 +49,9 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     super({
       voices: [],
       selectedOscType: 'sawtooth',
-      volumeEnvelope: { attack: 0.05, decay: 0.6, sustain: 0.8, release: 0.3 },
-      filterEnvelope: { attack: 0.2, decay: 0, sustain: 1, release: 0 },
-      filterEnvelopeAmount: 1,
+      volumeEnvelope: { attack: 0.15, decay: 0.6, sustain: 0.8, release: 0.3 },
+      filterEnvelope: { attack: 0.3, decay: 0, sustain: 0.05, release: 0 },
+      filterEnvelopeAmount: 0.5,
       masterGain: 0.5,
       filterFrequency: 200,
       filterResonance: 1.0,
@@ -80,7 +80,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     })).subscribe();
 
     this.effect(
-      (paramControl$: Observable<{ param: AnalogSynthApi.MidiMap; value: number }>) =>
+      (paramControl$: Observable<{ param: AnalogSynthApi.Knob; value: number }>) =>
         paramControl$.pipe(
           tap(({ param, value }) => {
             const { learnMode, learnTarget } = this.get();
@@ -88,9 +88,9 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
               this.midiService.mapControlToParam(param);
               this.disableMidiLearn();
             } else {
-              if (param === AnalogSynthApi.MidiMap.MASTER_GAIN) {
+              if (param === AnalogSynthApi.Knob.MASTER_GAIN) {
                 this.updateGain(value);
-              } else if (param === AnalogSynthApi.MidiMap.FILTER_FREQUENCY) {
+              } else if (param === AnalogSynthApi.Knob.FILTER_FREQUENCY) {
                 const freq = this.audioContextService.normalizedToFrequency(value);
                 this.updateFilterFrequency(freq);
               }
@@ -272,7 +272,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     });
   }
 
-  public startLearning(param: AnalogSynthApi.MidiMap): void {
+  public startLearning(param: AnalogSynthApi.Knob): void {
     console.log('midi mapping for: ', param);
     this.patchState({ learnTarget: param });
     this.midiService.startMapping(param);
