@@ -155,9 +155,15 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
 
   private releaseVoice(voice: Voice): void {
     const { volumeEnvelope, filterEnvelope } = this.get();
-    this.audioContextService.releaseVolumeEnvelope(voice.adsrGainNode, volumeEnvelope.release);
-    this.audioContextService.releaseFilterEnvelope(voice.filterNode, filterEnvelope.release);
-    const maxReleaseTime = Math.max(volumeEnvelope.release, filterEnvelope.release);
+
+    // Ensure release times are never zero to prevent clicks
+    const safeVolumeRelease = Math.max(0.005, volumeEnvelope.release);
+    const safeFilterRelease = Math.max(0.005, filterEnvelope.release);
+
+    this.audioContextService.releaseVolumeEnvelope(voice.adsrGainNode, safeVolumeRelease);
+    this.audioContextService.releaseFilterEnvelope(voice.filterNode, safeFilterRelease);
+
+    const maxReleaseTime = Math.max(safeVolumeRelease, safeFilterRelease);
     setTimeout(() => {
       this.audioContextService.stopAndDisconnectVoice(voice.oscNode, voice.filterNode, voice.adsrGainNode, voice.levelGainNode);
     }, maxReleaseTime * 1000);
