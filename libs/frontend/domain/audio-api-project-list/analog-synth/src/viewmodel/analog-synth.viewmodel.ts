@@ -4,6 +4,7 @@ import { ElementRef, inject, Injectable } from '@angular/core';
 import { v7 as uuidv7 } from 'uuid';
 import { AudioContextService } from '../service/audio-context.service';
 import { MidiService } from '../service/midi.service';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { ADSR } from '@ivanrogulj.com/gain';
 import { OscilloscopeService } from '../service/oscilloscope.service';
 import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
@@ -116,7 +117,12 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     if (totalVoices === 0) return;
 
     const compensationFactor = Math.sqrt(totalVoices);
-    const baseTargetGain = 1.0 / compensationFactor;
+    let baseTargetGain = 1.0 / compensationFactor;
+
+    //Reduce perceived volume when only 1 voice is active
+    if (totalVoices === 1) {
+      baseTargetGain *= 0.40;
+    }
 
     voices.forEach(voice => {
       // The lower the exponent, the louder will low-velocity keys be
