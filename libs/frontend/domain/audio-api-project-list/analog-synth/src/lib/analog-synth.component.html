@@ -1,9 +1,16 @@
-<div *ngIf="analogSynthViewModel.vm$ | async as vm">
-  <h3>Analog Synth</h3>
-  <lib-oscillator/>
-  <lib-filter/>
-  <lib-gain/>
-  <lib-oscilloscope/>
+@if (analogSynthViewModel.vm$ | async; as vm) {
+  <div>
+    <h3>Analog Synth</h3>
 
-  <lib-textarea/>
-</div>
+    <!-- Global MIDI Learn toggle -->
+    <button (click)="analogSynthViewModel.toggleMidiLearn()">
+      {{ vm.learnMode ? 'Disable MIDI Learn' : 'Enable MIDI Learn' }}
+    </button>
+
+    <lib-oscillator/>
+    <lib-filter/>
+    <lib-gain/>
+    <lib-oscilloscope/>
+    <lib-textarea/>
+  </div>
+}

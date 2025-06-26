@@ -5,6 +5,7 @@ import { AnalogSynthViewModel } from '../../../src/viewmodel/analog-synth.viewmo
 import { FormsModule } from '@angular/forms';
 import { ADSR } from './gain.interface';
 import { KnobComponent } from '@ivanrogulj.com/knob';
+import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 
 @Component({
   selector: 'lib-gain',
@@ -25,4 +26,6 @@ export class GainComponent {
   public onGainChange(value$: number): void {
     this.analogSynthViewModel.updateGain(value$);
   }
+
+  protected readonly AnalogSynthApi = AnalogSynthApi;
 }

@@ -1,5 +1,15 @@
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace AnalogSynthApi {
+  export enum MidiMap {
+    ATTACK = 'attack',
+    DECAY = 'decay',
+    SUSTAIN = 'sustain',
+    RELEASE = 'release',
+    MASTER_GAIN = 'masterGain',
+    FILTER_FREQUENCY = 'filterFrequency',
+    FILTER_RESONANCE = 'filterResonance'
+  }
+
   export interface SynthPatch {
     attack: number;
     decay: number;

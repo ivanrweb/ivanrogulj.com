@@ -11,6 +11,9 @@ export class AudioContextService {
   private analyserNode?: AnalyserNode;
   private maxGainForSingleNode = 0.3;
 
+  private FILTER_MIN_FREQ = 20;
+  private FILTER_MAX_FREQ = 10000;
+
   /*
     Initialize AudioContext
    */
@@ -165,5 +168,9 @@ export class AudioContextService {
     osc.stop();
     osc.disconnect();
     gainNode.disconnect();
+  }
+
+  public normalizedToFrequency(normValue: number): number {
+    return this.FILTER_MIN_FREQ + normValue * (this.FILTER_MAX_FREQ - this.FILTER_MIN_FREQ);
   }
 }

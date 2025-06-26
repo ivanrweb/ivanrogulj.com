@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'lib-modular-synth',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './modular-synth.component.html',
   styleUrl: './modular-synth.component.css',
 })

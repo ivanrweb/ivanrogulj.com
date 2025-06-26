@@ -1,10 +1,16 @@
-<div *ngIf="analogSynthViewModel.vm$ | async as vm">
-  <lib-knob
-    [minValue]="10"
-    [maxValue]="10000"
-    [label]="'Cutoff'"
-    [value]="frequency"
-    [measureUnit]="'Hz'"
-    (valueChange)="frequency = $event; onFilterValueChange()">
-  </lib-knob>
-</div>
+@if (analogSynthViewModel.vm$ | async; as vm) {
+  <div>
+    <lib-knob
+      [minValue]="10"
+      [maxValue]="10000"
+      [label]="'Cutoff'"
+      [value]="vm.filterFrequency"
+      [measureUnit]="'Hz'"
+      [isLearningMode]="vm.learnMode"
+      [isMapped]="vm.mappedParams[AnalogSynthApi.MidiMap.FILTER_FREQUENCY]"
+      (valueChange)="onFilterValueChange($event)"
+      (learn)="analogSynthViewModel.startLearning(AnalogSynthApi.MidiMap.FILTER_FREQUENCY)">
+    >
+    </lib-knob>
+  </div>
+}

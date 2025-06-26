@@ -1,9 +1,11 @@
-<ng-container *ngIf="item">
+@if (item) {
   <div class="tile" (click)="navigate()">
-    <img *ngIf="item?.iconUrl" [src]="item.iconUrl" alt="Tile Icon" class="tile-icon">
+    @if (item.iconUrl) {
+      <img [src]="item.iconUrl" alt="Tile Icon" class="tile-icon">
+    }
     <div class="tile-content">
       <h3 class="tile-title">{{ item.title }}</h3>
       <p class="tile-subtitle">{{ item.subtitle }}</p>
     </div>
   </div>
-</ng-container>
+}

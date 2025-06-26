@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'lib-waveform-picker',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './waveform-picker.component.html',
   styleUrl: './waveform-picker.component.scss',
 })
