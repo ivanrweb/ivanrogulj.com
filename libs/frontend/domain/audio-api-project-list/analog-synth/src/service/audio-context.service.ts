@@ -24,9 +24,11 @@ export class AudioContextService {
     this.masterGain = this.context.createGain();
     this.analyserNode = this.context.createAnalyser();
     this.compressorNode = this.createCompressor(-25, 30, 12);
+
     this.compressorNode.connect(this.masterGain);
     this.masterGain.connect(this.context.destination);
     this.masterGain.connect(this.analyserNode);
+
     console.log('Global audio nodes initialized.');
   }
 
@@ -74,13 +76,26 @@ export class AudioContextService {
   public applyFilterEnvelope(filterNode: BiquadFilterNode, adsr: ADSR, baseFrequency: number, amount: number): void {
     const now = this.context.currentTime;
     const filterFreq = filterNode.frequency;
-    filterFreq.cancelScheduledValues(now);
-    filterFreq.setValueAtTime(baseFrequency, now);
-    const peakFrequency = baseFrequency + amount * (this.FILTER_MAX_FREQ - baseFrequency);
+
+    // Cutoff knob now controls frequency on which the sound is stabilized (sustain).
+    const sustainFrequency = baseFrequency;
+
+    // 'Amount' controls how high envelope "jumps" over sustain frequency.
+    // Here we define the max range of that jump - for example, 5000 Hz.
+    const modulationDepth = 5000;
+    const peakFrequency = sustainFrequency + (amount * modulationDepth);
+
+    // Osiguravamo da vrijednosti ne prelaze granice.
     const clampedPeak = Math.min(peakFrequency, this.FILTER_MAX_FREQ);
-    const sustainFrequency = baseFrequency + (adsr.sustain * (clampedPeak - baseFrequency));
-    const clampedSustain = Math.min(sustainFrequency, this.FILTER_MAX_FREQ);
+    const clampedSustain = Math.max(this.FILTER_MIN_FREQ, sustainFrequency);
+
+    // Omotnica uvijek kreće od najniže frekvencije za klasični "sweep" efekt.
+    const startFrequency = this.FILTER_MIN_FREQ;
+
+    filterFreq.cancelScheduledValues(now);
+    filterFreq.setValueAtTime(startFrequency, now);
     filterFreq.linearRampToValueAtTime(clampedPeak, now + adsr.attack);
+    // Nakon "skoka", frekvencija pada na vrijednost koju je postavio knob.
     filterFreq.linearRampToValueAtTime(clampedSustain, now + adsr.attack + adsr.decay);
   }
 

@@ -51,7 +51,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       selectedOscType: 'sawtooth',
       volumeEnvelope: { attack: 0.05, decay: 0.6, sustain: 0.8, release: 0.3 },
       filterEnvelope: { attack: 0.2, decay: 0.5, sustain: 0.5, release: 0.8 },
-      filterEnvelopeAmount: 0.7,
+      filterEnvelopeAmount: 0.0,
       masterGain: 0.5,
       filterFrequency: 200,
       filterResonance: 1.0,
@@ -91,7 +91,6 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
               if (param === AnalogSynthApi.MidiMap.MASTER_GAIN) {
                 this.updateGain(value);
               } else if (param === AnalogSynthApi.MidiMap.FILTER_FREQUENCY) {
-                // Given that MIDI controller sends the normalized value, we change it to frequency
                 const freq = this.audioContextService.normalizedToFrequency(value);
                 this.updateFilterFrequency(freq);
               }
