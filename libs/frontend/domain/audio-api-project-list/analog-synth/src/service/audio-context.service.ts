@@ -80,22 +80,22 @@ export class AudioContextService {
     // Cutoff knob now controls frequency on which the sound is stabilized (sustain).
     const sustainFrequency = baseFrequency;
 
-    // 'Amount' controls how high envelope "jumps" over sustain frequency.
-    // Here we define the max range of that jump - for example, 5000 Hz.
+    // 'amount' controls how high envelope "jumps" over sustain frequency.
+    // here we define the max range of that jump - for example, 5000 Hz.
     const modulationDepth = 5000;
     const peakFrequency = sustainFrequency + (amount * modulationDepth);
 
-    // Osiguravamo da vrijednosti ne prelaze granice.
+    // Ensure that values don't go over the threshold.
     const clampedPeak = Math.min(peakFrequency, this.FILTER_MAX_FREQ);
     const clampedSustain = Math.max(this.FILTER_MIN_FREQ, sustainFrequency);
 
-    // Omotnica uvijek kreće od najniže frekvencije za klasični "sweep" efekt.
+    // Envelope always starts from the lowest frequency for classic "sweep" effect.
     const startFrequency = this.FILTER_MIN_FREQ;
 
     filterFreq.cancelScheduledValues(now);
     filterFreq.setValueAtTime(startFrequency, now);
     filterFreq.linearRampToValueAtTime(clampedPeak, now + adsr.attack);
-    // Nakon "skoka", frekvencija pada na vrijednost koju je postavio knob.
+    // After "jump", frequency drops to value set by knob.
     filterFreq.linearRampToValueAtTime(clampedSustain, now + adsr.attack + adsr.decay);
   }
 
