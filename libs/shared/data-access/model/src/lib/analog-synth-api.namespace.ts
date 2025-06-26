@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace AnalogSynthApi {
-  export enum MidiMap {
+  export enum Knob {
     ATTACK = 'attack',
     DECAY = 'decay',
     SUSTAIN = 'sustain',

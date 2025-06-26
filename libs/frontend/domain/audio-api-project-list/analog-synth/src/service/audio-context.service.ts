@@ -5,18 +5,13 @@ import { ADSR } from '@ivanrogulj.com/gain';
 @Injectable({ providedIn: 'root' })
 export class AudioContextService {
   private _context?: AudioContext;
-  private filterNode?: BiquadFilterNode;
   private compressorNode?: DynamicsCompressorNode;
   private masterGain?: GainNode;
   private analyserNode?: AnalyserNode;
-  private maxGainForSingleNode = 0.3;
 
   private FILTER_MIN_FREQ = 20;
   private FILTER_MAX_FREQ = 10000;
 
-  /*
-    Initialize AudioContext
-   */
   private get context(): AudioContext {
     if (!this._context) {
       this._context = new ((window as any).AudioContext || (window as any).webkitAudioContext)();
@@ -25,41 +20,32 @@ export class AudioContextService {
     return this._context!;
   }
 
-  /*
-    Method to initialize the audio context and nodes
-   */
   public initializeAudioNodes(): void {
-    this.filterNode = this.createFilter();
     this.masterGain = this.context.createGain();
     this.analyserNode = this.context.createAnalyser();
+    this.compressorNode = this.createCompressor(-25, 30, 12);
 
-    console.log('Audio nodes initialized.');
+    this.compressorNode.connect(this.masterGain);
+    this.masterGain.connect(this.context.destination);
+    this.masterGain.connect(this.analyserNode);
+
+    console.log('Global audio nodes initialized.');
   }
 
-  /*
-    Destroy AudioContext
-   */
   public async destroyContext(): Promise<void> {
     await this.context.close();
     console.log('Closed audio context.');
     this._context = undefined;
-
-    // Clear nodes to avoid referencing the old context
-    this.filterNode = undefined;
     this.masterGain = undefined;
     this.analyserNode = undefined;
+    this.compressorNode = undefined;
   }
-
-  /*
-    1. Oscillator Node
-   */
 
   public createOsc(oscType: OscillatorType, frequency: number): OscillatorNode {
     const osc = this.context.createOscillator();
     osc.type = oscType;
     osc.frequency.value = frequency;
     osc.detune.value = this.detuneOscillator(5);
-
     return osc;
   }
 
@@ -68,65 +54,83 @@ export class AudioContextService {
   }
 
   public detuneOscillator(detuneValue: number): number {
-    //Slightly detune every new one to make it sound more analog
     return Math.random() * detuneValue - (detuneValue / 2);
   }
 
-  /*
-    2. Filter Node
-   */
-
   public createFilter(): BiquadFilterNode {
     const filterNode = this.context.createBiquadFilter();
-    filterNode.frequency.value = 5000;
     filterNode.type = 'lowpass';
     return filterNode;
   }
 
-  public updateFilter(frequency: number): void {
-    this.filterNode!.frequency.value = frequency;
+  // Directly set filter frequency, bypassing filter envelope
+  // Use it for changes in real-time while notes are already playing
+  public setFilterFrequency(filterNode: BiquadFilterNode, frequency: number): void {
+    const now = this.context.currentTime;
+    // Destroy all past envelope changes
+    filterNode.frequency.cancelScheduledValues(now);
+    // Smoothly set new frequency
+    filterNode.frequency.setTargetAtTime(frequency, now, 0.01);
   }
 
-  /**
-    4. Compressor Node
-   @param threshold - starts compressing above that value (db), must be a negative number
-   @param kneeValue - ease of compression - gradually/abruptly - values below 50 are considered more gradual
-   @param ratio - Compression ratio (higher = more aggressive compression). For every 12 dB above the threshold, the output will only increase by only 1 dB
-   */
+  public applyFilterEnvelope(filterNode: BiquadFilterNode, adsr: ADSR, baseFrequency: number, amount: number): void {
+    const now = this.context.currentTime;
+    const filterFreq = filterNode.frequency;
+
+    // Cutoff knob now controls frequency on which the sound is stabilized (sustain).
+    const sustainFrequency = baseFrequency;
+
+    // 'amount' controls how high envelope "jumps" over sustain frequency.
+    // here we define the max range of that jump - for example, 5000 Hz.
+    const modulationDepth = 5000;
+    const peakFrequency = sustainFrequency + (amount * modulationDepth);
+
+    // Ensure that values don't go over the threshold.
+    const clampedPeak = Math.min(peakFrequency, this.FILTER_MAX_FREQ);
+    const clampedSustain = Math.max(this.FILTER_MIN_FREQ, sustainFrequency);
+
+    // Envelope always starts from the lowest frequency for classic "sweep" effect.
+    const startFrequency = this.FILTER_MIN_FREQ;
+
+    filterFreq.cancelScheduledValues(now);
+    filterFreq.setValueAtTime(startFrequency, now);
+    filterFreq.linearRampToValueAtTime(clampedPeak, now + adsr.attack);
+    // After "jump", frequency drops to value set by knob.
+    filterFreq.linearRampToValueAtTime(clampedSustain, now + adsr.attack + adsr.decay);
+  }
+
+  public releaseFilterEnvelope(filterNode: BiquadFilterNode, releaseTime: number): void {
+    const now = this.context.currentTime;
+    const filterFreq = filterNode.frequency;
+    filterFreq.cancelScheduledValues(now);
+    filterFreq.setValueAtTime(filterFreq.value, now);
+    filterFreq.linearRampToValueAtTime(this.FILTER_MIN_FREQ, now + releaseTime);
+  }
+
   public createCompressor(threshold: number, kneeValue: number, ratio: number): DynamicsCompressorNode {
-    if(threshold >= 0) {
-      throw Error();
-    }
-
-    this.compressorNode = this.context.createDynamicsCompressor();
-    // Set compressor parameters
-    this.compressorNode.threshold.setValueAtTime(threshold, this.context.currentTime);
-    this.compressorNode.knee.setValueAtTime(kneeValue, this.context.currentTime);
-    this.compressorNode.ratio.setValueAtTime(ratio, this.context.currentTime);
-
-    return this.compressorNode;
+    const compressor = this.context.createDynamicsCompressor();
+    compressor.threshold.setValueAtTime(threshold, this.context.currentTime);
+    compressor.knee.setValueAtTime(kneeValue, this.context.currentTime);
+    compressor.ratio.setValueAtTime(ratio, this.context.currentTime);
+    return compressor;
   }
-
-
-  /*
-    4. Gain Nodes
-   */
 
   public createGain(): GainNode {
     const gainNode = this.context.createGain();
-
-    gainNode.gain.value = this.maxGainForSingleNode;
+    gainNode.gain.value = 0;
     return gainNode;
   }
 
   public setMasterGain(value: number): void {
-    this.masterGain!.gain.value = value;
+    if (this.masterGain) {
+      this.masterGain.gain.setTargetAtTime(value, this.context.currentTime, 0.01);
+    }
   }
 
-  public updateVolumeEnvelope(gainNode: GainNode, adsr: ADSR): void {
+  public applyVolumeEnvelope(gainNode: GainNode, adsr: ADSR): void {
     const now = this.context.currentTime;
     gainNode.gain.cancelScheduledValues(now);
-    gainNode.gain.setValueAtTime(gainNode.gain.value, now);
+    gainNode.gain.setValueAtTime(0, now);
     gainNode.gain.linearRampToValueAtTime(1, now + adsr.attack);
     gainNode.gain.linearRampToValueAtTime(adsr.sustain, now + adsr.attack + adsr.decay);
   }
@@ -138,39 +142,38 @@ export class AudioContextService {
     gainNode.gain.linearRampToValueAtTime(0, now + release);
   }
 
-
-  /*
-    5. Connect and disconnect Nodes
-   */
   public getAnalyserNode(): AnalyserNode {
     this.analyserNode!.fftSize = 2048;
     return this.analyserNode!;
   }
 
-  /*
-    5. Connect and disconnect Nodes
-   */
-
-  public connectNodes(osc: OscillatorNode, gainNode: GainNode): void {
-    //TODO: make compressor component and make this parameters changeable on UI from user side
-    const compressor = this.createCompressor(-25, 30, 12);
-
-    osc.connect(this.filterNode!);
-    this.filterNode!.connect(gainNode);
-    gainNode.connect(compressor);
-    compressor.connect(this.masterGain!);
-    this.masterGain!.connect(this.context.destination);
-    //Visual oscilloscope representation of total output
-    this.masterGain!.connect(this.analyserNode!);
+  public connectVoiceNodes(osc: OscillatorNode, filterNode: BiquadFilterNode, adsrGainNode: GainNode, levelGainNode: GainNode): void {
+    osc.connect(filterNode);
+    filterNode.connect(adsrGainNode);
+    adsrGainNode.connect(levelGainNode);
+    levelGainNode.connect(this.compressorNode!);
   }
 
-  public stopAndDisconnectSound(osc: OscillatorNode, gainNode: GainNode): void {
+  public stopAndDisconnectVoice(osc: OscillatorNode, filterNode: BiquadFilterNode, adsrGainNode: GainNode, levelGainNode: GainNode): void {
     osc.stop();
     osc.disconnect();
-    gainNode.disconnect();
+    filterNode.disconnect();
+    adsrGainNode.disconnect();
+    levelGainNode.disconnect();
   }
 
   public normalizedToFrequency(normValue: number): number {
-    return this.FILTER_MIN_FREQ + normValue * (this.FILTER_MAX_FREQ - this.FILTER_MIN_FREQ);
+    if (typeof normValue !== 'number' || !isFinite(normValue)) {
+      return this.FILTER_MIN_FREQ;
+    }
+    const minLog = Math.log(this.FILTER_MIN_FREQ);
+    const maxLog = Math.log(this.FILTER_MAX_FREQ);
+    const clampedNormValue = Math.max(0, Math.min(1, normValue));
+    const logFreq = minLog + clampedNormValue * (maxLog - minLog);
+    return Math.exp(logFreq);
+  }
+
+  public get currentTime(): number {
+    return this.context.currentTime;
   }
 }

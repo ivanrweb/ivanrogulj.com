@@ -7,9 +7,9 @@
       [value]="vm.filterFrequency"
       [measureUnit]="'Hz'"
       [isLearningMode]="vm.learnMode"
-      [isMapped]="vm.mappedParams[AnalogSynthApi.MidiMap.FILTER_FREQUENCY]"
+      [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.FILTER_FREQUENCY]"
       (valueChange)="onFilterValueChange($event)"
-      (learn)="analogSynthViewModel.startLearning(AnalogSynthApi.MidiMap.FILTER_FREQUENCY)">
+      (learn)="analogSynthViewModel.startLearning(AnalogSynthApi.Knob.FILTER_FREQUENCY)">
     >
     </lib-knob>
   </div>
