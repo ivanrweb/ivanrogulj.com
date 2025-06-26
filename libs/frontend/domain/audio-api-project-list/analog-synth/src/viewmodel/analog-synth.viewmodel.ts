@@ -91,7 +91,9 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
               if (param === AnalogSynthApi.MidiMap.MASTER_GAIN) {
                 this.updateGain(value);
               } else if (param === AnalogSynthApi.MidiMap.FILTER_FREQUENCY) {
-                this.updateFilterFrequency(value);
+                // Given that MIDI controller sends the normalized value, we change it to frequency
+                const freq = this.audioContextService.normalizedToFrequency(value);
+                this.updateFilterFrequency(freq);
               }
               else {
                 this.updateVolumeEnvelope({ [param]: value });
@@ -190,13 +192,14 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     this.audioContextService.setMasterGain(gainValue);
   }
 
-  public updateFilterFrequency(normalizedFreq: number): void {
-    if (typeof normalizedFreq !== 'number' || !isFinite(normalizedFreq)) return;
-    const newFrequency = this.audioContextService.normalizedToFrequency(normalizedFreq);
-    this.patchState({ filterFrequency: newFrequency });
-    const { voices, filterEnvelope, filterEnvelopeAmount } = this.get();
-    voices.forEach(voice => {
-      this.audioContextService.applyFilterEnvelope(voice.filterNode, filterEnvelope, newFrequency, filterEnvelopeAmount);
+  public updateFilterFrequency(frequency: number): void {
+    if (typeof frequency !== 'number' || !isFinite(frequency)) return;
+
+    this.patchState({ filterFrequency: frequency });
+
+    // For all existing notes, directly set filter frequency for immediate audio response
+    this.get().voices.forEach(voice => {
+      this.audioContextService.setFilterFrequency(voice.filterNode, frequency);
     });
   }
 
@@ -211,6 +214,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   public updateFilterEnvelopeAmount(amount: number): void {
     if (typeof amount !== 'number' || !isFinite(amount)) return;
     this.patchState({ filterEnvelopeAmount: amount });
+
+    // When envelop amount is changed, retrigger envelope for all active voices so that change is registered.
     const { voices, filterEnvelope, filterFrequency } = this.get();
     voices.forEach(voice => {
       this.audioContextService.applyFilterEnvelope(voice.filterNode, filterEnvelope, filterFrequency, amount);

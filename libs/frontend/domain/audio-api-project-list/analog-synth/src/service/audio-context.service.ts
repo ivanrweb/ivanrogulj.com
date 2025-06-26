@@ -24,11 +24,9 @@ export class AudioContextService {
     this.masterGain = this.context.createGain();
     this.analyserNode = this.context.createAnalyser();
     this.compressorNode = this.createCompressor(-25, 30, 12);
-
     this.compressorNode.connect(this.masterGain);
     this.masterGain.connect(this.context.destination);
     this.masterGain.connect(this.analyserNode);
-
     console.log('Global audio nodes initialized.');
   }
 
@@ -63,6 +61,16 @@ export class AudioContextService {
     return filterNode;
   }
 
+  // Directly set filter frequency, bypassing filter envelope
+  // Use it for changes in real-time while notes are already playing
+  public setFilterFrequency(filterNode: BiquadFilterNode, frequency: number): void {
+    const now = this.context.currentTime;
+    // Destroy all past envelope changes
+    filterNode.frequency.cancelScheduledValues(now);
+    // Smoothly set new frequency
+    filterNode.frequency.setTargetAtTime(frequency, now, 0.01);
+  }
+
   public applyFilterEnvelope(filterNode: BiquadFilterNode, adsr: ADSR, baseFrequency: number, amount: number): void {
     const now = this.context.currentTime;
     const filterFreq = filterNode.frequency;
@@ -94,7 +102,7 @@ export class AudioContextService {
 
   public createGain(): GainNode {
     const gainNode = this.context.createGain();
-    gainNode.gain.value = 0; // ADSR gain starts at 0
+    gainNode.gain.value = 0;
     return gainNode;
   }
 
@@ -141,7 +149,6 @@ export class AudioContextService {
 
   public normalizedToFrequency(normValue: number): number {
     if (typeof normValue !== 'number' || !isFinite(normValue)) {
-      console.error('normalizedToFrequency received a non-finite value:', normValue);
       return this.FILTER_MIN_FREQ;
     }
     const minLog = Math.log(this.FILTER_MIN_FREQ);
