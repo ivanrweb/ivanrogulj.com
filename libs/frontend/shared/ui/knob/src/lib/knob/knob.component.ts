@@ -97,8 +97,8 @@ export class KnobComponent {
     return ((value - this.minValue) / (this.maxValue - this.minValue)) * 270;
   }
 
-  @HostListener('contextmenu', ['$event'])
-  public onRightClick(event: MouseEvent): void {
+  @HostListener('dblclick', ['$event'])
+  public onDoubleClick(event: MouseEvent): void {
     if (this.isLearningMode) {
       event.preventDefault();
       this.learn.emit();
