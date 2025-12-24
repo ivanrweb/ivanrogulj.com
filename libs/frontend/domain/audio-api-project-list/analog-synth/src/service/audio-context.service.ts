@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { ADSR } from '@ivanrogulj.com/gain';
+import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 
 @Injectable({ providedIn: 'root' })
 export class AudioContextService {
@@ -14,7 +13,8 @@ export class AudioContextService {
 
   private get context(): AudioContext {
     if (!this._context) {
-      this._context = new ((window as any).AudioContext || (window as any).webkitAudioContext)();
+      this._context = new ((window as any).AudioContext ||
+        (window as any).webkitAudioContext)();
       console.log('Started audio context.');
     }
     return this._context!;
@@ -54,7 +54,7 @@ export class AudioContextService {
   }
 
   public detuneOscillator(detuneValue: number): number {
-    return Math.random() * detuneValue - (detuneValue / 2);
+    return Math.random() * detuneValue - detuneValue / 2;
   }
 
   public createFilter(): BiquadFilterNode {
@@ -65,7 +65,10 @@ export class AudioContextService {
 
   // Directly set filter frequency, bypassing filter envelope
   // Use it for changes in real-time while notes are already playing
-  public setFilterFrequency(filterNode: BiquadFilterNode, frequency: number): void {
+  public setFilterFrequency(
+    filterNode: BiquadFilterNode,
+    frequency: number
+  ): void {
     const now = this.context.currentTime;
     // Destroy all past envelope changes
     filterNode.frequency.cancelScheduledValues(now);
@@ -73,7 +76,12 @@ export class AudioContextService {
     filterNode.frequency.setTargetAtTime(frequency, now, 0.01);
   }
 
-  public applyFilterEnvelope(filterNode: BiquadFilterNode, adsr: ADSR, baseFrequency: number, amount: number): void {
+  public applyFilterEnvelope(
+    filterNode: BiquadFilterNode,
+    adsr: AnalogSynthApi.ADSR,
+    baseFrequency: number,
+    amount: number
+  ): void {
     const now = this.context.currentTime;
     const filterFreq = filterNode.frequency;
 
@@ -83,7 +91,7 @@ export class AudioContextService {
     // 'amount' controls how high envelope "jumps" over sustain frequency.
     // here we define the max range of that jump - for example, 5000 Hz.
     const modulationDepth = 5000;
-    const peakFrequency = sustainFrequency + (amount * modulationDepth);
+    const peakFrequency = sustainFrequency + amount * modulationDepth;
 
     // Ensure that values don't go over the threshold.
     const clampedPeak = Math.min(peakFrequency, this.FILTER_MAX_FREQ);
@@ -96,10 +104,16 @@ export class AudioContextService {
     filterFreq.setValueAtTime(startFrequency, now);
     filterFreq.linearRampToValueAtTime(clampedPeak, now + adsr.attack);
     // After "jump", frequency drops to value set by knob.
-    filterFreq.linearRampToValueAtTime(clampedSustain, now + adsr.attack + adsr.decay);
+    filterFreq.linearRampToValueAtTime(
+      clampedSustain,
+      now + adsr.attack + adsr.decay
+    );
   }
 
-  public releaseFilterEnvelope(filterNode: BiquadFilterNode, releaseTime: number): void {
+  public releaseFilterEnvelope(
+    filterNode: BiquadFilterNode,
+    releaseTime: number
+  ): void {
     const now = this.context.currentTime;
     const filterFreq = filterNode.frequency;
     filterFreq.cancelScheduledValues(now);
@@ -107,7 +121,11 @@ export class AudioContextService {
     filterFreq.linearRampToValueAtTime(this.FILTER_MIN_FREQ, now + releaseTime);
   }
 
-  public createCompressor(threshold: number, kneeValue: number, ratio: number): DynamicsCompressorNode {
+  public createCompressor(
+    threshold: number,
+    kneeValue: number,
+    ratio: number
+  ): DynamicsCompressorNode {
     const compressor = this.context.createDynamicsCompressor();
     compressor.threshold.setValueAtTime(threshold, this.context.currentTime);
     compressor.knee.setValueAtTime(kneeValue, this.context.currentTime);
@@ -123,16 +141,26 @@ export class AudioContextService {
 
   public setMasterGain(value: number): void {
     if (this.masterGain) {
-      this.masterGain.gain.setTargetAtTime(value, this.context.currentTime, 0.01);
+      this.masterGain.gain.setTargetAtTime(
+        value,
+        this.context.currentTime,
+        0.01
+      );
     }
   }
 
-  public applyVolumeEnvelope(gainNode: GainNode, adsr: ADSR): void {
+  public applyVolumeEnvelope(
+    gainNode: GainNode,
+    adsr: AnalogSynthApi.ADSR
+  ): void {
     const now = this.context.currentTime;
     gainNode.gain.cancelScheduledValues(now);
     gainNode.gain.setValueAtTime(0, now);
     gainNode.gain.linearRampToValueAtTime(1, now + adsr.attack);
-    gainNode.gain.linearRampToValueAtTime(adsr.sustain, now + adsr.attack + adsr.decay);
+    gainNode.gain.linearRampToValueAtTime(
+      adsr.sustain,
+      now + adsr.attack + adsr.decay
+    );
   }
 
   public releaseVolumeEnvelope(gainNode: GainNode, release: number): void {
@@ -147,14 +175,24 @@ export class AudioContextService {
     return this.analyserNode!;
   }
 
-  public connectVoiceNodes(osc: OscillatorNode, filterNode: BiquadFilterNode, adsrGainNode: GainNode, levelGainNode: GainNode): void {
+  public connectVoiceNodes(
+    osc: OscillatorNode,
+    filterNode: BiquadFilterNode,
+    adsrGainNode: GainNode,
+    levelGainNode: GainNode
+  ): void {
     osc.connect(filterNode);
     filterNode.connect(adsrGainNode);
     adsrGainNode.connect(levelGainNode);
     levelGainNode.connect(this.compressorNode!);
   }
 
-  public stopAndDisconnectVoice(osc: OscillatorNode, filterNode: BiquadFilterNode, adsrGainNode: GainNode, levelGainNode: GainNode): void {
+  public stopAndDisconnectVoice(
+    osc: OscillatorNode,
+    filterNode: BiquadFilterNode,
+    adsrGainNode: GainNode,
+    levelGainNode: GainNode
+  ): void {
     osc.stop();
     osc.disconnect();
     filterNode.disconnect();

@@ -4,13 +4,18 @@
 
     <!-- Global MIDI Learn toggle -->
     <button (click)="analogSynthViewModel.toggleMidiLearn()">
-      {{ vm.learnMode ? 'Disable MIDI Learn' : 'Enable MIDI Learn' }}
+      {{ vm.learnMode ? 'MIDI Learn ON' : 'MIDI Learn OFF' }}
     </button>
 
-    <lib-oscillator/>
-    <lib-filter/>
-    <lib-gain/>
-    <lib-oscilloscope/>
-    <lib-textarea/>
+    @if (vm.learnMode) {
+      <p>Double click on button with mouse first, then assign the physical knob to it by pressing/rotating it</p>
+    }
+
+    <lib-oscillator />
+    <lib-filter />
+    <lib-gain />
+    <lib-filter-envelope />
+    <lib-oscilloscope />
+    <lib-textarea />
   </div>
 }

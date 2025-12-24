@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject, Observable, fromEventPattern, filter, take, tap } from 'rxjs';
 import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { ADSR } from '@ivanrogulj.com/gain';
 
 @Injectable({ providedIn: 'root' })
 export class MidiService {
@@ -18,7 +16,7 @@ export class MidiService {
   private mappingChangedSubject = new Subject<AnalogSynthApi.Knob>();
   public mappingChanged$ = this.mappingChangedSubject.asObservable();
 
-  public noteOn$ = new Subject<{ note: number; velocity: number }>();
+  public noteOn$ = new Subject<AnalogSynthApi.NoteOn>();
   public noteOff$ = new Subject<{ note: number }>();
 
   private midiAccess: MIDIAccess | null = null;
@@ -71,6 +69,8 @@ export class MidiService {
 
     // Ignore MIDI timing clock messages
     if (status === 0xF8) return;
+
+    console.log(`data: ${data}`);
 
     const messageType = status & 0xF0;
 

@@ -1,2 +1,2 @@
 export * from './lib/filter.component';
-export * from './lib/filter.interface';
+export * from './lib/filter-envelope.component';

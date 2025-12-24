@@ -7,7 +7,7 @@ export namespace AnalogSynthApi {
     RELEASE = 'release',
     MASTER_GAIN = 'masterGain',
     FILTER_FREQUENCY = 'filterFrequency',
-    FILTER_RESONANCE = 'filterResonance'
+    FILTER_RESONANCE = 'filterResonance',
   }
 
   export interface SynthPatch {
@@ -107,4 +107,29 @@ export namespace AnalogSynthApi {
     107: 3951.07,
     108: 4186.01,
   };
+
+  export interface NoteOn {
+    note: number;
+    velocity: number;
+  }
+
+  export interface Filter {
+    id: string;
+    type: BiquadFilterType;
+    frequency: number;
+    Q?: number;
+    node: BiquadFilterNode;
+  }
+
+  export interface Gain {
+    id: string;
+    gainNode: GainNode;
+  }
+
+  export interface ADSR {
+    attack: number;
+    decay: number;
+    sustain: number;
+    release: number;
+  }
 }

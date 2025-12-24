@@ -5,7 +5,6 @@ import { v7 as uuidv7 } from 'uuid';
 import { AudioContextService } from '../service/audio-context.service';
 import { MidiService } from '../service/midi.service';
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { ADSR } from '@ivanrogulj.com/gain';
 import { OscilloscopeService } from '../service/oscilloscope.service';
 import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 import { SynthPatchApiService } from '@ivanrogulj.com/frontend/shared/data-access/api';
@@ -23,8 +22,8 @@ export interface Voice {
 export interface AnalogSynthState {
   voices: Voice[];
   selectedOscType: OscillatorType;
-  volumeEnvelope: ADSR;
-  filterEnvelope: ADSR;
+  volumeEnvelope: AnalogSynthApi.ADSR;
+  filterEnvelope: AnalogSynthApi.ADSR;
   filterEnvelopeAmount: number;
   masterGain: number;
   filterFrequency: number;
@@ -37,7 +36,9 @@ export interface AnalogSynthState {
 
 @Injectable({ providedIn: 'root' })
 export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
-  public readonly vm$: Observable<AnalogSynthState> = this.select(state => state);
+  public readonly vm$: Observable<AnalogSynthState> = this.select(
+    (state) => state
+  );
 
   private readonly audioContextService = inject(AudioContextService);
   private readonly midiService = inject(MidiService);
@@ -62,25 +63,34 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     });
 
     this.midiService.noteOn$.subscribe(({ note, velocity }) => {
-      if (this.get().voices.some(v => v.note === note)) return;
+      if (this.get().voices.some((v) => v.note === note)) return;
       const frequency = this.midiService.getFrequency(note);
-      const adjustedVelocity = this.midiService.getVelocityBetweenZeroAndOne(velocity);
+      const adjustedVelocity =
+        this.midiService.getVelocityBetweenZeroAndOne(velocity);
       this.createAndStartVoice(note, frequency, adjustedVelocity);
     });
 
     this.midiService.noteOff$.subscribe(({ note }) => {
-      const voice = this.get().voices.find(v => v.note === note);
+      const voice = this.get().voices.find((v) => v.note === note);
       if (voice) {
         this.stopVoice(voice.id);
       }
     });
 
-    this.midiService.mappingChanged$.pipe(tap(param => {
-      this.patchState(state => ({ mappedParams: { ...state.mappedParams, [param]: true } }));
-    })).subscribe();
+    this.midiService.mappingChanged$
+      .pipe(
+        tap((param) => {
+          this.patchState((state) => ({
+            mappedParams: { ...state.mappedParams, [param]: true },
+          }));
+        })
+      )
+      .subscribe();
 
     this.effect(
-      (paramControl$: Observable<{ param: AnalogSynthApi.Knob; value: number }>) =>
+      (
+        paramControl$: Observable<{ param: AnalogSynthApi.Knob; value: number }>
+      ) =>
         paramControl$.pipe(
           tap(({ param, value }) => {
             const { learnMode, learnTarget } = this.get();
@@ -91,10 +101,10 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
               if (param === AnalogSynthApi.Knob.MASTER_GAIN) {
                 this.updateGain(value);
               } else if (param === AnalogSynthApi.Knob.FILTER_FREQUENCY) {
-                const freq = this.audioContextService.normalizedToFrequency(value);
+                const freq =
+                  this.audioContextService.normalizedToFrequency(value);
                 this.updateFilterFrequency(freq);
-              }
-              else {
+              } else {
                 this.updateVolumeEnvelope({ [param]: value });
               }
             }
@@ -122,27 +132,42 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
 
     //Reduce perceived volume when only 1 voice is active
     if (totalVoices === 1) {
-      baseTargetGain *= 0.40;
+      baseTargetGain *= 0.4;
     }
 
-    voices.forEach(voice => {
+    voices.forEach((voice) => {
       // The lower the exponent, the louder will low-velocity keys be
       const velocityFactor = Math.pow(voice.velocity, 1.2);
       // The final gain for this voice is the base gain modulated by its velocity
       const finalTargetGain = baseTargetGain * velocityFactor;
 
-      voice.levelGainNode.gain.setTargetAtTime(finalTargetGain, this.audioContextService.currentTime, 0.015);
+      voice.levelGainNode.gain.setTargetAtTime(
+        finalTargetGain,
+        this.audioContextService.currentTime,
+        0.015
+      );
     });
   }
 
-  public createAndStartVoice(note: number, frequency: number, velocity: number): void {
+  public createAndStartVoice(
+    note: number,
+    frequency: number,
+    velocity: number
+  ): void {
     const {
-      selectedOscType, volumeEnvelope, filterEnvelope,
-      filterFrequency, filterEnvelopeAmount, filterResonance
+      selectedOscType,
+      volumeEnvelope,
+      filterEnvelope,
+      filterFrequency,
+      filterEnvelopeAmount,
+      filterResonance,
     } = this.get();
 
     const voiceId = uuidv7();
-    const oscNode = this.audioContextService.createOsc(selectedOscType, frequency);
+    const oscNode = this.audioContextService.createOsc(
+      selectedOscType,
+      frequency
+    );
     const filterNode = this.audioContextService.createFilter();
     filterNode.Q.value = filterResonance;
 
@@ -150,13 +175,31 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     const levelGainNode = this.audioContextService.createGain();
 
     this.audioContextService.applyVolumeEnvelope(adsrGainNode, volumeEnvelope);
-    this.audioContextService.applyFilterEnvelope(filterNode, filterEnvelope, filterFrequency, filterEnvelopeAmount);
-    this.audioContextService.connectVoiceNodes(oscNode, filterNode, adsrGainNode, levelGainNode);
+    this.audioContextService.applyFilterEnvelope(
+      filterNode,
+      filterEnvelope,
+      filterFrequency,
+      filterEnvelopeAmount
+    );
+    this.audioContextService.connectVoiceNodes(
+      oscNode,
+      filterNode,
+      adsrGainNode,
+      levelGainNode
+    );
     this.audioContextService.startOsc(oscNode);
 
-    const newVoice: Voice = { id: voiceId, note, velocity, oscNode, filterNode, adsrGainNode, levelGainNode };
+    const newVoice: Voice = {
+      id: voiceId,
+      note,
+      velocity,
+      oscNode,
+      filterNode,
+      adsrGainNode,
+      levelGainNode,
+    };
 
-    this.patchState(state => ({ voices: [...state.voices, newVoice] }));
+    this.patchState((state) => ({ voices: [...state.voices, newVoice] }));
     this.updateAllVoiceLevels();
   }
 
@@ -167,20 +210,33 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     const safeVolumeRelease = Math.max(0.005, volumeEnvelope.release);
     const safeFilterRelease = Math.max(0.005, filterEnvelope.release);
 
-    this.audioContextService.releaseVolumeEnvelope(voice.adsrGainNode, safeVolumeRelease);
-    this.audioContextService.releaseFilterEnvelope(voice.filterNode, safeFilterRelease);
+    this.audioContextService.releaseVolumeEnvelope(
+      voice.adsrGainNode,
+      safeVolumeRelease
+    );
+    this.audioContextService.releaseFilterEnvelope(
+      voice.filterNode,
+      safeFilterRelease
+    );
 
     const maxReleaseTime = Math.max(safeVolumeRelease, safeFilterRelease);
     setTimeout(() => {
-      this.audioContextService.stopAndDisconnectVoice(voice.oscNode, voice.filterNode, voice.adsrGainNode, voice.levelGainNode);
+      this.audioContextService.stopAndDisconnectVoice(
+        voice.oscNode,
+        voice.filterNode,
+        voice.adsrGainNode,
+        voice.levelGainNode
+      );
     }, maxReleaseTime * 1000);
   }
 
   public stopVoice(voiceId: string): void {
-    const voiceToStop = this.get().voices.find(v => v.id === voiceId);
+    const voiceToStop = this.get().voices.find((v) => v.id === voiceId);
     if (voiceToStop) {
       this.releaseVoice(voiceToStop);
-      this.patchState(state => ({ voices: state.voices.filter(v => v.id !== voiceId) }));
+      this.patchState((state) => ({
+        voices: state.voices.filter((v) => v.id !== voiceId),
+      }));
       this.updateAllVoiceLevels();
     }
   }
@@ -197,36 +253,50 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     this.patchState({ filterFrequency: frequency });
 
     // For all existing notes, directly set filter frequency for immediate audio response
-    this.get().voices.forEach(voice => {
+    this.get().voices.forEach((voice) => {
       this.audioContextService.setFilterFrequency(voice.filterNode, frequency);
     });
   }
 
-  public updateFilterResonance(resonance: number): void {
-    if (typeof resonance !== 'number' || !isFinite(resonance)) return;
-    this.patchState({ filterResonance: resonance });
-    this.get().voices.forEach(voice => {
-      voice.filterNode.Q.setTargetAtTime(resonance, this.audioContextService.currentTime, 0.01);
-    });
+  public updateFilterEnvelope(partial: Partial<AnalogSynthApi.ADSR>): void {
+    this.patchState((state) => ({
+      filterEnvelope: { ...state.filterEnvelope, ...partial },
+    }));
   }
 
+  //how much percentage will (0-100)
   public updateFilterEnvelopeAmount(amount: number): void {
     if (typeof amount !== 'number' || !isFinite(amount)) return;
     this.patchState({ filterEnvelopeAmount: amount });
 
     // When envelop amount is changed, retrigger envelope for all active voices so that change is registered.
     const { voices, filterEnvelope, filterFrequency } = this.get();
-    voices.forEach(voice => {
-      this.audioContextService.applyFilterEnvelope(voice.filterNode, filterEnvelope, filterFrequency, amount);
+    voices.forEach((voice) => {
+      this.audioContextService.applyFilterEnvelope(
+        voice.filterNode,
+        filterEnvelope,
+        filterFrequency,
+        amount
+      );
     });
   }
 
-  public updateFilterEnvelope(partial: Partial<ADSR>): void {
-    this.patchState(state => ({ filterEnvelope: { ...state.filterEnvelope, ...partial } }));
+  public updateFilterResonance(resonance: number): void {
+    if (typeof resonance !== 'number' || !isFinite(resonance)) return;
+    this.patchState({ filterResonance: resonance });
+    this.get().voices.forEach((voice) => {
+      voice.filterNode.Q.setTargetAtTime(
+        resonance,
+        this.audioContextService.currentTime,
+        0.01
+      );
+    });
   }
 
-  public updateVolumeEnvelope(partial: Partial<ADSR>): void {
-    this.patchState(state => ({ volumeEnvelope: { ...state.volumeEnvelope, ...partial } }));
+  public updateVolumeEnvelope(partial: Partial<AnalogSynthApi.ADSR>): void {
+    this.patchState((state) => ({
+      volumeEnvelope: { ...state.volumeEnvelope, ...partial },
+    }));
   }
 
   public onOscillatorTypeChange(selectedValue: OscillatorType): void {
@@ -239,17 +309,19 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   }
 
   public generateAIPatch(patchDescription: string): void {
-    this.synthPatchApiService.generateAIPatch(patchDescription).subscribe(synthPatch => {
-      this.patchState({ volumeEnvelope: this.mapToADSR(synthPatch) });
-    });
+    this.synthPatchApiService
+      .generateAIPatch(patchDescription)
+      .subscribe((synthPatch) => {
+        this.patchState({ volumeEnvelope: this.mapToADSR(synthPatch) });
+      });
   }
 
-  public mapToADSR(synthPatch: AnalogSynthApi.SynthPatch): ADSR {
+  public mapToADSR(synthPatch: AnalogSynthApi.SynthPatch): AnalogSynthApi.ADSR {
     return {
       attack: synthPatch.attack,
       decay: synthPatch.decay,
       sustain: synthPatch.sustain,
-      release: synthPatch.release
+      release: synthPatch.release,
     };
   }
 
@@ -260,7 +332,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   public disableMidiLearn(): void {
     this.patchState({
       learnMode: false,
-      learnTarget: null
+      learnTarget: null,
     });
   }
 
@@ -279,8 +351,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   }
 
   public updateMapping(param: string, mapped: boolean): void {
-    this.patchState(state => ({
-      mappedParams: { ...state.mappedParams, [param]: mapped }
+    this.patchState((state) => ({
+      mappedParams: { ...state.mappedParams, [param]: mapped },
     }));
   }
 }

@@ -1,0 +1,112 @@
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { KnobComponent } from '@ivanrogulj.com/knob';
+import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
+
+@Component({
+  selector: 'lib-filter-envelope',
+  standalone: true,
+  imports: [CommonModule, FormsModule, KnobComponent],
+  template: `@if (analogSynthViewModel.vm$ | async; as vm) {
+    <div>
+      <h4>Filter envelope</h4>
+      <div class="adsr-container">
+        <!-- Attack Knob -->
+        <lib-knob
+          [minValue]="0"
+          [maxValue]="1"
+          [value]="vm.filterEnvelope.attack"
+          [label]="'Attack'"
+          [isLearningMode]="vm.learnMode"
+          [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.ATTACK]"
+          (valueChange)="
+            vm.filterEnvelope.attack = $event;
+            onFilterEnvelopeChange(AnalogSynthApi.Knob.ATTACK, $event)
+          "
+          (learn)="
+            analogSynthViewModel.startLearning(AnalogSynthApi.Knob.ATTACK)
+          "
+        />
+        <!-- Decay Knob -->
+        <lib-knob
+          [minValue]="0"
+          [maxValue]="1"
+          [value]="vm.filterEnvelope.decay"
+          [label]="'Decay'"
+          [isLearningMode]="vm.learnMode"
+          [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.DECAY]"
+          (valueChange)="
+            vm.filterEnvelope.decay = $event;
+            onFilterEnvelopeChange(AnalogSynthApi.Knob.DECAY, $event)
+          "
+          (learn)="
+            analogSynthViewModel.startLearning(AnalogSynthApi.Knob.DECAY)
+          "
+        />
+        <!-- Sustain Knob -->
+        <lib-knob
+          [minValue]="0"
+          [maxValue]="1"
+          [value]="vm.filterEnvelope.sustain"
+          [label]="'Sustain'"
+          [isLearningMode]="vm.learnMode"
+          [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.SUSTAIN]"
+          (valueChange)="
+            vm.filterEnvelope.sustain = $event;
+            onFilterEnvelopeChange(AnalogSynthApi.Knob.SUSTAIN, $event)
+          "
+          (learn)="
+            analogSynthViewModel.startLearning(AnalogSynthApi.Knob.SUSTAIN)
+          "
+        />
+        <!-- Release Knob -->
+        <lib-knob
+          [minValue]="0"
+          [maxValue]="1"
+          [value]="vm.filterEnvelope.release"
+          [label]="'Release'"
+          [isLearningMode]="vm.learnMode"
+          [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.RELEASE]"
+          (valueChange)="
+            vm.filterEnvelope.release = $event;
+            onFilterEnvelopeChange(AnalogSynthApi.Knob.RELEASE, $event)
+          "
+          (learn)="
+            analogSynthViewModel.startLearning(AnalogSynthApi.Knob.RELEASE)
+          "
+        />
+      </div>
+    </div>
+    }`,
+  styles: [
+    `
+      .adsr-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 2rem;
+      }
+
+      .knob-group {
+        flex: 1;
+        text-align: center;
+        border: 1px solid red;
+      }
+    `,
+  ],
+})
+export class FilterEnvelopeComponent {
+  protected readonly AnalogSynthApi = AnalogSynthApi;
+  protected analogSynthViewModel = inject(AnalogSynthViewModel);
+
+  public onFilterEnvelopeChange(
+    param: keyof AnalogSynthApi.ADSR,
+    value: number
+  ): void {
+    this.analogSynthViewModel.updateFilterEnvelope({
+      [param]: value,
+    });
+  }
+}
