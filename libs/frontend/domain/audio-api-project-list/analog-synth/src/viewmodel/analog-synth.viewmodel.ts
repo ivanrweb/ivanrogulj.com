@@ -104,6 +104,10 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
                 const freq =
                   this.audioContextService.normalizedToFrequency(value);
                 this.updateFilterFrequency(freq);
+              } else if (param === AnalogSynthApi.Knob.FILTER_RESONANCE) {
+                // (value is between 0-1) Resonance usually goes from 0 to 20 or 30 for biquad filter
+                const resonance = value * 20;
+                this.updateFilterResonance(resonance);
               } else {
                 this.updateVolumeEnvelope({ [param]: value });
               }

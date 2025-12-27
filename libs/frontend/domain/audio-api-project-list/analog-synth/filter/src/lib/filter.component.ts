@@ -24,9 +24,21 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
       (learn)="
         analogSynthViewModel.startLearning(AnalogSynthApi.Knob.FILTER_FREQUENCY)
       "
-    >
-      >
-    </lib-knob>
+    />
+
+    <lib-knob
+      [minValue]="0"
+      [maxValue]="20"
+      [label]="'Resonance'"
+      [value]="vm.filterResonance"
+      [measureUnit]="''"
+      [isLearningMode]="vm.learnMode"
+      [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.FILTER_RESONANCE]"
+      (valueChange)="onResonanceValueChange($event)"
+      (learn)="
+        analogSynthViewModel.startLearning(AnalogSynthApi.Knob.FILTER_RESONANCE)
+      "
+    />
     }`,
   styles: [``],
 })
@@ -36,5 +48,9 @@ export class FilterComponent {
 
   public onFilterValueChange(value$: number): void {
     this.analogSynthViewModel.updateFilterFrequency(value$);
+  }
+
+  public onResonanceValueChange(value: number): void {
+    this.analogSynthViewModel.updateFilterResonance(value);
   }
 }

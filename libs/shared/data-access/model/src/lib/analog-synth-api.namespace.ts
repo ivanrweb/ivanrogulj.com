@@ -113,6 +113,13 @@ export namespace AnalogSynthApi {
     velocity: number;
   }
 
+  export interface ADSR {
+    attack: number;
+    decay: number;
+    sustain: number;
+    release: number;
+  }
+
   export interface Filter {
     id: string;
     type: BiquadFilterType;
@@ -124,12 +131,5 @@ export namespace AnalogSynthApi {
   export interface Gain {
     id: string;
     gainNode: GainNode;
-  }
-
-  export interface ADSR {
-    attack: number;
-    decay: number;
-    sustain: number;
-    release: number;
   }
 }
