@@ -9,19 +9,11 @@ import { OscilloscopeService } from '../service/oscilloscope.service';
 import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 import { SynthPatchApiService } from '@ivanrogulj.com/frontend/shared/data-access/api';
 
-export interface Voice {
-  id: string;
-  note: number;
-  velocity: number;
-  oscNode: OscillatorNode;
-  filterNode: BiquadFilterNode;
-  adsrGainNode: GainNode;
-  levelGainNode: GainNode;
-}
-
 export interface AnalogSynthState {
-  voices: Voice[];
+  voices: AnalogSynthApi.Voice[];
   selectedOscType: OscillatorType;
+  oscillatorCount: number;
+  detuneAmount: number;
   volumeEnvelope: AnalogSynthApi.ADSR;
   filterEnvelope: AnalogSynthApi.ADSR;
   filterEnvelopeAmount: number;
@@ -50,6 +42,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     super({
       voices: [],
       selectedOscType: 'sawtooth',
+      oscillatorCount: 4,
+      detuneAmount: 10,
       volumeEnvelope: { attack: 0.15, decay: 0.6, sustain: 0.8, release: 0.3 },
       filterEnvelope: { attack: 0.3, decay: 0, sustain: 0.05, release: 0 },
       filterEnvelopeAmount: 0.5,
@@ -165,18 +159,40 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       filterFrequency,
       filterEnvelopeAmount,
       filterResonance,
+      oscillatorCount,
+      detuneAmount,
     } = this.get();
 
     const voiceId = uuidv7();
-    const oscNode = this.audioContextService.createOsc(
-      selectedOscType,
-      frequency
-    );
     const filterNode = this.audioContextService.createFilter();
     filterNode.Q.value = filterResonance;
 
     const adsrGainNode = this.audioContextService.createGain();
     const levelGainNode = this.audioContextService.createGain();
+
+    const oscNodes: OscillatorNode[] = [];
+
+    // Create number of oscillators dynamically in a voice (based on oscillatorCount)
+    for (let i = 0; i < oscillatorCount; i++) {
+      const osc = this.audioContextService.createOsc(
+        selectedOscType,
+        frequency
+      );
+
+      // Math for Detune:
+      // If we have 3 oscillators, and detuneAmount is 20:
+      // i=0 -> -20, i=1 -> 0, i=2 -> +20
+      if (oscillatorCount > 1) {
+        const spread = (i / (oscillatorCount - 1) - 0.5) * 2; // Span from -1 to 1
+        osc.detune.value = spread * detuneAmount;
+      } else {
+        osc.detune.value = 0; // Only 1 oscillator is perfectly pitched
+      }
+
+      osc.connect(filterNode);
+      osc.start();
+      oscNodes.push(osc);
+    }
 
     this.audioContextService.applyVolumeEnvelope(adsrGainNode, volumeEnvelope);
     this.audioContextService.applyFilterEnvelope(
@@ -185,19 +201,17 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       filterFrequency,
       filterEnvelopeAmount
     );
-    this.audioContextService.connectVoiceNodes(
-      oscNode,
-      filterNode,
-      adsrGainNode,
-      levelGainNode
-    );
-    this.audioContextService.startOsc(oscNode);
 
-    const newVoice: Voice = {
+    // Connect filter to rest of the chain (which is common for all oscilators of that voice)
+    filterNode.connect(adsrGainNode);
+    adsrGainNode.connect(levelGainNode);
+    levelGainNode.connect((this.audioContextService as any).compressorNode);
+
+    const newVoice: AnalogSynthApi.Voice = {
       id: voiceId,
       note,
       velocity,
-      oscNode,
+      oscNodes,
       filterNode,
       adsrGainNode,
       levelGainNode,
@@ -207,7 +221,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     this.updateAllVoiceLevels();
   }
 
-  private releaseVoice(voice: Voice): void {
+  private releaseVoice(voice: AnalogSynthApi.Voice): void {
     const { volumeEnvelope, filterEnvelope } = this.get();
 
     // Ensure release times are never zero to prevent clicks
@@ -224,9 +238,10 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     );
 
     const maxReleaseTime = Math.max(safeVolumeRelease, safeFilterRelease);
+
     setTimeout(() => {
       this.audioContextService.stopAndDisconnectVoice(
-        voice.oscNode,
+        voice.oscNodes,
         voice.filterNode,
         voice.adsrGainNode,
         voice.levelGainNode
@@ -352,11 +367,5 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     console.log('midi mapping for: ', param);
     this.patchState({ learnTarget: param });
     this.midiService.startMapping(param);
-  }
-
-  public updateMapping(param: string, mapped: boolean): void {
-    this.patchState((state) => ({
-      mappedParams: { ...state.mappedParams, [param]: mapped },
-    }));
   }
 }

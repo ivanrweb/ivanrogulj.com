@@ -188,13 +188,18 @@ export class AudioContextService {
   }
 
   public stopAndDisconnectVoice(
-    osc: OscillatorNode,
+    oscs: OscillatorNode | OscillatorNode[],
     filterNode: BiquadFilterNode,
     adsrGainNode: GainNode,
     levelGainNode: GainNode
   ): void {
-    osc.stop();
-    osc.disconnect();
+    const oscArray = Array.isArray(oscs) ? oscs : [oscs];
+
+    oscArray.forEach((osc) => {
+      osc.stop();
+      osc.disconnect();
+    });
+
     filterNode.disconnect();
     adsrGainNode.disconnect();
     levelGainNode.disconnect();

@@ -1,13 +1,13 @@
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace AnalogSynthApi {
-  export enum Knob {
-    ATTACK = 'attack',
-    DECAY = 'decay',
-    SUSTAIN = 'sustain',
-    RELEASE = 'release',
-    MASTER_GAIN = 'masterGain',
-    FILTER_FREQUENCY = 'filterFrequency',
-    FILTER_RESONANCE = 'filterResonance',
+  export interface Voice {
+    id: string;
+    note: number;
+    velocity: number;
+    oscNodes: OscillatorNode[];
+    filterNode: BiquadFilterNode;
+    adsrGainNode: GainNode;
+    levelGainNode: GainNode;
   }
 
   export interface SynthPatch {
@@ -131,5 +131,16 @@ export namespace AnalogSynthApi {
   export interface Gain {
     id: string;
     gainNode: GainNode;
+  }
+
+  //UI
+  export enum Knob {
+    ATTACK = 'attack',
+    DECAY = 'decay',
+    SUSTAIN = 'sustain',
+    RELEASE = 'release',
+    MASTER_GAIN = 'masterGain',
+    FILTER_FREQUENCY = 'filterFrequency',
+    FILTER_RESONANCE = 'filterResonance',
   }
 }
