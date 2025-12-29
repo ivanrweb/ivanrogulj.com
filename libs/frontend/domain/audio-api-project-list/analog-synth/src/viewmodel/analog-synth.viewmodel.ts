@@ -8,6 +8,7 @@ import { MidiService } from '../service/midi.service';
 import { OscilloscopeService } from '../service/oscilloscope.service';
 import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 import { SynthPatchApiService } from '@ivanrogulj.com/frontend/shared/data-access/api';
+import { EffectsViewModel } from './effects.viewmodel';
 
 export interface AnalogSynthState {
   voices: AnalogSynthApi.Voice[];
@@ -36,6 +37,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   private readonly midiService = inject(MidiService);
   private readonly oscilloscopeService = inject(OscilloscopeService);
   private readonly synthPatchApiService = inject(SynthPatchApiService);
+  private readonly effectsViewmodel = inject(EffectsViewModel);
   private readonly paramControl$ = this.midiService.paramControl$;
 
   constructor() {
@@ -102,6 +104,17 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
                 // (value is between 0-1) Resonance usually goes from 0 to 20 or 30 for biquad filter
                 const resonance = value * 20;
                 this.updateFilterResonance(resonance);
+              } else if (param === AnalogSynthApi.Knob.REVERB_MIX) {
+                this.effectsViewmodel.updateReverbMix(value);
+              } else if (param === AnalogSynthApi.Knob.REVERB_DECAY) {
+                // Mapping 0-1 0.1s-5s
+                this.effectsViewmodel.updateReverbDecay(0.1 + value * 4.9);
+              } else if (param === AnalogSynthApi.Knob.DELAY_TIME) {
+                this.effectsViewmodel.updateDelayTime(value); // 0-1s
+              } else if (param === AnalogSynthApi.Knob.DELAY_FEEDBACK) {
+                this.effectsViewmodel.updateDelayFeedback(value * 0.9); // Max 0.9 to reduce microphonia
+              } else if (param === AnalogSynthApi.Knob.DELAY_MIX) {
+                this.effectsViewmodel.updateDelayMix(value);
               } else {
                 this.updateVolumeEnvelope({ [param]: value });
               }
@@ -113,6 +126,9 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
 
   public startAudioContext(): void {
     this.audioContextService.initializeAudioNodes();
+
+    //now, when nodes exist, tell the effects to apply values from the effects viewmodel
+    this.effectsViewmodel.refreshState();
   }
 
   public destroyAudioContext(): void {
@@ -202,10 +218,11 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       filterEnvelopeAmount
     );
 
-    // Connect filter to rest of the chain (which is common for all oscilators of that voice)
-    filterNode.connect(adsrGainNode);
-    adsrGainNode.connect(levelGainNode);
-    levelGainNode.connect((this.audioContextService as any).compressorNode);
+    this.audioContextService.connectVoiceNodes(
+      filterNode,
+      adsrGainNode,
+      levelGainNode
+    );
 
     const newVoice: AnalogSynthApi.Voice = {
       id: voiceId,

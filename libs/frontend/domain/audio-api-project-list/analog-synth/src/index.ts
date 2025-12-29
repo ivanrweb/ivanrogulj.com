@@ -3,3 +3,4 @@ export * from './service/audio-context.service';
 export * from './service/midi.service';
 export * from './service/oscilloscope.service';
 export * from './viewmodel/analog-synth.viewmodel';
+export * from './viewmodel/effects.viewmodel';

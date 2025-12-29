@@ -35,6 +35,12 @@
       "@ivanrogulj.com/dashboard": [
         "libs/frontend/shared/ui/dashboard/src/index.ts"
       ],
+      "@ivanrogulj.com/effects": [
+        "libs/frontend/domain/audio-api-project-list/analog-synth/effects/src/index.ts"
+      ],
+      "@ivanrogulj.com/effects-rack": [
+        "libs/frontend/shared/ui/effects-rack/src/index.ts"
+      ],
       "@ivanrogulj.com/filter": [
         "libs/frontend/domain/audio-api-project-list/analog-synth/filter/src/index.ts"
       ],

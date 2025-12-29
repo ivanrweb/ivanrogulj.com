@@ -133,6 +133,19 @@ export namespace AnalogSynthApi {
     gainNode: GainNode;
   }
 
+  export interface SynthEffect {
+    // Input point where we connect the previous node (GainNode or AudioNode)
+    input: AudioNode;
+    // Output point which we connect to the next node in the chain
+    output: AudioNode;
+    // Method to connect to the next element in the chain (e.g. Compressor or next Effect)
+    connect(target: AudioNode): void;
+    // Method for cleanup (disconnecting nodes)
+    disconnect(): void;
+    // Generic method for controlling parameters (mix, time, decay...)
+    setParam(param: string, value: number): void;
+  }
+
   //UI
   export enum Knob {
     ATTACK = 'attack',
@@ -142,5 +155,11 @@ export namespace AnalogSynthApi {
     MASTER_GAIN = 'masterGain',
     FILTER_FREQUENCY = 'filterFrequency',
     FILTER_RESONANCE = 'filterResonance',
+    //effects
+    REVERB_MIX = 'reverbMix',
+    REVERB_DECAY = 'reverbDecay',
+    DELAY_TIME = 'delayTime',
+    DELAY_FEEDBACK = 'delayFeedback',
+    DELAY_MIX = 'delayMix',
   }
 }

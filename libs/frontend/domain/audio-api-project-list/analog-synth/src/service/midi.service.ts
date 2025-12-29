@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject, Observable, fromEventPattern, filter, take, tap } from 'rxjs';
+import { filter, fromEventPattern, Observable, Subject, take, tap } from 'rxjs';
 import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 
 @Injectable({ providedIn: 'root' })
@@ -7,8 +7,14 @@ export class MidiService {
   private frequencyLookup: number[] = [];
   private activeNotes = new Set<number>();
 
-  private paramControlSubject = new Subject<{ param: AnalogSynthApi.Knob; value: number }>();
-  public paramControl$: Observable<{ param: AnalogSynthApi.Knob; value: number }> = this.paramControlSubject.asObservable();
+  private paramControlSubject = new Subject<{
+    param: AnalogSynthApi.Knob;
+    value: number;
+  }>();
+  public paramControl$: Observable<{
+    param: AnalogSynthApi.Knob;
+    value: number;
+  }> = this.paramControlSubject.asObservable();
   private controlToParamMap = new Map<number, AnalogSynthApi.Knob>();
   private lastReceivedCC: number | null = null;
 
@@ -24,16 +30,13 @@ export class MidiService {
   private mappingInProgress = false;
   private pendingParam: AnalogSynthApi.Knob | null = null;
 
-
   constructor() {
     for (let note = 0; note <= 127; note++) {
       this.frequencyLookup[note] = this.midiToFreq(note);
     }
 
     if (navigator.requestMIDIAccess) {
-      navigator.requestMIDIAccess()
-        .then(this.successMIDI)
-        .catch(this.failMIDI);
+      navigator.requestMIDIAccess().then(this.successMIDI).catch(this.failMIDI);
     }
   }
 
@@ -55,9 +58,13 @@ export class MidiService {
     if (!port) return;
 
     if (port.state === 'connected') {
-      window.alert('Connected device: ' + port.name + ', IN/OUT type: ' + port.type);
+      window.alert(
+        'Connected device: ' + port.name + ', IN/OUT type: ' + port.type
+      );
     } else if (port.state === 'disconnected') {
-      window.alert('Disconnected device: ' + port.name + ', IN/OUT type: ' + port.type);
+      window.alert(
+        'Disconnected device: ' + port.name + ', IN/OUT type: ' + port.type
+      );
     }
   };
 
@@ -68,11 +75,9 @@ export class MidiService {
     const [status, data1, data2] = data;
 
     // Ignore MIDI timing clock messages
-    if (status === 0xF8) return;
+    if (status === 0xf8) return;
 
-    console.log(`data: ${data}`);
-
-    const messageType = status & 0xF0;
+    const messageType = status & 0xf0;
 
     switch (messageType) {
       case 0x90: // Note On
@@ -97,7 +102,7 @@ export class MidiService {
         }
         break;
 
-      case 0xB0: // Control Change (CC)
+      case 0xb0: // Control Change (CC)
         this.lastReceivedCC = data1;
 
         if (this.mappingInProgress && this.pendingParam) {
@@ -117,8 +122,6 @@ export class MidiService {
     }
   };
 
-
-
   public startMapping(param: AnalogSynthApi.Knob): void {
     if (!this.midiAccess) {
       console.warn('MIDI access not available');
@@ -129,29 +132,39 @@ export class MidiService {
     this.pendingParam = param;
 
     const addHandler = (handler: (event: MIDIMessageEvent) => void): void => {
-      this.midiAccess!.inputs.forEach(input => input.addEventListener('midimessage', handler));
+      this.midiAccess!.inputs.forEach((input) =>
+        input.addEventListener('midimessage', handler)
+      );
     };
 
-    const removeHandler = (handler: (event: MIDIMessageEvent) => void): void => {
-      this.midiAccess!.inputs.forEach(input => input.removeEventListener('midimessage', handler));
+    const removeHandler = (
+      handler: (event: MIDIMessageEvent) => void
+    ): void => {
+      this.midiAccess!.inputs.forEach((input) =>
+        input.removeEventListener('midimessage', handler)
+      );
     };
 
-    fromEventPattern<MIDIMessageEvent>(addHandler, removeHandler).pipe(
-      filter(event => !!event.data && (event.data[0] & 0xf0) === 0xb0), // Only CC messages
-      take(1),
-      tap(event => {
-        if (!event.data) return;
+    fromEventPattern<MIDIMessageEvent>(addHandler, removeHandler)
+      .pipe(
+        filter((event) => !!event.data && (event.data[0] & 0xf0) === 0xb0), // Only CC messages
+        take(1),
+        tap((event) => {
+          if (!event.data) return;
 
-        const ccNumber = event.data[1];
+          const ccNumber = event.data[1];
 
-        this.controlToParamMap.set(ccNumber, this.pendingParam!);
+          this.controlToParamMap.set(ccNumber, this.pendingParam!);
 
-        console.log(`Mapped CC ${ccNumber} to pendingParam ${this.pendingParam}`);
+          console.log(
+            `Mapped CC ${ccNumber} to pendingParam ${this.pendingParam}`
+          );
 
-        this.mappingInProgress = false;
-        this.pendingParam = null;
-      }),
-    ).subscribe();
+          this.mappingInProgress = false;
+          this.pendingParam = null;
+        })
+      )
+      .subscribe();
   }
 
   public midiToFreq(midiNote: number): number {

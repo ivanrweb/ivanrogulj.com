@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
+import { DelayEffect, ReverbEffect } from '@ivanrogulj.com/effects';
 
 @Injectable({ providedIn: 'root' })
 export class AudioContextService {
@@ -7,6 +8,11 @@ export class AudioContextService {
   private compressorNode?: DynamicsCompressorNode;
   private masterGain?: GainNode;
   private analyserNode?: AnalyserNode;
+  private effectsInputBus?: GainNode;
+
+  //Effect references
+  private reverbEffect?: ReverbEffect;
+  private delayEffect?: DelayEffect;
 
   private FILTER_MIN_FREQ = 20;
   private FILTER_MAX_FREQ = 10000;
@@ -25,8 +31,25 @@ export class AudioContextService {
     this.analyserNode = this.context.createAnalyser();
     this.compressorNode = this.createCompressor(-25, 30, 12);
 
+    // Create Effects Bus
+    this.effectsInputBus = this.context.createGain();
+
+    // Instantiate effects
+    this.reverbEffect = new ReverbEffect(this.context);
+    this.delayEffect = new DelayEffect(this.context);
+
+    //CONNECT CHAIN
+    // Bus -> Delay Input
+    this.effectsInputBus.connect(this.delayEffect.input);
+    // Delay Output -> Reverb Input
+    this.delayEffect.connect(this.reverbEffect.input);
+    // Reverb Output -> Compressor
+    this.reverbEffect.connect(this.compressorNode);
+    // Compressor -> Master Gain
     this.compressorNode.connect(this.masterGain);
+    // Master Gain -> Destination
     this.masterGain.connect(this.context.destination);
+    // Master also goes to analyser
     this.masterGain.connect(this.analyserNode);
 
     console.log('Global audio nodes initialized.');
@@ -176,15 +199,18 @@ export class AudioContextService {
   }
 
   public connectVoiceNodes(
-    osc: OscillatorNode,
     filterNode: BiquadFilterNode,
     adsrGainNode: GainNode,
     levelGainNode: GainNode
   ): void {
-    osc.connect(filterNode);
     filterNode.connect(adsrGainNode);
     adsrGainNode.connect(levelGainNode);
-    levelGainNode.connect(this.compressorNode!);
+
+    if (this.effectsInputBus) {
+      levelGainNode.connect(this.effectsInputBus);
+    } else {
+      levelGainNode.connect(this.compressorNode!);
+    }
   }
 
   public stopAndDisconnectVoice(
@@ -218,5 +244,22 @@ export class AudioContextService {
 
   public get currentTime(): number {
     return this.context.currentTime;
+  }
+
+  //EFFECTS
+
+  public setReverbParams(mix: number, decay: number): void {
+    if (this.reverbEffect) {
+      this.reverbEffect.setParam('mix', mix);
+      this.reverbEffect.setParam('decay', decay);
+    }
+  }
+
+  public setDelayParams(time: number, feedback: number, mix: number): void {
+    if (this.delayEffect) {
+      this.delayEffect.setParam('time', time);
+      this.delayEffect.setParam('feedback', feedback);
+      this.delayEffect.setParam('mix', mix);
+    }
   }
 }
