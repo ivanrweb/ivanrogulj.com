@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
-import { DelayEffect, ReverbEffect } from '@ivanrogulj.com/effects';
+import {
+  DelayEffect,
+  DistortionEffect,
+  ReverbEffect,
+} from '@ivanrogulj.com/effects';
 
 @Injectable({ providedIn: 'root' })
 export class AudioContextService {
@@ -11,6 +15,7 @@ export class AudioContextService {
   private effectsInputBus?: GainNode;
 
   //Effect references
+  private distortionEffect?: DistortionEffect;
   private reverbEffect?: ReverbEffect;
   private delayEffect?: DelayEffect;
 
@@ -35,12 +40,15 @@ export class AudioContextService {
     this.effectsInputBus = this.context.createGain();
 
     // Instantiate effects
+    this.distortionEffect = new DistortionEffect(this.context);
     this.reverbEffect = new ReverbEffect(this.context);
     this.delayEffect = new DelayEffect(this.context);
 
     //CONNECT CHAIN
+    //Bus -> Distortion effect
+    this.effectsInputBus.connect(this.distortionEffect.input);
     // Bus -> Delay Input
-    this.effectsInputBus.connect(this.delayEffect.input);
+    this.distortionEffect.connect(this.delayEffect.input);
     // Delay Output -> Reverb Input
     this.delayEffect.connect(this.reverbEffect.input);
     // Reverb Output -> Compressor
@@ -247,6 +255,11 @@ export class AudioContextService {
   }
 
   //EFFECTS
+  public setDistortionParams(amount: number): void {
+    if (this.distortionEffect) {
+      this.distortionEffect.setParam('amount', amount);
+    }
+  }
 
   public setReverbParams(mix: number, decay: number): void {
     if (this.reverbEffect) {

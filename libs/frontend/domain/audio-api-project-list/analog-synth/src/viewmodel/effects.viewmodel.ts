@@ -16,12 +16,16 @@ export interface EffectsState {
     mix: number;
     enabled: boolean;
   };
-  // Add distorsion and other effects the same: { ... }
+  distortion: {
+    amount: number; // 0.0 - 1.0
+    enabled: boolean;
+  };
 }
 
 const DEFAULT_STATE: EffectsState = {
-  reverb: { mix: 0.5, decay: 2.0, enabled: true },
-  delay: { time: 0.5, feedback: 0.3, mix: 1, enabled: true },
+  reverb: { mix: 0.5, decay: 2.0, enabled: false },
+  delay: { time: 0.5, feedback: 0.3, mix: 1, enabled: false },
+  distortion: { amount: 0.5, enabled: false },
 };
 
 @Injectable({ providedIn: 'root' })
@@ -41,6 +45,9 @@ export class EffectsViewModel extends ComponentStore<EffectsState> {
     console.log('Refreshing Effects State:', state);
 
     // Manually trigger update of service with current values
+    if (state.distortion.enabled) {
+      this.audioService.setDistortionParams(state.distortion.amount);
+    }
     if (state.reverb.enabled) {
       this.audioService.setReverbParams(state.reverb.mix, state.reverb.decay);
     }
@@ -57,6 +64,14 @@ export class EffectsViewModel extends ComponentStore<EffectsState> {
     (state$: Observable<EffectsState>) =>
       state$.pipe(
         tap((state) => {
+          //Distortion sync
+          if (state.distortion.enabled) {
+            this.audioService.setDistortionParams(state.distortion.amount);
+          } else {
+            // If disabled, send clean signal
+            this.audioService.setDistortionParams(0);
+          }
+
           // Reverb sync
           if (state.reverb.enabled) {
             this.audioService.setReverbParams(
@@ -84,6 +99,11 @@ export class EffectsViewModel extends ComponentStore<EffectsState> {
   );
 
   // --- ACTIONS (Methods called from UI or MIDI) ---
+
+  //Distortion Actions
+  public updateDistortionAmount(amount: number): void {
+    this.patchState((s) => ({ distortion: { ...s.distortion, amount } }));
+  }
 
   // Reverb Actions
   public updateReverbMix(mix: number): void {

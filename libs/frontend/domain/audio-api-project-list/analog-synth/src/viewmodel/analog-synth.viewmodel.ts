@@ -104,6 +104,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
                 // (value is between 0-1) Resonance usually goes from 0 to 20 or 30 for biquad filter
                 const resonance = value * 20;
                 this.updateFilterResonance(resonance);
+              } else if (param === AnalogSynthApi.Knob.DISTORTION_AMOUNT) {
+                this.effectsViewmodel.updateDistortionAmount(value);
               } else if (param === AnalogSynthApi.Knob.REVERB_MIX) {
                 this.effectsViewmodel.updateReverbMix(value);
               } else if (param === AnalogSynthApi.Knob.REVERB_DECAY) {

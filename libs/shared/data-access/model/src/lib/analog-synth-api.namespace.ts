@@ -156,6 +156,7 @@ export namespace AnalogSynthApi {
     FILTER_FREQUENCY = 'filterFrequency',
     FILTER_RESONANCE = 'filterResonance',
     //effects
+    DISTORTION_AMOUNT = 'distortionAmount',
     REVERB_MIX = 'reverbMix',
     REVERB_DECAY = 'reverbDecay',
     DELAY_TIME = 'delayTime',
