@@ -146,16 +146,26 @@ export namespace AnalogSynthApi {
     setParam(param: string, value: number): void;
   }
 
-  //UI
+  // UI
   export enum Knob {
+    // Volume ADSR
     ATTACK = 'attack',
     DECAY = 'decay',
     SUSTAIN = 'sustain',
     RELEASE = 'release',
+
+    // Filter ADSR
+    FILTER_ATTACK = 'filterAttack',
+    FILTER_DECAY = 'filterDecay',
+    FILTER_SUSTAIN = 'filterSustain',
+    FILTER_RELEASE = 'filterRelease',
+
+    // Global
     MASTER_GAIN = 'masterGain',
     FILTER_FREQUENCY = 'filterFrequency',
     FILTER_RESONANCE = 'filterResonance',
-    //effects
+
+    // Effects
     DISTORTION_AMOUNT = 'distortionAmount',
     REVERB_MIX = 'reverbMix',
     REVERB_DECAY = 'reverbDecay',

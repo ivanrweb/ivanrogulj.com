@@ -117,8 +117,30 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
                 this.effectsViewmodel.updateDelayFeedback(value * 0.9); // Max 0.9 to reduce microphonia
               } else if (param === AnalogSynthApi.Knob.DELAY_MIX) {
                 this.effectsViewmodel.updateDelayMix(value);
-              } else {
-                this.updateVolumeEnvelope({ [param]: value });
+              }
+              // --- FILTER ENVELOPE ---
+              else if (param === AnalogSynthApi.Knob.FILTER_ATTACK) {
+                this.updateFilterEnvelope({ attack: value });
+              } else if (param === AnalogSynthApi.Knob.FILTER_DECAY) {
+                this.updateFilterEnvelope({ decay: value });
+              } else if (param === AnalogSynthApi.Knob.FILTER_SUSTAIN) {
+                this.updateFilterEnvelope({ sustain: value });
+              } else if (param === AnalogSynthApi.Knob.FILTER_RELEASE) {
+                this.updateFilterEnvelope({ release: value });
+              }
+              // --- VOLUME ENVELOPE ---
+              else if (param === AnalogSynthApi.Knob.ATTACK) {
+                this.updateVolumeEnvelope({ attack: value });
+              } else if (param === AnalogSynthApi.Knob.DECAY) {
+                this.updateVolumeEnvelope({ decay: value });
+              } else if (param === AnalogSynthApi.Knob.SUSTAIN) {
+                this.updateVolumeEnvelope({ sustain: value });
+              } else if (param === AnalogSynthApi.Knob.RELEASE) {
+                this.updateVolumeEnvelope({ release: value });
+              }
+              // Safety check
+              else {
+                console.warn('Unhandled param:', param);
               }
             }
           })

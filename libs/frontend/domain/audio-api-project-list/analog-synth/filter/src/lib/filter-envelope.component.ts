@@ -21,13 +21,15 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
           [value]="vm.filterEnvelope.attack"
           [label]="'Attack'"
           [isLearningMode]="vm.learnMode"
-          [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.ATTACK]"
+          [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.FILTER_ATTACK]"
           (valueChange)="
             vm.filterEnvelope.attack = $event;
-            onFilterEnvelopeChange(AnalogSynthApi.Knob.ATTACK, $event)
+            onFilterEnvelopeChange('attack', $event)
           "
           (learn)="
-            analogSynthViewModel.startLearning(AnalogSynthApi.Knob.ATTACK)
+            analogSynthViewModel.startLearning(
+              AnalogSynthApi.Knob.FILTER_ATTACK
+            )
           "
         />
         <!-- Decay Knob -->
@@ -37,13 +39,13 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
           [value]="vm.filterEnvelope.decay"
           [label]="'Decay'"
           [isLearningMode]="vm.learnMode"
-          [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.DECAY]"
+          [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.FILTER_DECAY]"
           (valueChange)="
             vm.filterEnvelope.decay = $event;
-            onFilterEnvelopeChange(AnalogSynthApi.Knob.DECAY, $event)
+            onFilterEnvelopeChange('decay', $event)
           "
           (learn)="
-            analogSynthViewModel.startLearning(AnalogSynthApi.Knob.DECAY)
+            analogSynthViewModel.startLearning(AnalogSynthApi.Knob.FILTER_DECAY)
           "
         />
         <!-- Sustain Knob -->
@@ -53,13 +55,15 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
           [value]="vm.filterEnvelope.sustain"
           [label]="'Sustain'"
           [isLearningMode]="vm.learnMode"
-          [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.SUSTAIN]"
+          [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.FILTER_SUSTAIN]"
           (valueChange)="
             vm.filterEnvelope.sustain = $event;
-            onFilterEnvelopeChange(AnalogSynthApi.Knob.SUSTAIN, $event)
+            onFilterEnvelopeChange('sustain', $event)
           "
           (learn)="
-            analogSynthViewModel.startLearning(AnalogSynthApi.Knob.SUSTAIN)
+            analogSynthViewModel.startLearning(
+              AnalogSynthApi.Knob.FILTER_SUSTAIN
+            )
           "
         />
         <!-- Release Knob -->
@@ -69,13 +73,15 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
           [value]="vm.filterEnvelope.release"
           [label]="'Release'"
           [isLearningMode]="vm.learnMode"
-          [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.RELEASE]"
+          [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.FILTER_RELEASE]"
           (valueChange)="
             vm.filterEnvelope.release = $event;
-            onFilterEnvelopeChange(AnalogSynthApi.Knob.RELEASE, $event)
+            onFilterEnvelopeChange('release', $event)
           "
           (learn)="
-            analogSynthViewModel.startLearning(AnalogSynthApi.Knob.RELEASE)
+            analogSynthViewModel.startLearning(
+              AnalogSynthApi.Knob.FILTER_RELEASE
+            )
           "
         />
       </div>
