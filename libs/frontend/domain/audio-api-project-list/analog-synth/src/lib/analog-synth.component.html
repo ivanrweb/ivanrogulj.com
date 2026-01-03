@@ -7,6 +7,20 @@
       {{ vm.learnMode ? 'MIDI Learn ON' : 'MIDI Learn OFF' }}
     </button>
 
+    <!-- TODO: Make special select component in UI lib -->
+    <div class="osc-select">
+      <label for="oscCount">Number of oscillators:</label>
+      <select
+        id="oscCount"
+        [ngModel]="vm.oscillatorCount"
+        (ngModelChange)="analogSynthViewModel.updateOscillatorCount($event)">
+
+        @for (count of oscillatorCount; track count) {
+          <option [value]="count">{{ count }}</option>
+        }
+      </select>
+    </div>
+
     @if (vm.learnMode) {
       <p>Double click on button with mouse first, then assign the physical knob to it by pressing/rotating it</p>
     }

@@ -44,7 +44,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     super({
       voices: [],
       selectedOscType: 'sawtooth',
-      oscillatorCount: 4,
+      oscillatorCount: 3,
       detuneAmount: 10,
       volumeEnvelope: { attack: 0.15, decay: 0.6, sustain: 0.8, release: 0.3 },
       filterEnvelope: { attack: 0.3, decay: 0, sustain: 0.05, release: 0 },
@@ -411,5 +411,9 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     console.log('midi mapping for: ', param);
     this.patchState({ learnTarget: param });
     this.midiService.startMapping(param);
+  }
+
+  public updateOscillatorCount(count: number): void {
+    this.patchState({ oscillatorCount: Number(count) });
   }
 }

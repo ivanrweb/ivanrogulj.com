@@ -48,6 +48,9 @@ export class AnalogSynthComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public analogSynthViewModel = inject(AnalogSynthViewModel);
 
+  //User can select from 1 to 8 oscillators
+  public readonly oscillatorCount = [1, 2, 3, 4, 5, 6, 7, 8];
+
   public ngOnInit(): void {
     this.analogSynthViewModel.startAudioContext();
   }
