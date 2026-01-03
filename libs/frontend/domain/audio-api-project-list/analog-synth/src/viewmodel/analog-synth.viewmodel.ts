@@ -14,7 +14,7 @@ export interface AnalogSynthState {
   voices: AnalogSynthApi.Voice[];
   selectedOscType: OscillatorType;
   oscillatorCount: number;
-  detuneAmount: number;
+  detuneOscillatorsAmount: number;
   volumeEnvelope: AnalogSynthApi.ADSR;
   filterEnvelope: AnalogSynthApi.ADSR;
   filterEnvelopeAmount: number;
@@ -45,7 +45,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       voices: [],
       selectedOscType: 'sawtooth',
       oscillatorCount: 3,
-      detuneAmount: 10,
+      detuneOscillatorsAmount: 10,
       volumeEnvelope: { attack: 0.15, decay: 0.6, sustain: 0.8, release: 0.3 },
       filterEnvelope: { attack: 0.3, decay: 0, sustain: 0.05, release: 0 },
       filterEnvelopeAmount: 0.5,
@@ -96,6 +96,11 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
             } else {
               if (param === AnalogSynthApi.Knob.MASTER_GAIN) {
                 this.updateGain(value);
+              } else if (
+                param === AnalogSynthApi.Knob.DETUNE_OSCILLATORS_AMOUNT
+              ) {
+                // MIDI sends 0-1, we want 0-100
+                this.updateDetuneOscillatorsAmount(value * 100);
               } else if (param === AnalogSynthApi.Knob.FILTER_FREQUENCY) {
                 const freq =
                   this.audioContextService.normalizedToFrequency(value);
@@ -203,7 +208,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       filterEnvelopeAmount,
       filterResonance,
       oscillatorCount,
-      detuneAmount,
+      detuneOscillatorsAmount,
     } = this.get();
 
     const voiceId = uuidv7();
@@ -225,12 +230,11 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       // Math for Detune:
       // If we have 3 oscillators, and detuneAmount is 20:
       // i=0 -> -20, i=1 -> 0, i=2 -> +20
-      if (oscillatorCount > 1) {
-        const spread = (i / (oscillatorCount - 1) - 0.5) * 2; // Span from -1 to 1
-        osc.detune.value = spread * detuneAmount;
-      } else {
-        osc.detune.value = 0; // Only 1 oscillator is perfectly pitched
-      }
+      osc.detune.value = this.calculateDetuneSpread(
+        i,
+        oscillatorCount,
+        detuneOscillatorsAmount
+      );
 
       osc.connect(filterNode);
       osc.start();
@@ -415,5 +419,53 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
 
   public updateOscillatorCount(count: number): void {
     this.patchState({ oscillatorCount: Number(count) });
+  }
+
+  public updateDetuneOscillatorsAmount(amount: number): void {
+    // 1. Update state
+    this.patchState({ detuneOscillatorsAmount: amount });
+
+    // 2. Get current voices and settings
+    const { voices, oscillatorCount } = this.get();
+    const now = this.audioContextService.currentTime;
+
+    // 3. Go through every active voice
+    voices.forEach((voice) => {
+      // Every voice has multiple oscillators (ex. 4)
+      voice.oscNodes.forEach((osc, i) => {
+        const detuneValue = this.calculateDetuneSpread(
+          i,
+          oscillatorCount,
+          amount
+        );
+
+        // 4. Set new value smoothly (without audio clicks/pops)
+        osc.detune.setTargetAtTime(detuneValue, now, 0.01); // 10ms smoothing
+      });
+    });
+  }
+
+  /**
+   * Calculates the detune value for a specific oscillator index to create a symmetrical spread.
+   *
+   * Formula breakdown: `(i / (count - 1) - 0.5) * 2`
+   * 1. `i / (count - 1)`: Normalizes the index to a [0, 1] range.
+   * 2. `- 0.5`: Shifts the range to [-0.5, 0.5] to center it around the root pitch.
+   * 3. `* 2`: Scales it to [-1, 1] so the first oscillator is fully flat and the last is fully sharp.
+   *
+   * @param index - The index of the current oscillator (0 to total-1).
+   * @param totalOscillators - Total number of active oscillators.
+   * @param amount - The maximum detune amount in cents.
+   */
+  private calculateDetuneSpread(
+    index: number,
+    totalOscillators: number,
+    amount: number
+  ): number {
+    if (totalOscillators <= 1) {
+      return 0; // Single oscillator is always perfectly tuned
+    }
+    const spreadFactor = (index / (totalOscillators - 1) - 0.5) * 2;
+    return spreadFactor * amount;
   }
 }

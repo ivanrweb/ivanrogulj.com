@@ -161,6 +161,8 @@ export namespace AnalogSynthApi {
     FILTER_RELEASE = 'filterRelease',
 
     // Global
+    OSCILLATOR_COUNT = 'oscillatorCount',
+    DETUNE_OSCILLATORS_AMOUNT = 'detuneOscillatorsAmount',
     MASTER_GAIN = 'masterGain',
     FILTER_FREQUENCY = 'filterFrequency',
     FILTER_RESONANCE = 'filterResonance',

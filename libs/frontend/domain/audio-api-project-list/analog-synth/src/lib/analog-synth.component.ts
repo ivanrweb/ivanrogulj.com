@@ -24,6 +24,8 @@ import { FormsModule } from '@angular/forms';
 import { OscilloscopeComponent } from '@ivanrogulj.com/oscilloscope';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { TextareaComponent } from '@ivanrogulj.com/textarea';
+import { KnobComponent } from '@ivanrogulj.com/knob';
+import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 
 @Component({
   selector: 'lib-analog-synth',
@@ -37,6 +39,7 @@ import { TextareaComponent } from '@ivanrogulj.com/textarea';
     OscilloscopeComponent,
     TextareaComponent,
     FilterEnvelopeComponent,
+    KnobComponent,
   ],
   providers: [AudioContextService],
   templateUrl: './analog-synth.component.html',
@@ -66,4 +69,6 @@ export class AnalogSynthComponent implements OnInit, AfterViewInit, OnDestroy {
   public ngOnDestroy(): void {
     this.analogSynthViewModel.destroyAudioContext();
   }
+
+  protected readonly AnalogSynthApi = AnalogSynthApi;
 }
