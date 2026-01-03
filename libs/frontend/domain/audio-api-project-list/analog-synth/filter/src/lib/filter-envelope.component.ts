@@ -14,6 +14,29 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
     <div>
       <h4>Filter envelope</h4>
       <div class="adsr-container">
+        <!-- Filter envelope amount -->
+        <div class="amount-control">
+          <lib-knob
+            label="Filter amount"
+            [minValue]="0"
+            [maxValue]="100"
+            [measureUnit]="'%'"
+            [value]="vm.filterEnvelopeAmount * 100"
+            [isLearningMode]="vm.learnMode"
+            [isMapped]="
+              vm.mappedParams[AnalogSynthApi.Knob.FILTER_ENVELOPE_AMOUNT]
+            "
+            (learn)="
+              analogSynthViewModel.startLearning(
+                AnalogSynthApi.Knob.FILTER_ENVELOPE_AMOUNT
+              )
+            "
+            (valueChange)="
+              analogSynthViewModel.updateFilterEnvelopeAmount($event / 100)
+            "
+          ></lib-knob>
+        </div>
+
         <!-- Attack Knob -->
         <lib-knob
           [minValue]="0"

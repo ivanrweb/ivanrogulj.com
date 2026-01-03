@@ -164,6 +164,7 @@ export namespace AnalogSynthApi {
     MASTER_GAIN = 'masterGain',
     FILTER_FREQUENCY = 'filterFrequency',
     FILTER_RESONANCE = 'filterResonance',
+    FILTER_ENVELOPE_AMOUNT = 'filterEnvelopeAmount',
 
     // Effects
     DISTORTION_AMOUNT = 'distortionAmount',
