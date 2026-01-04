@@ -14,14 +14,15 @@ import {
   standalone: true,
   imports: [CommonModule, FormsModule, KnobComponent],
   template: `
-    @if (effectsVm.vm$ | async; as state) {
-    <div class="effect-unit" [class.disabled]="!state.reverb.enabled">
+    @if (effectsVm.vm$ | async; as fxState) { @if (synthVm.vm$ | async; as
+    synthState) {
+    <div class="effect-unit" [class.disabled]="!fxState.reverb.enabled">
       <div class="effect-header">
         <span class="effect-title">REVERB</span>
         <label class="toggle-switch">
           <input
             type="checkbox"
-            [ngModel]="state.reverb.enabled"
+            [ngModel]="fxState.reverb.enabled"
             (ngModelChange)="effectsVm.toggleReverb($event)"
           />
           <span class="slider"></span>
@@ -34,9 +35,9 @@ import {
           [minValue]="0"
           [maxValue]="100"
           [measureUnit]="'%'"
-          [value]="state.reverb.mix * 100"
-          [isLearningMode]="false"
-          [isMapped]="false"
+          [value]="fxState.reverb.mix * 100"
+          [isLearningMode]="synthState.learnMode"
+          [isMapped]="synthState.mappedParams[AnalogSynthApi.Knob.REVERB_MIX]"
           (valueChange)="effectsVm.updateReverbMix($event / 100)"
           (learn)="synthVm.startLearning(AnalogSynthApi.Knob.REVERB_MIX)"
         ></lib-knob>
@@ -46,15 +47,15 @@ import {
           [minValue]="0.1"
           [maxValue]="10.0"
           [measureUnit]="'s'"
-          [value]="state.reverb.decay"
-          [isLearningMode]="false"
-          [isMapped]="false"
+          [value]="fxState.reverb.decay"
+          [isLearningMode]="synthState.learnMode"
+          [isMapped]="synthState.mappedParams[AnalogSynthApi.Knob.REVERB_DECAY]"
           (valueChange)="effectsVm.updateReverbDecay($event)"
           (learn)="synthVm.startLearning(AnalogSynthApi.Knob.REVERB_DECAY)"
         ></lib-knob>
       </div>
     </div>
-    }
+    } }
   `,
   styles: [
     `
