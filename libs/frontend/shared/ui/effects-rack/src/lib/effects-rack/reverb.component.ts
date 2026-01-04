@@ -1,37 +1,56 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-// eslint-disable-next-line @nx/enforce-module-boundaries
+import { FormsModule } from '@angular/forms';
 import { KnobComponent } from '@ivanrogulj.com/knob';
-import { EffectsViewModel } from '../../../../../../domain/audio-api-project-list/analog-synth/src/viewmodel/effects.viewmodel;
+import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import {
+  AnalogSynthViewModel,
+  EffectsViewModel,
+} from '@ivanrogulj.com/analog-synth';
 
 @Component({
   selector: 'lib-reverb',
   standalone: true,
-  imports: [CommonModule, KnobComponent],
+  imports: [CommonModule, FormsModule, KnobComponent],
   template: `
-    @if (reverbState$ | async; as state) {
-    <div class="effect-module">
-      <div class="header">
-        <span class="led" [class.on]="state.enabled"></span>
-        <h4>Reverb</h4>
+    @if (effectsVm.vm$ | async; as state) {
+    <div class="effect-unit" [class.disabled]="!state.reverb.enabled">
+      <div class="effect-header">
+        <span class="effect-title">REVERB</span>
+        <label class="toggle-switch">
+          <input
+            type="checkbox"
+            [ngModel]="state.reverb.enabled"
+            (ngModelChange)="effectsVm.toggleReverb($event)"
+          />
+          <span class="slider"></span>
+        </label>
       </div>
 
-      <div class="controls">
+      <div class="effect-controls">
         <lib-knob
           label="Mix"
-          [value]="state.mix * 100"
+          [minValue]="0"
           [maxValue]="100"
-          measureUnit="%"
+          [measureUnit]="'%'"
+          [value]="state.reverb.mix * 100"
+          [isLearningMode]="false"
+          [isMapped]="false"
           (valueChange)="effectsVm.updateReverbMix($event / 100)"
+          (learn)="synthVm.startLearning(AnalogSynthApi.Knob.REVERB_MIX)"
         ></lib-knob>
 
         <lib-knob
-          label="Size"
-          [value]="state.decay"
+          label="Decay"
           [minValue]="0.1"
-          [maxValue]="5.0"
-          measureUnit="s"
+          [maxValue]="10.0"
+          [measureUnit]="'s'"
+          [value]="state.reverb.decay"
+          [isLearningMode]="false"
+          [isMapped]="false"
           (valueChange)="effectsVm.updateReverbDecay($event)"
+          (learn)="synthVm.startLearning(AnalogSynthApi.Knob.REVERB_DECAY)"
         ></lib-knob>
       </div>
     </div>
@@ -39,50 +58,94 @@ import { EffectsViewModel } from '../../../../../../domain/audio-api-project-lis
   `,
   styles: [
     `
-      .effect-module {
-        border: 1px solid #555;
+      .effect-unit {
         background: #2a2a2a;
-        border-radius: 4px;
-        padding: 10px;
+        border: 1px solid #444;
+        border-radius: 6px;
+        width: 180px;
         display: flex;
         flex-direction: column;
-        gap: 10px;
-        min-width: 140px;
+        padding: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        transition: opacity 0.3s;
+        color: #ffffff;
+
+        &.disabled {
+          opacity: 0.6;
+          .effect-controls {
+            pointer-events: none;
+            filter: grayscale(100%);
+          }
+        }
       }
-      .header {
+
+      .effect-header {
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        gap: 8px;
-        border-bottom: 1px solid #444;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #555;
         padding-bottom: 5px;
-        margin-bottom: 5px;
       }
-      h4 {
-        margin: 0;
+
+      .effect-title {
+        font-weight: bold;
+        color: #ddd;
         font-size: 0.9rem;
-        text-transform: uppercase;
-        color: #ccc;
+        letter-spacing: 1px;
       }
-      .controls {
+
+      .effect-controls {
         display: flex;
-        justify-content: center;
-        gap: 10px;
+        justify-content: space-around;
+        gap: 5px;
       }
-      .led {
-        width: 8px;
-        height: 8px;
+
+      /* CSS Toggle Switch */
+      .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 30px;
+        height: 16px;
+      }
+      .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #555;
+        transition: 0.4s;
+        border-radius: 16px;
+      }
+      .slider:before {
+        position: absolute;
+        content: '';
+        height: 10px;
+        width: 10px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.4s;
         border-radius: 50%;
-        background: #330000;
-        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
       }
-      .led.on {
-        background: #ff3333;
-        box-shadow: 0 0 5px #ff3333, inset 0 1px 2px rgba(255, 255, 255, 0.5);
+      input:checked + .slider {
+        background-color: #4caf50;
+      } /* Green when ON */
+      input:checked + .slider:before {
+        transform: translateX(14px);
       }
     `,
   ],
 })
 export class ReverbComponent {
-  protected effectsVm = inject(EffectsViewModel);
-  protected reverbState$ = this.effectsVm.select((state) => state.reverb);
+  public effectsVm = inject(EffectsViewModel);
+  public synthVm = inject(AnalogSynthViewModel);
+  protected readonly AnalogSynthApi = AnalogSynthApi;
 }

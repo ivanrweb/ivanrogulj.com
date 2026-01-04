@@ -26,6 +26,7 @@ import { OscilloscopeComponent } from '@ivanrogulj.com/oscilloscope';
 import { TextareaComponent } from '@ivanrogulj.com/textarea';
 import { KnobComponent } from '@ivanrogulj.com/knob';
 import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
+import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack';
 
 @Component({
   selector: 'lib-analog-synth',
@@ -40,6 +41,7 @@ import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
     TextareaComponent,
     FilterEnvelopeComponent,
     KnobComponent,
+    EffectsRackComponent,
   ],
   providers: [AudioContextService],
   templateUrl: './analog-synth.component.html',

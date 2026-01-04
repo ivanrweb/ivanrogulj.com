@@ -30,6 +30,7 @@ const DEFAULT_STATE: EffectsState = {
 
 @Injectable({ providedIn: 'root' })
 export class EffectsViewModel extends ComponentStore<EffectsState> {
+  public readonly vm$: Observable<EffectsState> = this.select((state) => state);
   private audioService = inject(AudioContextService);
 
   constructor() {
@@ -125,5 +126,21 @@ export class EffectsViewModel extends ComponentStore<EffectsState> {
 
   public updateDelayMix(mix: number): void {
     this.patchState((state) => ({ delay: { ...state.delay, mix } }));
+  }
+
+  // Toggle actions
+
+  public toggleReverb(enabled: boolean): void {
+    this.patchState((state) => ({ reverb: { ...state.reverb, enabled } }));
+  }
+
+  public toggleDelay(enabled: boolean): void {
+    this.patchState((state) => ({ delay: { ...state.delay, enabled } }));
+  }
+
+  public toggleDistortion(enabled: boolean): void {
+    this.patchState((state) => ({
+      distortion: { ...state.distortion, enabled },
+    }));
   }
 }
