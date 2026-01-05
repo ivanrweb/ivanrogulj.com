@@ -1,16 +1,18 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReverbComponent } from './reverb.component';
+import { DelayComponent } from './delay.component';
 
 @Component({
   selector: 'lib-effects-rack',
   standalone: true,
-  imports: [CommonModule, ReverbComponent],
+  imports: [CommonModule, ReverbComponent, DelayComponent],
   template: `
     <div class="rack-container">
       <h4 class="rack-label">FX RACK</h4>
       <div class="rack-slots">
         <lib-reverb></lib-reverb>
+        <lib-delay></lib-delay>
       </div>
     </div>
   `,
