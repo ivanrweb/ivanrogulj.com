@@ -34,7 +34,7 @@ export class AudioContextService {
   public initializeAudioNodes(): void {
     this.masterGain = this.context.createGain();
     this.analyserNode = this.context.createAnalyser();
-    this.compressorNode = this.createCompressor(-25, 30, 12);
+    this.compressorNode = this.createCompressor(-1, 30, 12);
 
     // Create Effects Bus
     this.effectsInputBus = this.context.createGain();
@@ -155,12 +155,16 @@ export class AudioContextService {
   public createCompressor(
     threshold: number,
     kneeValue: number,
-    ratio: number
+    ratio: number,
+    attack = 0.001,
+    release = 0.1
   ): DynamicsCompressorNode {
     const compressor = this.context.createDynamicsCompressor();
     compressor.threshold.setValueAtTime(threshold, this.context.currentTime);
     compressor.knee.setValueAtTime(kneeValue, this.context.currentTime);
     compressor.ratio.setValueAtTime(ratio, this.context.currentTime);
+    compressor.attack.setValueAtTime(attack, this.context.currentTime);
+    compressor.release.setValueAtTime(release, this.context.currentTime);
     return compressor;
   }
 

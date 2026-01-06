@@ -169,11 +169,27 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
 
   // Incorporates each voice's individual velocity
   private updateAllVoiceLevels(): void {
-    const { voices } = this.get();
+    const { voices, oscillatorCount, detuneOscillatorsAmount } = this.get();
     const totalVoices = voices.length;
     if (totalVoices === 0) return;
 
-    const compensationFactor = Math.sqrt(totalVoices);
+    // Calculate oscillator scaling factor based on phase coherence (detune).
+    // Detune 0 implies coherent phases (constructive interference), requiring linear scaling.
+    // Higher detune implies incoherent phases, allowing for square root scaling (power addition).
+    const detuneSaturation = 30;
+    const detuneFactor = Math.min(
+      detuneOscillatorsAmount / detuneSaturation,
+      1.0
+    );
+
+    const coherentScale = oscillatorCount; // All in phase (Detune 0) - worst case scenario, needs more gain reduction
+    const incoherentScale = Math.sqrt(oscillatorCount); // Detuned - best case scenario, needs less gain reduction
+
+    // Interpolate between coherent and incoherent scaling based on detune amount
+    const currentOscScale =
+      coherentScale * (1 - detuneFactor) + incoherentScale * detuneFactor;
+
+    const compensationFactor = Math.sqrt(totalVoices) * currentOscScale;
     let baseTargetGain = 1.0 / compensationFactor;
 
     //Reduce perceived volume when only 1 voice is active
