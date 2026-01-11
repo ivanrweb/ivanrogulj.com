@@ -46,8 +46,13 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       selectedOscType: 'sawtooth',
       oscillatorCount: 3,
       detuneOscillatorsAmount: 10,
-      volumeEnvelope: { attack: 0.15, decay: 0.6, sustain: 0.8, release: 0.3 },
-      filterEnvelope: { attack: 0.3, decay: 0, sustain: 0.05, release: 0 },
+      volumeEnvelope: {
+        attack: 0.15,
+        decay: 0.6,
+        sustain: 0.8,
+        release: 0.005,
+      },
+      filterEnvelope: { attack: 0.3, decay: 0, sustain: 0.05, release: 0.02 },
       filterEnvelopeAmount: 0.5,
       masterGain: 0.5,
       filterFrequency: 200,
@@ -189,8 +194,17 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     const currentOscScale =
       coherentScale * (1 - detuneFactor) + incoherentScale * detuneFactor;
 
+    // Leave 20% od space for filter resonance, effects, etc. before it comes to distortion
+    let baseHeadroom = 0.8;
+
+    //sine has higher peak when oscillators are in tune than others
+    const selectedOscType = this.get().selectedOscType;
+    if (selectedOscType === 'sine') {
+      baseHeadroom = 0.6;
+    }
+
     const compensationFactor = Math.sqrt(totalVoices) * currentOscScale;
-    let baseTargetGain = 1.0 / compensationFactor;
+    let baseTargetGain = baseHeadroom / compensationFactor;
 
     //Reduce perceived volume when only 1 voice is active
     if (totalVoices === 1) {
@@ -206,7 +220,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       voice.levelGainNode.gain.setTargetAtTime(
         finalTargetGain,
         this.audioContextService.currentTime,
-        0.015
+        0.02
       );
     });
   }
@@ -290,7 +304,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
 
     // Ensure release times are never zero to prevent clicks
     const safeVolumeRelease = Math.max(0.005, volumeEnvelope.release);
-    const safeFilterRelease = Math.max(0.005, filterEnvelope.release);
+    const safeFilterRelease = Math.max(0.02, filterEnvelope.release);
 
     this.audioContextService.releaseVolumeEnvelope(
       voice.adsrGainNode,

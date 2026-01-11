@@ -80,10 +80,6 @@ export class AudioContextService {
     return osc;
   }
 
-  public startOsc(oscNode: OscillatorNode): void {
-    oscNode.start();
-  }
-
   public detuneOscillator(detuneValue: number): number {
     return Math.random() * detuneValue - detuneValue / 2;
   }
