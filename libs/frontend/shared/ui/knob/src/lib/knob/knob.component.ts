@@ -13,11 +13,7 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   template: `
     <div class="knob-wrapper">
-      <div
-        class="knob-container"
-        [class.learning-mode]="isLearningMode"
-        (mouseup)="stopDragging()"
-      >
+      <div class="knob-container" [class.learning-mode]="isLearningMode">
         <div class="knob-render">
           <i
             class="icon-fad-slider-round-3 knob-icon"
@@ -129,6 +125,7 @@ export class KnobComponent {
 
   public rotation = 135;
   private isDragging = false;
+  private startX: number | null = null;
   private startY: number | null = null;
   private startRotation: number | null = null;
 
@@ -136,6 +133,7 @@ export class KnobComponent {
 
   public startDragging(event: MouseEvent): void {
     this.isDragging = true;
+    this.startX = event.clientX;
     this.startY = event.clientY;
     this.startRotation = this.rotation;
 
@@ -156,11 +154,15 @@ export class KnobComponent {
   public onMouseMove(event: MouseEvent): void {
     if (
       this.isDragging &&
+      this.startX !== null &&
       this.startY !== null &&
       this.startRotation !== null
     ) {
+      const deltaX = event.clientX - this.startX;
       const deltaY = this.startY - event.clientY;
-      const rotationStep = (deltaY / this.dragRange) * 270;
+      const totalDelta = deltaX + deltaY;
+
+      const rotationStep = (totalDelta / this.dragRange) * 270;
 
       let newRotation = this.startRotation + rotationStep;
       newRotation = Math.max(0, Math.min(270, newRotation));
