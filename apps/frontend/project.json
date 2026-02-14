@@ -20,6 +20,11 @@
           {
             "glob": "**/*",
             "input": "libs/frontend/shared/ui/assets/src/lib/image"
+          },
+          {
+            "glob": "**/*",
+            "input": "libs/frontend/shared/ui/assets/src/lib/fontaudio",
+            "output": "assets/fontaudio"
           }
         ],
         "styles": ["apps/frontend/src/styles.scss"],
