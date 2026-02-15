@@ -44,7 +44,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     super({
       voices: [],
       selectedOscType: 'sawtooth',
-      oscillatorCount: 3,
+      oscillatorCount: 1,
       detuneOscillatorsAmount: 10,
       volumeEnvelope: {
         attack: 0.15,

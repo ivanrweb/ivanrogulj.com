@@ -27,6 +27,7 @@ import { TextareaComponent } from '@ivanrogulj.com/textarea';
 import { KnobComponent } from '@ivanrogulj.com/knob';
 import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack';
+import { CountSelectorComponent } from '@ivanrogulj.com/count-selector';
 
 @Component({
   selector: 'lib-analog-synth',
@@ -42,6 +43,7 @@ import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack';
     FilterEnvelopeComponent,
     KnobComponent,
     EffectsRackComponent,
+    CountSelectorComponent,
   ],
   providers: [AudioContextService],
   templateUrl: './analog-synth.component.html',

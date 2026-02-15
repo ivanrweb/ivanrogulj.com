@@ -32,6 +32,9 @@
         "libs/backend/domain/analog-synth-patch/data-access/src/index.ts"
       ],
       "@ivanrogulj.com/backend/shell": ["libs/backend/shell/src/index.ts"],
+      "@ivanrogulj.com/count-selector": [
+        "libs/frontend/shared/ui/count-selector/src/index.ts"
+      ],
       "@ivanrogulj.com/dashboard": [
         "libs/frontend/shared/ui/dashboard/src/index.ts"
       ],
