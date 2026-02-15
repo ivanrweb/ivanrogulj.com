@@ -17,19 +17,21 @@
     </div>
 
     <div class="osc-detune-amount">
-      <lib-knob
-        label="Spread (detune oscillators)"
-        [minValue]="0"
-        [maxValue]="100"
-        [measureUnit]="'ct'"
-        [value]="vm.detuneOscillatorsAmount"
+      @if (vm.oscillatorCount > 1) {
+        <lib-knob
+          label="Spread (detune oscillators)"
+          [minValue]="0"
+          [maxValue]="100"
+          [measureUnit]="'ct'"
+          [value]="vm.detuneOscillatorsAmount"
 
-        [isLearningMode]="vm.learnMode"
-        [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.DETUNE_OSCILLATORS_AMOUNT]"
-        (learn)="analogSynthViewModel.startLearning(AnalogSynthApi.Knob.DETUNE_OSCILLATORS_AMOUNT)"
+          [isLearningMode]="vm.learnMode"
+          [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.DETUNE_OSCILLATORS_AMOUNT]"
+          (learn)="analogSynthViewModel.startLearning(AnalogSynthApi.Knob.DETUNE_OSCILLATORS_AMOUNT)"
 
-        (valueChange)="analogSynthViewModel.updateDetuneOscillatorsAmount($event)"
-      ></lib-knob>
+          (valueChange)="analogSynthViewModel.updateDetuneOscillatorsAmount($event)"
+        ></lib-knob>
+      }
     </div>
 
     @if (vm.learnMode) {
