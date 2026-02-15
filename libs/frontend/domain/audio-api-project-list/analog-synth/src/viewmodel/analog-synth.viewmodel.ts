@@ -123,7 +123,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
                 this.effectsViewmodel.updateReverbMix(value);
               } else if (param === AnalogSynthApi.Knob.REVERB_DECAY) {
                 // Mapping 0-1 0.1s-5s
-                this.effectsViewmodel.updateReverbDecay(0.1 + value * 4.9);
+                this.effectsViewmodel.updateReverbDecay(0.1 + value * 9.9);
               } else if (param === AnalogSynthApi.Knob.DELAY_TIME) {
                 this.effectsViewmodel.updateDelayTime(value); // 0-1s
               } else if (param === AnalogSynthApi.Knob.DELAY_FEEDBACK) {

@@ -129,6 +129,7 @@ export class KnobComponent {
   private startY: number | null = null;
   private startRotation: number | null = null;
 
+  // This number is inversely proportional to knob rotation speed
   private dragRange = 300;
 
   public startDragging(event: MouseEvent): void {

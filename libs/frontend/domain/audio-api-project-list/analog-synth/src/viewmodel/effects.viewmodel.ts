@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
-import { Observable, tap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Observable, tap } from 'rxjs';
 import { AudioContextService } from '../service/audio-context.service';
 
 // Defined states for ALL effects here
@@ -37,7 +37,9 @@ export class EffectsViewModel extends ComponentStore<EffectsState> {
     super(DEFAULT_STATE);
 
     // When VM state is changed, update Audio Service
-    this.syncAudioParams(this.select((s) => s));
+    this.syncDistortion(this.select((s) => s.distortion));
+    this.syncDelay(this.select((s) => s.delay));
+    this.syncReverb(this.select((s) => s.reverb));
   }
 
   public refreshState(): void {
@@ -61,39 +63,70 @@ export class EffectsViewModel extends ComponentStore<EffectsState> {
     }
   }
 
-  public readonly syncAudioParams = this.effect(
-    (state$: Observable<EffectsState>) =>
+  // Distortion sync
+  private readonly syncDistortion = this.effect(
+    (state$: Observable<EffectsState['distortion']>) =>
       state$.pipe(
+        distinctUntilChanged(
+          (prev, curr) =>
+            prev.amount === curr.amount && prev.enabled === curr.enabled
+        ),
         tap((state) => {
-          //Distortion sync
-          if (state.distortion.enabled) {
-            this.audioService.setDistortionParams(state.distortion.amount);
+          if (state.enabled) {
+            this.audioService.setDistortionParams(state.amount);
           } else {
             // If disabled, send clean signal
             this.audioService.setDistortionParams(0);
           }
+        })
+      )
+  );
 
-          // Reverb sync
-          if (state.reverb.enabled) {
-            this.audioService.setReverbParams(
-              state.reverb.mix,
-              state.reverb.decay
-            );
-          } else {
-            // If disabled, reduce mix to 0
-            this.audioService.setReverbParams(0, state.reverb.decay);
-          }
-
-          // Delay sync
-          if (state.delay.enabled) {
+  // Delay sync
+  private readonly syncDelay = this.effect(
+    (state$: Observable<EffectsState['delay']>) =>
+      state$.pipe(
+        distinctUntilChanged(
+          (prev, curr) =>
+            prev.time === curr.time &&
+            prev.feedback === curr.feedback &&
+            prev.mix === curr.mix &&
+            prev.enabled === curr.enabled
+        ),
+        tap((state) => {
+          if (state.enabled) {
             this.audioService.setDelayParams(
-              state.delay.time,
-              state.delay.feedback,
-              state.delay.mix
+              state.time,
+              state.feedback,
+              state.mix
             );
           } else {
             // If disabled, reduce mix to 0
-            this.audioService.setDelayParams(state.delay.time, 0, 0);
+            this.audioService.setDelayParams(state.time, 0, 0);
+          }
+        })
+      )
+  );
+
+  // Reverb sync
+  private readonly syncReverb = this.effect(
+    (state$: Observable<EffectsState['reverb']>) =>
+      state$.pipe(
+        distinctUntilChanged(
+          (prev, curr) =>
+            prev.mix === curr.mix &&
+            prev.decay === curr.decay &&
+            prev.enabled === curr.enabled
+        ),
+        // Wait 100ms to stop turning the knob before it starts with calculation
+        //Hundreds of calls on every knob turn change adds weight on CPU here, so debounce is needed
+        debounceTime(100),
+        tap((state) => {
+          if (state.enabled) {
+            this.audioService.setReverbParams(state.mix, state.decay);
+          } else {
+            // If disabled, reduce mix to 0
+            this.audioService.setReverbParams(0, state.decay);
           }
         })
       )
