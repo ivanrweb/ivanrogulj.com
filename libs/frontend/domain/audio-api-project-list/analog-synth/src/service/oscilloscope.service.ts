@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class OscilloscopeService {
+  private hue = 0; // State for color rotation
 
   public draw(analyser: AnalyserNode, oscilloscope: HTMLCanvasElement): void {
     // Use requestAnimationFrame to continuously update the drawing
@@ -26,12 +27,20 @@ export class OscilloscopeService {
     }
 
     // Clear the canvas before drawing the next frame
-    canvasCtx.fillStyle = '#F5F5F5';
+    canvasCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
     canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Set stroke style for the waveform
+    // Rotate hue for dynamic rainbow color
+    this.hue = (this.hue + 1) % 360;
+    const dynamicColor = `hsl(${this.hue}, 100%, 50%)`;
+
     canvasCtx.lineWidth = 1;
-    canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
+    canvasCtx.strokeStyle = dynamicColor;
+
+    // Add neon glow effect
+    canvasCtx.shadowBlur = 10;
+    canvasCtx.shadowColor = dynamicColor;
 
     // Begin the drawing path
     canvasCtx.beginPath();
@@ -42,8 +51,9 @@ export class OscilloscopeService {
 
     // Loop through each value in the dataArray and draw the waveform
     for (let i = 0; i < bufferLength; i++) {
-      const v = dataArray[i] / 128.0;
-      const y = (v * canvas.height) / 2;
+      // Calculate deviation from center (128) and multiply by 2.5 for higher amplitude
+      const v = (dataArray[i] - 128) * 2.5;
+      const y = canvas.height / 2 + v;
 
       if (i === 0) {
         canvasCtx.moveTo(x, y);
@@ -57,5 +67,8 @@ export class OscilloscopeService {
     // Finish the drawing path
     canvasCtx.lineTo(canvas.width, canvas.height / 2);
     canvasCtx.stroke();
+
+    // Reset shadow to improve performance for the next fillRect
+    canvasCtx.shadowBlur = 0;
   }
 }

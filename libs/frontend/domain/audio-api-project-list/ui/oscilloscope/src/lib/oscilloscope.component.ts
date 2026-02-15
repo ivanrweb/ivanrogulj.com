@@ -1,15 +1,52 @@
-import { AfterViewInit, Component, ElementRef, inject, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  inject,
+  ViewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
 
 @Component({
   selector: 'lib-oscilloscope',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './oscilloscope.component.html',
-  styleUrl: './oscilloscope.component.scss',
+  template: `
+    @if (analogSynthViewModel.vm$ | async; as vm) {
+    <div class="scope-container">
+      <canvas #oscilloscope></canvas>
+    </div>
+    }
+  `,
+  styles: [
+    `
+      :host {
+        display: block;
+        width: 100%;
+        margin-top: 20px;
+      }
+
+      .scope-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+      }
+
+      canvas {
+        width: 80vw;
+        height: 200px;
+        display: block;
+        background-color: #000;
+        border: 1px solid #333;
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.1);
+        border-radius: 1.5rem;
+      }
+    `,
+  ],
 })
-export class OscilloscopeComponent implements AfterViewInit{
+export class OscilloscopeComponent implements AfterViewInit {
   @ViewChild('oscilloscope', { static: false })
   public oscilloscopeCanvas!: ElementRef<HTMLCanvasElement>;
 
@@ -17,10 +54,15 @@ export class OscilloscopeComponent implements AfterViewInit{
 
   public ngAfterViewInit(): void {
     if (this.oscilloscopeCanvas) {
-      // Initialize the oscilloscope by passing the canvas element
       this.analogSynthViewModel.initializeOscilloscope(this.oscilloscopeCanvas);
     } else {
-      console.error('Oscilloscope canvas not found');
+      setTimeout(() => {
+        if (this.oscilloscopeCanvas) {
+          this.analogSynthViewModel.initializeOscilloscope(
+            this.oscilloscopeCanvas
+          );
+        }
+      }, 0);
     }
   }
 }
