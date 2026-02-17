@@ -11,33 +11,32 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
   standalone: true,
   imports: [CommonModule, FormsModule, KnobComponent],
   template: `@if (analogSynthViewModel.vm$ | async; as vm) {
-    <div>
-      <h4>Filter envelope</h4>
-      <div class="adsr-container">
-        <!-- Filter envelope amount -->
-        <div class="amount-control">
-          <lib-knob
-            label="Filter amount"
-            [minValue]="0"
-            [maxValue]="100"
-            [measureUnit]="'%'"
-            [value]="vm.filterEnvelopeAmount * 100"
-            [isLearningMode]="vm.learnMode"
-            [isMapped]="
-              vm.mappedParams[AnalogSynthApi.Knob.FILTER_ENVELOPE_AMOUNT]
-            "
-            (learn)="
-              analogSynthViewModel.startLearning(
-                AnalogSynthApi.Knob.FILTER_ENVELOPE_AMOUNT
-              )
-            "
-            (valueChange)="
-              analogSynthViewModel.updateFilterEnvelopeAmount($event / 100)
-            "
-          ></lib-knob>
-        </div>
+    <div class="env-panel">
+      <div class="amount-control">
+        <lib-knob
+          label="ENV Amount"
+          [minValue]="0"
+          [maxValue]="100"
+          [measureUnit]="'%'"
+          [value]="vm.filterEnvelopeAmount * 100"
+          [isLearningMode]="vm.learnMode"
+          [isMapped]="
+            vm.mappedParams[AnalogSynthApi.Knob.FILTER_ENVELOPE_AMOUNT]
+          "
+          (learn)="
+            analogSynthViewModel.startLearning(
+              AnalogSynthApi.Knob.FILTER_ENVELOPE_AMOUNT
+            )
+          "
+          (valueChange)="
+            analogSynthViewModel.updateFilterEnvelopeAmount($event / 100)
+          "
+        ></lib-knob>
+      </div>
 
-        <!-- Attack Knob -->
+      <div class="separator"></div>
+
+      <div class="adsr-container">
         <lib-knob
           [minValue]="0"
           [maxValue]="1"
@@ -55,7 +54,6 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
             )
           "
         />
-        <!-- Decay Knob -->
         <lib-knob
           [minValue]="0"
           [maxValue]="1"
@@ -71,7 +69,6 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
             analogSynthViewModel.startLearning(AnalogSynthApi.Knob.FILTER_DECAY)
           "
         />
-        <!-- Sustain Knob -->
         <lib-knob
           [minValue]="0"
           [maxValue]="1"
@@ -89,7 +86,6 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
             )
           "
         />
-        <!-- Release Knob -->
         <lib-knob
           [minValue]="0"
           [maxValue]="1"
@@ -112,12 +108,28 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
     }`,
   styles: [
     `
+      .env-panel {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        width: 100%;
+      }
+      .amount-control {
+        display: flex;
+        justify-content: center;
+      }
       .adsr-container {
         display: flex;
-        justify-content: space-between;
-        gap: 2rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
       }
-
+      .separator {
+        width: 80%;
+        height: 1px;
+        background: #333;
+      }
       .knob-group {
         flex: 1;
         text-align: center;

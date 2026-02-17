@@ -4,8 +4,6 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class OscilloscopeService {
-  private hue = 0;
-
   public draw(analyser: AnalyserNode, oscilloscope: HTMLCanvasElement): void {
     // Use requestAnimationFrame to continuously update the drawing
     requestAnimationFrame(() => this.draw(analyser, oscilloscope));
@@ -41,8 +39,7 @@ export class OscilloscopeService {
     canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Update dynamic color
-    this.hue = (this.hue + 1) % 360;
-    const dynamicColor = `hsl(${this.hue}, 100%, 50%)`;
+    const dynamicColor = '#ff3333';
 
     // Set stroke style and neon glow
     canvasCtx.lineWidth = 1;

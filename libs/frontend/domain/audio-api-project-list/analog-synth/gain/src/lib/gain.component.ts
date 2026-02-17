@@ -12,10 +12,8 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
   imports: [CommonModule, FormsModule, KnobComponent],
   template: `
     @if (analogSynthViewModel.vm$ | async; as vm) {
-    <div>
-      <h4>Gain envelope</h4>
+    <div class="gain-panel">
       <div class="adsr-container">
-        <!-- Attack Knob -->
         <lib-knob
           [minValue]="0"
           [maxValue]="1"
@@ -32,7 +30,6 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
           "
         >
         </lib-knob>
-        <!-- Decay Knob -->
         <lib-knob
           [minValue]="0"
           [maxValue]="1"
@@ -49,7 +46,6 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
           "
         >
         </lib-knob>
-        <!-- Sustain Knob -->
         <lib-knob
           [minValue]="0"
           [maxValue]="1"
@@ -66,7 +62,6 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
           "
         >
         </lib-knob>
-        <!-- Release Knob -->
         <lib-knob
           [minValue]="0"
           [maxValue]="1"
@@ -84,29 +79,50 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
         >
         </lib-knob>
       </div>
-      <!-- Gain Knob -->
-      <lib-knob
-        [minValue]="0"
-        [maxValue]="1"
-        [value]="vm.masterGain"
-        [label]="'Gain'"
-        [isLearningMode]="vm.learnMode"
-        [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.MASTER_GAIN]"
-        (valueChange)="onGainChange($event)"
-        (learn)="
-          analogSynthViewModel.startLearning(AnalogSynthApi.Knob.MASTER_GAIN)
-        "
-      >
-      </lib-knob>
+
+      <div class="separator"></div>
+
+      <div class="master-control">
+        <lib-knob
+          [minValue]="0"
+          [maxValue]="1"
+          [value]="vm.masterGain"
+          [label]="'Master Vol'"
+          [isLearningMode]="vm.learnMode"
+          [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.MASTER_GAIN]"
+          (valueChange)="onGainChange($event)"
+          (learn)="
+            analogSynthViewModel.startLearning(AnalogSynthApi.Knob.MASTER_GAIN)
+          "
+        >
+        </lib-knob>
+      </div>
     </div>
     }
   `,
   styles: [
     `
+      .gain-panel {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        width: 100%;
+      }
       .adsr-container {
         display: flex;
-        justify-content: space-between;
-        gap: 2rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+      }
+      .separator {
+        width: 80%;
+        height: 1px;
+        background: #333;
+      }
+      .master-control {
+        display: flex;
+        justify-content: center;
       }
     `,
   ],

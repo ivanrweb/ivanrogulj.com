@@ -12,35 +12,50 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
   standalone: true,
   imports: [CommonModule, FormsModule, KnobComponent],
   template: ` @if (analogSynthViewModel.vm$ | async; as vm) {
-    <lib-knob
-      [minValue]="10"
-      [maxValue]="10000"
-      [label]="'Cutoff'"
-      [value]="vm.filterFrequency"
-      [measureUnit]="'Hz'"
-      [isLearningMode]="vm.learnMode"
-      [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.FILTER_FREQUENCY]"
-      (valueChange)="onFilterValueChange($event)"
-      (learn)="
-        analogSynthViewModel.startLearning(AnalogSynthApi.Knob.FILTER_FREQUENCY)
-      "
-    />
+    <div class="filter-controls">
+      <lib-knob
+        [minValue]="10"
+        [maxValue]="10000"
+        [label]="'Cutoff'"
+        [value]="vm.filterFrequency"
+        [measureUnit]="'Hz'"
+        [isLearningMode]="vm.learnMode"
+        [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.FILTER_FREQUENCY]"
+        (valueChange)="onFilterValueChange($event)"
+        (learn)="
+          analogSynthViewModel.startLearning(
+            AnalogSynthApi.Knob.FILTER_FREQUENCY
+          )
+        "
+      />
 
-    <lib-knob
-      [minValue]="0"
-      [maxValue]="20"
-      [label]="'Resonance'"
-      [value]="vm.filterResonance"
-      [measureUnit]="''"
-      [isLearningMode]="vm.learnMode"
-      [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.FILTER_RESONANCE]"
-      (valueChange)="onResonanceValueChange($event)"
-      (learn)="
-        analogSynthViewModel.startLearning(AnalogSynthApi.Knob.FILTER_RESONANCE)
-      "
-    />
+      <lib-knob
+        [minValue]="0"
+        [maxValue]="20"
+        [label]="'Resonance'"
+        [value]="vm.filterResonance"
+        [measureUnit]="''"
+        [isLearningMode]="vm.learnMode"
+        [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.FILTER_RESONANCE]"
+        (valueChange)="onResonanceValueChange($event)"
+        (learn)="
+          analogSynthViewModel.startLearning(
+            AnalogSynthApi.Knob.FILTER_RESONANCE
+          )
+        "
+      />
+    </div>
     }`,
-  styles: [``],
+  styles: [
+    `
+      .filter-controls {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        width: 100%;
+      }
+    `,
+  ],
 })
 export class FilterComponent {
   protected readonly AnalogSynthApi = AnalogSynthApi;

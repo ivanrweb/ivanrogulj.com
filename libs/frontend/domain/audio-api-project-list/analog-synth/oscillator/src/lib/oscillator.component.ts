@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { AnalogSynthViewModel } from '../../../src/viewmodel/analog-synth.viewmodel';
+import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
 import { FormsModule } from '@angular/forms';
 import { WaveformPickerComponent } from '@ivanrogulj.com/waveform-picker';
 
@@ -11,7 +11,7 @@ import { WaveformPickerComponent } from '@ivanrogulj.com/waveform-picker';
   imports: [CommonModule, FormsModule, WaveformPickerComponent],
   template: `
     @if (analogSynthViewModel.vm$ | async; as vm) {
-    <div>
+    <div class="osc-container">
       <lib-waveform-picker
         [waveforms]="oscTypes"
         [selectedWaveform]="vm.selectedOscType"
@@ -21,7 +21,15 @@ import { WaveformPickerComponent } from '@ivanrogulj.com/waveform-picker';
     </div>
     }
   `,
-  styles: [``],
+  styles: [
+    `
+      .osc-container {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+      }
+    `,
+  ],
 })
 export class OscillatorComponent {
   public oscTypes: OscillatorType[] = [

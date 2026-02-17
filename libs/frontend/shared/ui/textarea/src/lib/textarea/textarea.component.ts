@@ -41,37 +41,39 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
       .ai-prompt-container {
         padding: 16px;
         font-family: Arial, sans-serif;
+        color: #e0e0e0;
       }
 
       /* General button styling */
       .ai-prompt-button,
       .generate-button {
         padding: 10px 16px;
-        border: none;
+        border: 1px solid #444;
         border-radius: 6px;
         cursor: pointer;
-        font-size: 16px;
+        font-size: 14px;
         font-weight: bold;
-        transition: background-color 0.2s ease-in-out;
+        transition: all 0.2s ease-in-out;
+        background-color: #2a2a2a;
+        color: #e0e0e0;
       }
 
       /* Primary button styling */
-      .ai-prompt-button {
-        background-color: #343a40;
-        color: white;
-      }
-
-      .ai-prompt-button:hover {
-        background-color: #5a6268;
+      .ai-prompt-button:hover,
+      .generate-button:hover {
+        background-color: #444;
+        border-color: #666;
+        color: #fff;
       }
 
       /* Box containing textarea and generate button */
       .ai-prompt-box {
-        margin-top: 12px;
+        margin-top: 15px;
         display: flex;
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
+        animation: fadeIn 0.3s ease;
       }
 
       /* Textarea styling */
@@ -79,21 +81,30 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
         width: 100%;
         min-height: 100px;
         padding: 10px;
-        border: 1px solid #ccc;
+        background: #121212;
+        border: 1px solid #333;
+        color: #e0e0e0;
         border-radius: 6px;
         font-size: 14px;
         resize: vertical;
         transition: border-color 0.2s ease-in-out;
+        box-sizing: border-box;
       }
 
-      /* Generate button styling */
-      .generate-button {
-        background-color: #343a40;
-        color: white;
+      .ai-textarea:focus {
+        outline: none;
+        border-color: #666;
       }
 
-      .generate-button:hover {
-        background-color: #5a6268;
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-5px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
     `,
   ],

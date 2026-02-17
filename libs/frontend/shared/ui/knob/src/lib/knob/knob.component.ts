@@ -25,9 +25,10 @@ import { CommonModule } from '@angular/common';
       </div>
 
       <div class="knob-info">
-        <span [class.is-mapped]="isMapped">{{ label }}</span>
+        <span class="knob-label" [class.is-mapped]="isMapped">{{ label }}</span>
         <span class="value-display"
-          >{{ value | number : '1.1-1' }} {{ measureUnit }}</span
+          >{{ value | number : '1.1-1' }}
+          <span class="unit">{{ measureUnit }}</span></span
         >
       </div>
     </div>
@@ -39,26 +40,32 @@ import { CommonModule } from '@angular/common';
         flex-direction: column;
         align-items: center;
         user-select: none;
+        width: 100%;
+        font-family: 'Segoe UI', sans-serif;
       }
 
       .knob-container {
-        width: 4rem;
-        height: 4rem;
+        width: 3.5rem;
+        height: 3.5rem;
         display: flex;
         align-items: center;
         justify-content: center;
         position: relative;
+        background: radial-gradient(circle, #222 0%, #050505 100%);
+        border-radius: 50%;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.9),
+          0 1px 0 rgba(255, 255, 255, 0.1);
+        margin-bottom: 4px;
 
         &.learning-mode {
-          border: 2px solid #2978ff;
-          box-shadow: 0 0 12px #2978ff;
-          border-radius: 50%;
+          border: 2px solid #ff3333;
+          box-shadow: 0 0 10px #ff3333;
         }
       }
 
       .knob-render {
-        width: 3rem;
-        height: 3rem;
+        width: 100%;
+        height: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -66,20 +73,24 @@ import { CommonModule } from '@angular/common';
 
       .knob-icon {
         display: inline-block;
-        font-size: 3rem;
+        font-size: 3.2rem;
         line-height: 1;
         cursor: pointer;
-        color: #333;
+        color: #d0d0d0;
         transform-origin: center center;
-
         width: 1em;
         height: 1em;
         text-align: center;
+        filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.6));
+        transition: color 0.1s;
 
-        transition: transform 0.1s linear;
+        &:hover {
+          color: #ffffff;
+        }
 
         &:active {
-          color: #111;
+          color: #a0a0a0;
+          transform: scale(0.98);
         }
       }
 
@@ -87,18 +98,53 @@ import { CommonModule } from '@angular/common';
         display: flex;
         flex-direction: column;
         align-items: center;
-        font-size: 0.75rem;
-        margin-top: 4px;
+        gap: 2px;
+        width: 100%;
+      }
+
+      .knob-label {
+        font-size: 0.6rem;
+        font-weight: 700;
+        color: #888;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      .value-display {
+        font-size: 0.7rem;
+        color: #ff3333;
+        font-family: 'Consolas', monospace;
+        background: rgba(0, 0, 0, 0.4);
+        padding: 2px 6px;
+        border-radius: 3px;
+        min-width: 40px;
+        text-align: center;
+        border: 1px solid #333;
+        text-shadow: 0 0 5px rgba(255, 51, 51, 0.4);
+      }
+
+      .unit {
+        font-size: 0.6rem;
+        color: #888;
+        margin-left: 2px;
+      }
+
+      .is-mapped {
+        color: #ccc;
       }
 
       .is-mapped::after {
         content: '';
         display: inline-block;
-        width: 8px;
-        height: 8px;
-        background-color: #2978ff;
+        width: 6px;
+        height: 6px;
+        background-color: #ffcc00;
         border-radius: 50%;
-        margin-left: 0.4em;
+        margin-left: 5px;
+        vertical-align: middle;
+        box-shadow: 0 0 5px #ffcc00;
       }
     `,
   ],
