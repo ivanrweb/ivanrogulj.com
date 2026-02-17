@@ -15,7 +15,7 @@ import { NgIcon } from '@ng-icons/core';
         (click)="selectWaveform(waveform)"
         [title]="waveform"
       >
-        <ng-icon [name]="waveformMap[waveform]" size="1.8rem"></ng-icon>
+        <ng-icon [name]="waveformMap[waveform]" size="1.4rem"></ng-icon>
       </div>
       }
     </div>
@@ -24,24 +24,26 @@ import { NgIcon } from '@ng-icons/core';
     `
       .wave-selector {
         display: flex;
-        gap: 12px;
-        padding: 10px;
-        background: #ffffff;
-        border-radius: 8px;
+        gap: 8px;
+        padding: 6px;
+        background: #111;
+        border-radius: 6px;
+        border: 1px solid #333;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8);
         width: fit-content;
       }
 
       .wave-option {
-        width: 45px;
-        height: 45px;
+        width: 38px;
+        height: 38px;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        border: 2px solid #333;
-        border-radius: 6px;
-        color: #888;
-        background: #eee;
+        border: 1px solid #333;
+        border-radius: 4px;
+        color: #d0d0d0;
+        background: #1a1a1a;
         transition: all 0.2s ease-in-out;
 
         ng-icon {
@@ -51,14 +53,16 @@ import { NgIcon } from '@ng-icons/core';
 
         &:hover {
           border-color: #555;
-          color: #555;
+          color: #ffffff;
+          background: #222;
         }
 
         &.selected {
-          border-color: #2978ff;
-          color: #2978ff;
-          background: #eef4ff;
-          box-shadow: 0 0 10px rgba(41, 120, 255, 0.3);
+          border-color: #ff3333;
+          color: #ff3333;
+          background: rgba(255, 51, 51, 0.1);
+          box-shadow: 0 0 8px rgba(255, 51, 51, 0.4);
+          text-shadow: 0 0 5px rgba(255, 51, 51, 0.6);
         }
       }
     `,

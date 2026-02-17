@@ -19,14 +19,13 @@ import {
     <div class="effect-unit" [class.disabled]="!fxState.delay.enabled">
       <div class="effect-header">
         <span class="effect-title">DELAY</span>
-        <label class="toggle-switch">
-          <input
-            type="checkbox"
-            [ngModel]="fxState.delay.enabled"
-            (ngModelChange)="effectsVm.toggleDelay($event)"
-          />
-          <span class="slider"></span>
-        </label>
+
+        <button
+          class="power-btn"
+          [class.active]="fxState.delay.enabled"
+          (click)="effectsVm.toggleDelay(!fxState.delay.enabled)"
+          title="Toggle Delay"
+        ></button>
       </div>
 
       <div class="effect-controls">
@@ -86,7 +85,7 @@ import {
         color: #ffffff;
 
         &.disabled {
-          opacity: 0.6;
+          opacity: 0.8;
           .effect-controls {
             pointer-events: none;
             filter: grayscale(100%);
@@ -105,7 +104,7 @@ import {
 
       .effect-title {
         font-weight: bold;
-        color: #ddd;
+        color: #888;
         font-size: 0.9rem;
         letter-spacing: 1px;
       }
@@ -116,44 +115,28 @@ import {
         gap: 2px;
       }
 
-      .toggle-switch {
-        position: relative;
-        display: inline-block;
-        width: 30px;
+      /* LED Power Button */
+      .power-btn {
+        width: 16px;
         height: 16px;
-      }
-      .toggle-switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-      }
-      .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #555;
-        transition: 0.4s;
-        border-radius: 16px;
-      }
-      .slider:before {
-        position: absolute;
-        content: '';
-        height: 10px;
-        width: 10px;
-        left: 3px;
-        bottom: 3px;
-        background-color: white;
-        transition: 0.4s;
         border-radius: 50%;
+        border: 1px solid #777;
+        background: #555;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8);
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        padding: 0;
+        outline: none;
       }
-      input:checked + .slider {
-        background-color: #4caf50;
+
+      .power-btn:hover {
+        background: #444;
       }
-      input:checked + .slider:before {
-        transform: translateX(14px);
+
+      .power-btn.active {
+        background-color: #ffcc00;
+        box-shadow: 0 0 8px #ffcc00, inset 0 -1px 2px rgba(255, 255, 255, 0.4); /* Glow + Highlight */
+        border-color: #d4a000;
       }
     `,
   ],

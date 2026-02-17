@@ -24,11 +24,9 @@ import { FormsModule } from '@angular/forms';
 import { OscilloscopeComponent } from '@ivanrogulj.com/oscilloscope';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { TextareaComponent } from '@ivanrogulj.com/textarea';
-import { KnobComponent } from '@ivanrogulj.com/knob';
 import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack';
-import { CountSelectorComponent } from '@ivanrogulj.com/count-selector';
 
 @Component({
   selector: 'lib-analog-synth',
@@ -42,9 +40,7 @@ import { CountSelectorComponent } from '@ivanrogulj.com/count-selector';
     OscilloscopeComponent,
     TextareaComponent,
     FilterEnvelopeComponent,
-    KnobComponent,
     EffectsRackComponent,
-    CountSelectorComponent,
   ],
   providers: [AudioContextService],
   template: `
@@ -66,43 +62,6 @@ import { CountSelectorComponent } from '@ivanrogulj.com/count-selector';
           <div class="ai-header-wrapper">
             <lib-textarea />
           </div>
-        </div>
-
-        <div class="header-right">
-          <div>
-            <lib-count-selector
-              label="OSCILLATORS"
-              [value]="vm.oscillatorCount"
-              [min]="1"
-              [max]="8"
-              (valueChange)="analogSynthViewModel.updateOscillatorCount($event)"
-            >
-            </lib-count-selector>
-          </div>
-
-          @if (vm.oscillatorCount > 1) {
-          <div class="osc-detune-amount">
-            <lib-knob
-              label="Spread"
-              [minValue]="0"
-              [maxValue]="100"
-              [measureUnit]="'%'"
-              [value]="vm.detuneOscillatorsAmount"
-              [isLearningMode]="vm.learnMode"
-              [isMapped]="
-                vm.mappedParams[AnalogSynthApi.Knob.DETUNE_OSCILLATORS_AMOUNT]
-              "
-              (learn)="
-                analogSynthViewModel.startLearning(
-                  AnalogSynthApi.Knob.DETUNE_OSCILLATORS_AMOUNT
-                )
-              "
-              (valueChange)="
-                analogSynthViewModel.updateDetuneOscillatorsAmount($event)
-              "
-            ></lib-knob>
-          </div>
-          }
         </div>
 
         @if (vm.learnMode) {
@@ -192,8 +151,7 @@ import { CountSelectorComponent } from '@ivanrogulj.com/count-selector';
         position: relative;
       }
 
-      .header-left,
-      .header-right {
+      .header-left {
         display: flex;
         align-items: center;
         gap: 20px;
@@ -246,10 +204,6 @@ import { CountSelectorComponent } from '@ivanrogulj.com/count-selector';
       .led.on {
         background: #ff0000;
         box-shadow: 0 0 6px #ff0000;
-      }
-
-      .osc-detune-amount {
-        transform: scale(0.9);
       }
 
       .midi-hint {
