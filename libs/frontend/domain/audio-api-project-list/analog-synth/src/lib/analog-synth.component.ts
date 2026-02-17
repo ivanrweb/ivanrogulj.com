@@ -49,19 +49,19 @@ import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack';
       <div class="synth-header">
         <div class="header-left">
           <h3 class="synth-title">ANALOG SYNTH</h3>
+        </div>
 
+        <div class="header-right">
           <button
             class="btn-midi"
             (click)="analogSynthViewModel.toggleMidiLearn()"
             [class.active]="vm.learnMode"
           >
             <span class="led" [class.on]="vm.learnMode"></span>
-            {{ vm.learnMode ? 'MIDI LEARN ON' : 'MIDI LEARN' }}
+            {{ 'MIDI LEARN' }}
           </button>
 
-          <div class="ai-header-wrapper">
-            <lib-textarea />
-          </div>
+          <lib-textarea />
         </div>
 
         @if (vm.learnMode) {
@@ -137,7 +137,6 @@ import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack';
         gap: 20px;
       }
 
-      /* HEADER */
       .synth-header {
         background: #1a1a1a;
         padding: 15px 20px;
@@ -149,12 +148,14 @@ import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack';
         justify-content: space-between;
         gap: 20px;
         position: relative;
+        z-index: 1000;
       }
 
-      .header-left {
+      .header-left,
+      .header-right {
         display: flex;
         align-items: center;
-        gap: 20px;
+        gap: 15px;
       }
 
       .synth-title {
@@ -179,19 +180,17 @@ import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack';
         font-size: 0.8rem;
         font-weight: bold;
         transition: all 0.2s;
+        height: 33px;
+        box-sizing: border-box;
       }
 
       .btn-midi:hover {
         background: #333;
       }
-      .btn-midi.active {
-        border-color: #ff0000;
-        color: #fff;
-      }
 
-      .ai-header-wrapper {
-        display: flex;
-        align-items: center;
+      .btn-midi.active {
+        border-color: #ff3333;
+        color: #fff;
       }
 
       .led {
@@ -201,6 +200,7 @@ import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack';
         background: #440000;
         box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
       }
+
       .led.on {
         background: #ff0000;
         box-shadow: 0 0 6px #ff0000;
@@ -216,14 +216,12 @@ import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack';
         margin-top: 10px;
       }
 
-      /* GRID SYSTEM */
       .module-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 15px;
       }
 
-      /* MODULE CARD */
       .synth-module {
         background: #1e1e1e;
         border: 1px solid #333;
@@ -261,7 +259,6 @@ import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack';
         grid-column: 1 / -1;
       }
 
-      /* VISUALS */
       .visuals-section {
         width: 100%;
         background: #000;

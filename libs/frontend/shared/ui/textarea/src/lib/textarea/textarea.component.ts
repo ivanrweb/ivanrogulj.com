@@ -14,11 +14,13 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
       <button
         (click)="analogSynthViewModel.togglePrompt()"
         class="ai-prompt-button"
+        [class.active]="vm.isPromptOpen"
       >
-        {{ vm.isPromptOpen ? 'Close AI prompt' : 'Open AI Prompt' }}
+        {{ vm.isPromptOpen ? 'CLOSE AI PROMPT' : 'OPEN AI PROMPT' }}
       </button>
+
       @if(vm.isPromptOpen){
-      <div class="ai-prompt-box">
+      <div class="ai-prompt-popup">
         <textarea
           [(ngModel)]="patchAIDescription"
           class="ai-textarea"
@@ -28,7 +30,7 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
           (click)="analogSynthViewModel.generateAIPatch(patchAIDescription)"
           class="generate-button"
         >
-          Generate new AI patch
+          GENERATE NEW AI PATCH
         </button>
       </div>
       }
@@ -37,69 +39,94 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
   `,
   styles: [
     `
-      /* Container for the AI prompt */
+      :host {
+        display: block;
+      }
+
       .ai-prompt-container {
-        padding: 16px;
-        font-family: Arial, sans-serif;
-        color: #e0e0e0;
+        position: relative;
       }
 
-      /* General button styling */
-      .ai-prompt-button,
-      .generate-button {
-        padding: 10px 16px;
+      .ai-prompt-button {
+        background: #2a2a2a;
         border: 1px solid #444;
-        border-radius: 6px;
+        color: #ccc;
+        padding: 6px 12px;
+        border-radius: 4px;
         cursor: pointer;
-        font-size: 14px;
+        font-size: 0.8rem;
         font-weight: bold;
-        transition: all 0.2s ease-in-out;
-        background-color: #2a2a2a;
-        color: #e0e0e0;
-      }
-
-      /* Primary button styling */
-      .ai-prompt-button:hover,
-      .generate-button:hover {
-        background-color: #444;
-        border-color: #666;
-        color: #fff;
-      }
-
-      /* Box containing textarea and generate button */
-      .ai-prompt-box {
-        margin-top: 15px;
+        transition: all 0.2s;
+        white-space: nowrap;
+        height: 33px;
         display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-        animation: fadeIn 0.3s ease;
-      }
-
-      /* Textarea styling */
-      .ai-textarea {
-        width: 100%;
-        min-height: 100px;
-        padding: 10px;
-        background: #121212;
-        border: 1px solid #333;
-        color: #e0e0e0;
-        border-radius: 6px;
-        font-size: 14px;
-        resize: vertical;
-        transition: border-color 0.2s ease-in-out;
+        align-items: center;
+        justify-content: center;
+        min-width: 150px;
         box-sizing: border-box;
       }
 
-      .ai-textarea:focus {
-        outline: none;
-        border-color: #666;
+      .ai-prompt-button:hover {
+        background: #333;
+      }
+
+      .ai-prompt-button.active {
+        border-color: #ff3333;
+        color: #fff;
+      }
+
+      .ai-prompt-popup {
+        position: absolute;
+        top: calc(100% + 10px);
+        right: 0;
+        width: 300px;
+        background: #1a1a1a;
+        border: 1px solid #444;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        animation: fadeIn 0.2s ease-out;
+      }
+
+      .ai-textarea {
+        width: 100%;
+        min-height: 120px;
+        padding: 10px;
+        background: #0a0a0a;
+        border: 1px solid #333;
+        color: #e0e0e0;
+        border-radius: 6px;
+        font-size: 13px;
+        resize: vertical;
+        box-sizing: border-box;
+      }
+
+      .generate-button {
+        background: #2a2a2a;
+        border: 1px solid #444;
+        color: #eee;
+        padding: 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.7rem;
+        font-weight: bold;
+        transition: all 0.2s;
+      }
+
+      .generate-button:hover {
+        background: #ff3333;
+        color: #fff;
+        border-color: #ff3333;
       }
 
       @keyframes fadeIn {
         from {
           opacity: 0;
-          transform: translateY(-5px);
+          transform: translateY(-10px);
         }
         to {
           opacity: 1;
@@ -111,6 +138,5 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
 })
 export class TextareaComponent {
   public patchAIDescription = '';
-
   public analogSynthViewModel = inject(AnalogSynthViewModel);
 }

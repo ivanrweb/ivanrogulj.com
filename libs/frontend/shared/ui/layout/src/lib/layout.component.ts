@@ -18,12 +18,14 @@ import { FooterComponent } from '@ivanrogulj.com/footer';
     `
       :host {
         display: block;
+        width: 100%;
       }
 
       .layout-container {
         display: flex;
         flex-direction: column;
         min-height: 100vh;
+        width: 100%;
       }
 
       .content-area {

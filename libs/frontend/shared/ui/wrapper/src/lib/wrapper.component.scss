@@ -1,4 +1,20 @@
 #wrapper {
   margin: 2rem auto;
-  width: 80%;
+  width: 95%; /* Default for smaller screens */
+  max-width: 1600px; /* Limit on ultra-wide screens */
+}
+
+/* On desktop monitors 80% if screen if wide enough */
+@media (min-width: 1920px) {
+  #wrapper {
+    width: 80%;
+  }
+}
+
+/* Phones and tablets 100% */
+@media (max-width: 768px) {
+  #wrapper {
+    margin: 0 auto;
+    width: 100%;
+  }
 }
