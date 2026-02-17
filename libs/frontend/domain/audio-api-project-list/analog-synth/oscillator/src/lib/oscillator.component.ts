@@ -9,11 +9,27 @@ import { WaveformPickerComponent } from '@ivanrogulj.com/waveform-picker';
   selector: 'lib-oscillator',
   standalone: true,
   imports: [CommonModule, FormsModule, WaveformPickerComponent],
-  templateUrl: './oscillator.component.html',
-  styleUrl: './oscillator.component.scss',
+  template: `
+    @if (analogSynthViewModel.vm$ | async; as vm) {
+    <div>
+      <lib-waveform-picker
+        [waveforms]="oscTypes"
+        [selectedWaveform]="vm.selectedOscType"
+        (waveformChange)="analogSynthViewModel.onOscillatorTypeChange($event)"
+      >
+      </lib-waveform-picker>
+    </div>
+    }
+  `,
+  styles: [``],
 })
 export class OscillatorComponent {
-  public oscTypes: OscillatorType[] = ['sine', 'triangle', 'square', 'sawtooth'];
+  public oscTypes: OscillatorType[] = [
+    'sine',
+    'triangle',
+    'square',
+    'sawtooth',
+  ];
 
   protected analogSynthViewModel = inject(AnalogSynthViewModel);
 

@@ -1,9 +1,0 @@
-@if (analogSynthViewModel.vm$ | async; as vm) {
-  <div>
-    <lib-waveform-picker
-      [waveforms]="oscTypes"
-      [selectedWaveform]="vm.selectedOscType"
-      (waveformChange)="analogSynthViewModel.onOscillatorTypeChange($event)">
-    </lib-waveform-picker>
-  </div>
-}

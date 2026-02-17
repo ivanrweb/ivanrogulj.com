@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class OscilloscopeService {
-  private hue = 0; // State for color rotation
+  private hue = 0;
 
   public draw(analyser: AnalyserNode, oscilloscope: HTMLCanvasElement): void {
     // Use requestAnimationFrame to continuously update the drawing
@@ -26,19 +26,27 @@ export class OscilloscopeService {
       return;
     }
 
-    // Clear the canvas before drawing the next frame
+    // Find the rising edge zero-crossing point to stabilize the waveform
+    let triggerPoint = 0;
+    for (let i = 0; i < bufferLength; i++) {
+      // Look for the point where the wave crosses the center (128) going up
+      if (dataArray[i] < 128 && dataArray[i + 1] >= 128) {
+        triggerPoint = i;
+        break;
+      }
+    }
+
+    // Clear the canvas with a trail effect
     canvasCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
     canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Set stroke style for the waveform
-    // Rotate hue for dynamic rainbow color
+    // Update dynamic color
     this.hue = (this.hue + 1) % 360;
     const dynamicColor = `hsl(${this.hue}, 100%, 50%)`;
 
+    // Set stroke style and neon glow
     canvasCtx.lineWidth = 1;
     canvasCtx.strokeStyle = dynamicColor;
-
-    // Add neon glow effect
     canvasCtx.shadowBlur = 10;
     canvasCtx.shadowColor = dynamicColor;
 
@@ -51,8 +59,15 @@ export class OscilloscopeService {
 
     // Loop through each value in the dataArray and draw the waveform
     for (let i = 0; i < bufferLength; i++) {
-      // Calculate deviation from center (128) and multiply by 2.5 for higher amplitude
-      const v = (dataArray[i] - 128) * 2.5;
+      // Offset the data index by the trigger point to lock the phase
+      const index = i + triggerPoint;
+
+      // Handle buffer overflow if trigger offset goes out of bounds
+      // Default to silence (128) if no data available
+      const rawValue = index < bufferLength ? dataArray[index] : 128;
+
+      // Apply amplitude scaling (2.5x) for better visibility
+      const v = (rawValue - 128) * 2.5;
       const y = canvas.height / 2 + v;
 
       if (i === 0) {
@@ -65,10 +80,9 @@ export class OscilloscopeService {
     }
 
     // Finish the drawing path
-    canvasCtx.lineTo(canvas.width, canvas.height / 2);
     canvasCtx.stroke();
 
-    // Reset shadow to improve performance for the next fillRect
+    // Reset shadow to avoid performance issues on fillRect
     canvasCtx.shadowBlur = 0;
   }
 }
