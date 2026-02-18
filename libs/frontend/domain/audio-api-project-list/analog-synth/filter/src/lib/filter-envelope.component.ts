@@ -12,30 +12,6 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
   imports: [CommonModule, FormsModule, KnobComponent],
   template: `@if (analogSynthViewModel.vm$ | async; as vm) {
     <div class="env-panel">
-      <div class="amount-control">
-        <lib-knob
-          label="ENV Amount"
-          [minValue]="0"
-          [maxValue]="100"
-          [measureUnit]="'%'"
-          [value]="vm.filterEnvelopeAmount * 100"
-          [isLearningMode]="vm.learnMode"
-          [isMapped]="
-            vm.mappedParams[AnalogSynthApi.Knob.FILTER_ENVELOPE_AMOUNT]
-          "
-          (learn)="
-            analogSynthViewModel.startLearning(
-              AnalogSynthApi.Knob.FILTER_ENVELOPE_AMOUNT
-            )
-          "
-          (valueChange)="
-            analogSynthViewModel.updateFilterEnvelopeAmount($event / 100)
-          "
-        ></lib-knob>
-      </div>
-
-      <div class="separator"></div>
-
       <div class="adsr-container">
         <lib-knob
           [minValue]="0"
@@ -103,6 +79,30 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
             )
           "
         />
+      </div>
+
+      <div class="separator"></div>
+
+      <div class="amount-control">
+        <lib-knob
+          label="ENV Amount"
+          [minValue]="0"
+          [maxValue]="100"
+          [measureUnit]="'%'"
+          [value]="vm.filterEnvelopeAmount * 100"
+          [isLearningMode]="vm.learnMode"
+          [isMapped]="
+            vm.mappedParams[AnalogSynthApi.Knob.FILTER_ENVELOPE_AMOUNT]
+          "
+          (learn)="
+            analogSynthViewModel.startLearning(
+              AnalogSynthApi.Knob.FILTER_ENVELOPE_AMOUNT
+            )
+          "
+          (valueChange)="
+            analogSynthViewModel.updateFilterEnvelopeAmount($event / 100)
+          "
+        ></lib-knob>
       </div>
     </div>
     }`,

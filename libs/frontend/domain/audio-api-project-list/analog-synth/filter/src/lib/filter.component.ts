@@ -14,6 +14,7 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
   template: ` @if (analogSynthViewModel.vm$ | async; as vm) {
     <div class="filter-controls">
       <lib-knob
+        class="filter-knob"
         [minValue]="10"
         [maxValue]="10000"
         [label]="'Cutoff'"
@@ -30,6 +31,7 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
       />
 
       <lib-knob
+        class="filter-knob"
         [minValue]="0"
         [maxValue]="20"
         [label]="'Resonance'"
@@ -51,8 +53,15 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
       .filter-controls {
         display: flex;
         justify-content: center;
-        gap: 15px;
+        gap: 20px;
         width: 100%;
+      }
+
+      .filter-knob {
+        flex: 1;
+        min-width: 90px;
+        display: flex;
+        justify-content: center;
       }
     `,
   ],

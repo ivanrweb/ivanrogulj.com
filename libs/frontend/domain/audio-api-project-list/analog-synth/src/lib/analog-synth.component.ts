@@ -52,24 +52,26 @@ import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack';
         </div>
 
         <div class="header-right">
-          <button
-            class="btn-midi"
-            (click)="analogSynthViewModel.toggleMidiLearn()"
-            [class.active]="vm.learnMode"
-          >
-            <span class="led" [class.on]="vm.learnMode"></span>
-            {{ 'MIDI LEARN' }}
-          </button>
+          <div class="midi-btn-wrapper">
+            <button
+              class="btn-midi"
+              (click)="analogSynthViewModel.toggleMidiLearn()"
+              [class.active]="vm.learnMode"
+            >
+              <span class="led" [class.on]="vm.learnMode"></span>
+              {{ 'MIDI LEARN' }}
+            </button>
+
+            @if (vm.learnMode) {
+            <div class="midi-tooltip">
+              Double click on button with mouse first, then assign the physical
+              knob to it by pressing/rotating it.
+            </div>
+            }
+          </div>
 
           <lib-textarea />
         </div>
-
-        @if (vm.learnMode) {
-        <div class="midi-hint">
-          Double click on button with mouse first, then assign the physical knob
-          to it by pressing/rotating it
-        </div>
-        }
       </div>
 
       <div class="module-grid">
@@ -167,6 +169,12 @@ import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack';
         text-transform: uppercase;
       }
 
+      .midi-btn-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+
       .btn-midi {
         background: #2a2a2a;
         border: 1px solid #444;
@@ -206,14 +214,22 @@ import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack';
         box-shadow: 0 0 6px #ff0000;
       }
 
-      .midi-hint {
-        width: 100%;
-        font-size: 0.8rem;
+      .midi-tooltip {
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 0;
+        width: 250px;
+        background: #1a1a1a;
+        border: 1px solid #ffcc00;
         color: #ffcc00;
-        text-align: center;
-        padding-top: 5px;
-        border-top: 1px solid #333;
-        margin-top: 10px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        text-align: left;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        z-index: 1100;
+        pointer-events: none;
+        animation: fadeIn 0.2s ease-out;
       }
 
       .module-grid {
@@ -266,6 +282,17 @@ import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack';
         border: 1px solid #333;
         padding: 0;
         overflow: hidden;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-5px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
     `,
   ],
