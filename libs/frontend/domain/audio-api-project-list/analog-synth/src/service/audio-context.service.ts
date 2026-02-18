@@ -14,6 +14,11 @@ export class AudioContextService {
   private analyserNode?: AnalyserNode;
   private effectsInputBus?: GainNode;
 
+  //NoiseComponent
+  private noiseSource?: AudioBufferSourceNode;
+  private noiseGain?: GainNode;
+  private currentNoiseType: 'white' | 'pink' | 'brown' = 'brown';
+
   //Effect references
   private distortionEffect?: DistortionEffect;
   private reverbEffect?: ReverbEffect;
@@ -38,6 +43,12 @@ export class AudioContextService {
 
     // Create Effects Bus
     this.effectsInputBus = this.context.createGain();
+
+    // NoiseComponent setup
+    this.noiseGain = this.context.createGain();
+    this.noiseGain.gain.value = 0;
+    this.noiseGain.connect(this.effectsInputBus);
+    this.startNoiseSource();
 
     // Instantiate effects
     this.distortionEffect = new DistortionEffect(this.context);
@@ -84,10 +95,95 @@ export class AudioContextService {
     return Math.random() * detuneValue - detuneValue / 2;
   }
 
+  public setNoiseGain(value: number): void {
+    if (this.noiseGain) {
+      this.noiseGain.gain.setTargetAtTime(value, this.currentTime, 0.02);
+    }
+  }
+
+  public setNoiseType(type: 'white' | 'pink' | 'brown'): void {
+    if (this.currentNoiseType === type) return;
+    this.currentNoiseType = type;
+    this.startNoiseSource();
+  }
+
   public createFilter(): BiquadFilterNode {
     const filterNode = this.context.createBiquadFilter();
     filterNode.type = 'lowpass';
     return filterNode;
+  }
+
+  private startNoiseSource(): void {
+    if (this.noiseSource) {
+      this.noiseSource.stop();
+      this.noiseSource.disconnect();
+    }
+
+    // Create 2 second buffer and reapeat it
+    const bufferSize = 2 * this.context.sampleRate;
+    const buffer = this.context.createBuffer(
+      1,
+      bufferSize,
+      this.context.sampleRate
+    );
+    const data = buffer.getChannelData(0);
+
+    switch (this.currentNoiseType) {
+      case 'white':
+        this.fillWhiteNoise(data);
+        break;
+      case 'pink':
+        this.fillPinkNoise(data);
+        break;
+      case 'brown':
+        this.fillBrownNoise(data);
+        break;
+    }
+
+    this.noiseSource = this.context.createBufferSource();
+    this.noiseSource.buffer = buffer;
+    this.noiseSource.loop = true;
+    this.noiseSource.connect(this.noiseGain!);
+    this.noiseSource.start();
+  }
+
+  private fillWhiteNoise(data: Float32Array): void {
+    // Flat frequency response (0dB/octave).
+    for (let i = 0; i < data.length; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+  }
+
+  private fillPinkNoise(data: Float32Array): void {
+    // Rolls off at -3dB per octave (1/f noise).
+    let b0, b1, b2, b3, b4, b5, b6;
+    b0 = b1 = b2 = b3 = b4 = b5 = b6 = 0.0;
+
+    for (let i = 0; i < data.length; i++) {
+      const white = Math.random() * 2 - 1;
+      b0 = 0.99886 * b0 + white * 0.0555179;
+      b1 = 0.99332 * b1 + white * 0.0750759;
+      b2 = 0.969 * b2 + white * 0.153852;
+      b3 = 0.8665 * b3 + white * 0.3104856;
+      b4 = 0.55 * b4 + white * 0.5329522;
+      b5 = -0.7616 * b5 - white * 0.0168981;
+
+      data[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+      data[i] *= 0.11;
+      b6 = white * 0.115926;
+    }
+  }
+
+  private fillBrownNoise(data: Float32Array): void {
+    // Rolls off at -6dB per octave (1/f^2 noise).
+    let lastOut = 0.0;
+    for (let i = 0; i < data.length; i++) {
+      const white = Math.random() * 2 - 1;
+
+      // Leaky integrator (equivalent of a low-pass filter)
+      lastOut = (lastOut + 0.02 * white) / 1.02;
+      data[i] = lastOut * 3.5;
+    }
   }
 
   // Directly set filter frequency, bypassing filter envelope

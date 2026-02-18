@@ -25,6 +25,9 @@ export interface AnalogSynthState {
   learnMode: boolean;
   learnTarget: AnalogSynthApi.Knob | null;
   mappedParams: Record<string, boolean>;
+  noiseType: 'white' | 'pink' | 'brown';
+  noiseVolume: number;
+  isPolyphonic: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -44,8 +47,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     super({
       voices: [],
       selectedOscType: 'sawtooth',
-      oscillatorCount: 1,
-      detuneOscillatorsAmount: 10,
+      oscillatorCount: 2,
+      detuneOscillatorsAmount: 0,
       volumeEnvelope: {
         attack: 0.15,
         decay: 0.6,
@@ -55,12 +58,15 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       filterEnvelope: { attack: 0.3, decay: 0, sustain: 0.05, release: 0.02 },
       filterEnvelopeAmount: 0.5,
       masterGain: 0.5,
-      filterFrequency: 200,
+      filterFrequency: 2000,
       filterResonance: 1.0,
       isPromptOpen: false,
       learnMode: false,
       learnTarget: null,
       mappedParams: {},
+      noiseType: 'brown',
+      noiseVolume: 0,
+      isPolyphonic: true,
     });
 
     this.midiService.noteOn$.subscribe(({ note, velocity }) => {
@@ -230,6 +236,11 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     frequency: number,
     velocity: number
   ): void {
+    if (!this.get().isPolyphonic) {
+      // If in Mono mode, turn off all current oscillators
+      this.get().voices.forEach((v) => this.stopVoice(v.id));
+    }
+
     const {
       selectedOscType,
       volumeEnvelope,
@@ -338,10 +349,24 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     }
   }
 
+  public togglePolyphony(): void {
+    this.patchState((state) => ({ isPolyphonic: !state.isPolyphonic }));
+  }
+
   public updateGain(gainValue: number): void {
     if (typeof gainValue !== 'number' || !isFinite(gainValue)) return;
     this.patchState({ masterGain: gainValue });
     this.audioContextService.setMasterGain(gainValue);
+  }
+
+  public updateNoiseVolume(volume: number): void {
+    this.patchState({ noiseVolume: volume });
+    this.audioContextService.setNoiseGain(volume);
+  }
+
+  public updateNoiseType(type: 'white' | 'pink' | 'brown'): void {
+    this.patchState({ noiseType: type });
+    this.audioContextService.setNoiseType(type);
   }
 
   public updateFilterFrequency(frequency: number): void {

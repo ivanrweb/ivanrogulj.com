@@ -8,6 +8,14 @@ export class OscilloscopeService {
     // Use requestAnimationFrame to continuously update the drawing
     requestAnimationFrame(() => this.draw(analyser, oscilloscope));
 
+    if (
+      oscilloscope.width !== oscilloscope.clientWidth ||
+      oscilloscope.height !== oscilloscope.clientHeight
+    ) {
+      oscilloscope.width = oscilloscope.clientWidth;
+      oscilloscope.height = oscilloscope.clientHeight;
+    }
+
     // Get the number of frequency bins
     const bufferLength = analyser.frequencyBinCount;
     // Create a new Uint8Array to store the time-domain data
@@ -44,7 +52,7 @@ export class OscilloscopeService {
     // Set stroke style and neon glow
     canvasCtx.lineWidth = 1;
     canvasCtx.strokeStyle = dynamicColor;
-    canvasCtx.shadowBlur = 10;
+    canvasCtx.shadowBlur = 4;
     canvasCtx.shadowColor = dynamicColor;
 
     // Begin the drawing path
@@ -63,9 +71,10 @@ export class OscilloscopeService {
       // Default to silence (128) if no data available
       const rawValue = index < bufferLength ? dataArray[index] : 128;
 
-      // Apply amplitude scaling (2.5x) for better visibility
-      const v = (rawValue - 128) * 2.5;
-      const y = canvas.height / 2 + v;
+      // Apply amplitude scaling (3.0x) for better visibility
+      const amplitudeScale = 4.0;
+      const v = ((rawValue - 128) / 128.0) * amplitudeScale;
+      const y = canvas.height / 2 + v * (canvas.height / 2);
 
       if (i === 0) {
         canvasCtx.moveTo(x, y);

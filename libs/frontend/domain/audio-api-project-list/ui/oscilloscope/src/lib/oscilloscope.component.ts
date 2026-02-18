@@ -25,19 +25,22 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
       :host {
         display: block;
         width: 100%;
+        height: 100%;
       }
 
       .scope-container {
         width: 100%;
+        height: 100%;
         display: flex;
         justify-content: center;
         padding: 0;
         box-sizing: border-box;
+        overflow: hidden;
       }
 
       canvas {
         width: 100%;
-        height: 200px;
+        height: 100%;
         display: block;
         background-color: #000;
         border: 1px solid #333;

@@ -34,8 +34,8 @@ import { NgIcon } from '@ng-icons/core';
       }
 
       .wave-option {
-        width: 38px;
-        height: 38px;
+        width: 40px;
+        height: 40px;
         display: flex;
         align-items: center;
         justify-content: center;

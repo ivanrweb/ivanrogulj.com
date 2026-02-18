@@ -1,15 +1,31 @@
-import { AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common'; // eslint-disable-next-line @nx/enforce-module-boundaries
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  inject,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { OscillatorComponent } from '@ivanrogulj.com/oscillator';
-import { AudioContextService } from '../service/audio-context.service'; // eslint-disable-next-line @nx/enforce-module-boundaries
-import { FilterComponent } from '@ivanrogulj.com/filter'; // eslint-disable-next-line @nx/enforce-module-boundaries
+import { AudioContextService } from '../service/audio-context.service';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { FilterComponent } from '@ivanrogulj.com/filter';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { GainComponent } from '@ivanrogulj.com/gain';
 import { AnalogSynthViewModel } from '../viewmodel/analog-synth.viewmodel';
-import { FormsModule } from '@angular/forms'; // eslint-disable-next-line @nx/enforce-module-boundaries
-import { OscilloscopeComponent } from '@ivanrogulj.com/oscilloscope'; // eslint-disable-next-line @nx/enforce-module-boundaries
+import { FormsModule } from '@angular/forms';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { OscilloscopeComponent } from '@ivanrogulj.com/oscilloscope';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { TextareaComponent } from '@ivanrogulj.com/textarea';
-import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model'; // eslint-disable-next-line @nx/enforce-module-boundaries
+import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { NoiseGeneratorComponent } from '@ivanrogulj.com/noise';
 
 @Component({
   selector: 'lib-analog-synth',
@@ -23,6 +39,7 @@ import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack';
     OscilloscopeComponent,
     TextareaComponent,
     EffectsRackComponent,
+    NoiseGeneratorComponent,
   ],
   providers: [AudioContextService],
   template: `
@@ -64,9 +81,36 @@ import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack';
           </div>
         </div>
 
-        <div class="synth-module filter-module">
+        <div class="synth-module utility-module">
           <h4 class="module-label">UTILITY</h4>
-          <div class="module-content"></div>
+
+          <div class="module-content utility-content">
+            <div class="utility-controls">
+              <div class="control-group">
+                <label class="control-label">VOICING</label>
+                <button
+                  class="btn-voicing"
+                  [class.poly]="vm.isPolyphonic"
+                  [class.mono]="!vm.isPolyphonic"
+                  (click)="analogSynthViewModel.togglePolyphony()"
+                  title="Toggle Mono/Poly Mode"
+                >
+                  <i class="fad-squareswitch icon-lg"></i>
+                  <span class="voicing-state">{{
+                    vm.isPolyphonic ? 'POLY' : 'MONO'
+                  }}</span>
+                </button>
+              </div>
+
+              <div class="v-separator"></div>
+
+              <lib-noise-generator />
+            </div>
+
+            <div class="utility-scope">
+              <lib-oscilloscope />
+            </div>
+          </div>
         </div>
 
         <div class="synth-module filter-module">
@@ -89,10 +133,6 @@ import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack';
             <lib-effects-rack />
           </div>
         </div>
-      </div>
-
-      <div class="visuals-section">
-        <lib-oscilloscope />
       </div>
     </div>
     }
@@ -251,17 +291,111 @@ import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack';
         align-items: center;
       }
 
-      .fx-module {
-        grid-column: 1 / -1;
+      .utility-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        width: 100%;
+        height: 100%;
+        padding: 15px;
+        box-sizing: border-box;
       }
 
-      .visuals-section {
+      .utility-controls {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-evenly;
         width: 100%;
+        gap: 10px;
+      }
+
+      .utility-scope {
+        width: 100%;
+        height: 60px;
         background: #000;
-        border-radius: 8px;
         border: 1px solid #333;
-        padding: 0;
+        border-radius: 4px;
         overflow: hidden;
+        display: flex;
+      }
+
+      .utility-scope ::ng-deep canvas {
+        width: 100% !important;
+        height: 100% !important;
+      }
+
+      .control-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .control-label {
+        font-size: 0.6rem;
+        color: #888;
+        font-weight: bold;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      .v-separator {
+        width: 1px;
+        height: 40px;
+        background-color: #333;
+        margin: 0 5px;
+      }
+
+      .btn-voicing {
+        background: #0a0a0a;
+        border: 1px solid #444;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 70px;
+        height: 55px;
+        transition: all 0.2s ease;
+        color: #666;
+        gap: 5px;
+      }
+
+      .btn-voicing:hover {
+        border-color: #666;
+        background: #151515;
+      }
+
+      .icon-lg {
+        font-size: 1.5rem;
+      }
+
+      .voicing-state {
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+      }
+
+      .btn-voicing.poly {
+        color: #ffcc00;
+        border-color: #ffcc00;
+        background: rgba(255, 204, 0, 0.05);
+        box-shadow: 0 0 8px rgba(255, 204, 0, 0.15);
+      }
+
+      .btn-voicing.mono {
+        color: #ff3333;
+        border-color: #ff3333;
+        background: rgba(255, 51, 51, 0.05);
+        box-shadow: 0 0 8px rgba(255, 51, 51, 0.15);
+      }
+
+      .fx-module {
+        grid-column: 1 / -1;
       }
 
       @keyframes fadeIn {
