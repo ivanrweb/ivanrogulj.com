@@ -44,6 +44,9 @@
       "@ivanrogulj.com/effects-rack": [
         "libs/frontend/shared/ui/effects-rack/src/index.ts"
       ],
+      "@ivanrogulj.com/envelope": [
+        "libs/frontend/shared/ui/envelope/src/index.ts"
+      ],
       "@ivanrogulj.com/filter": [
         "libs/frontend/domain/audio-api-project-list/analog-synth/filter/src/index.ts"
       ],

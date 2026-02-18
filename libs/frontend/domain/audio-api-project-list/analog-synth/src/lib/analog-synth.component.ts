@@ -1,31 +1,14 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  inject,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import { CommonModule } from '@angular/common';
-// eslint-disable-next-line @nx/enforce-module-boundaries
+import { AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common'; // eslint-disable-next-line @nx/enforce-module-boundaries
 import { OscillatorComponent } from '@ivanrogulj.com/oscillator';
-import { AudioContextService } from '../service/audio-context.service';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import {
-  FilterComponent,
-  FilterEnvelopeComponent,
-} from '@ivanrogulj.com/filter';
-// eslint-disable-next-line @nx/enforce-module-boundaries
+import { AudioContextService } from '../service/audio-context.service'; // eslint-disable-next-line @nx/enforce-module-boundaries
+import { FilterComponent } from '@ivanrogulj.com/filter'; // eslint-disable-next-line @nx/enforce-module-boundaries
 import { GainComponent } from '@ivanrogulj.com/gain';
 import { AnalogSynthViewModel } from '../viewmodel/analog-synth.viewmodel';
-import { FormsModule } from '@angular/forms';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { OscilloscopeComponent } from '@ivanrogulj.com/oscilloscope';
-// eslint-disable-next-line @nx/enforce-module-boundaries
+import { FormsModule } from '@angular/forms'; // eslint-disable-next-line @nx/enforce-module-boundaries
+import { OscilloscopeComponent } from '@ivanrogulj.com/oscilloscope'; // eslint-disable-next-line @nx/enforce-module-boundaries
 import { TextareaComponent } from '@ivanrogulj.com/textarea';
-import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
-// eslint-disable-next-line @nx/enforce-module-boundaries
+import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model'; // eslint-disable-next-line @nx/enforce-module-boundaries
 import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack';
 
 @Component({
@@ -39,7 +22,6 @@ import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack';
     FormsModule,
     OscilloscopeComponent,
     TextareaComponent,
-    FilterEnvelopeComponent,
     EffectsRackComponent,
   ],
   providers: [AudioContextService],
@@ -76,23 +58,21 @@ import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack';
 
       <div class="module-grid">
         <div class="synth-module source-module">
-          <h4 class="module-label">SOURCE</h4>
+          <h4 class="module-label">OSCILLATOR</h4>
           <div class="module-content">
             <lib-oscillator />
           </div>
         </div>
 
         <div class="synth-module filter-module">
+          <h4 class="module-label">UTILITY</h4>
+          <div class="module-content"></div>
+        </div>
+
+        <div class="synth-module filter-module">
           <h4 class="module-label">FILTER</h4>
           <div class="module-content">
             <lib-filter />
-          </div>
-        </div>
-
-        <div class="synth-module env-module">
-          <h4 class="module-label">FILTER ENV</h4>
-          <div class="module-content">
-            <lib-filter-envelope />
           </div>
         </div>
 

@@ -124,7 +124,7 @@ export class AudioContextService {
     const clampedPeak = Math.min(peakFrequency, this.FILTER_MAX_FREQ);
     const clampedSustain = Math.max(this.FILTER_MIN_FREQ, sustainFrequency);
 
-    // Envelope always starts from the lowest frequency for classic "sweep" effect.
+    // AdsrEnvelopeComponent always starts from the lowest frequency for classic "sweep" effect.
     const startFrequency = this.FILTER_MIN_FREQ;
 
     filterFreq.cancelScheduledValues(now);

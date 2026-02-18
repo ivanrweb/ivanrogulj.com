@@ -5,14 +5,33 @@ import { KnobComponent } from '@ivanrogulj.com/knob';
 import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
+import { AdsrEnvelopeComponent } from '@ivanrogulj.com/envelope';
 
 @Component({
   selector: 'lib-gain',
   standalone: true,
-  imports: [CommonModule, FormsModule, KnobComponent],
+  imports: [CommonModule, FormsModule, KnobComponent, AdsrEnvelopeComponent],
   template: `
     @if (analogSynthViewModel.vm$ | async; as vm) {
     <div class="gain-panel">
+      <div class="master-control">
+        <lib-knob
+          [minValue]="0"
+          [maxValue]="1"
+          [value]="vm.masterGain"
+          [label]="'Master Vol'"
+          [isLearningMode]="vm.learnMode"
+          [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.MASTER_GAIN]"
+          (valueChange)="onGainChange($event)"
+          (learn)="
+            analogSynthViewModel.startLearning(AnalogSynthApi.Knob.MASTER_GAIN)
+          "
+        >
+        </lib-knob>
+      </div>
+
+      <div class="separator"></div>
+
       <div class="adsr-container">
         <lib-knob
           [minValue]="0"
@@ -80,23 +99,13 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
         </lib-knob>
       </div>
 
-      <div class="separator"></div>
-
-      <div class="master-control">
-        <lib-knob
-          [minValue]="0"
-          [maxValue]="1"
-          [value]="vm.masterGain"
-          [label]="'Master Vol'"
-          [isLearningMode]="vm.learnMode"
-          [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.MASTER_GAIN]"
-          (valueChange)="onGainChange($event)"
-          (learn)="
-            analogSynthViewModel.startLearning(AnalogSynthApi.Knob.MASTER_GAIN)
-          "
-        >
-        </lib-knob>
-      </div>
+      <lib-adsr-envelope
+        [attack]="vm.volumeEnvelope.attack"
+        [decay]="vm.volumeEnvelope.decay"
+        [sustain]="vm.volumeEnvelope.sustain"
+        [release]="vm.volumeEnvelope.release"
+      >
+      </lib-adsr-envelope>
     </div>
     }
   `,
