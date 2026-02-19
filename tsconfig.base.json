@@ -81,6 +81,7 @@
       "@ivanrogulj.com/oscilloscope": [
         "libs/frontend/domain/audio-api-project-list/ui/oscilloscope/src/index.ts"
       ],
+      "@ivanrogulj.com/select": ["libs/frontend/shared/ui/select/src/index.ts"],
       "@ivanrogulj.com/shared/data-access/model": [
         "libs/shared/data-access/model/src/index.ts"
       ],

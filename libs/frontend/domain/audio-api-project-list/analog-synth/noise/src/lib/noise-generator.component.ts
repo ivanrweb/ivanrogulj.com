@@ -7,25 +7,22 @@ import { KnobComponent } from '@ivanrogulj.com/knob';
 import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
 
 import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
+import { SelectComponent, SelectOption } from '@ivanrogulj.com/select';
 
 @Component({
   selector: 'lib-noise-generator',
   standalone: true,
-  imports: [CommonModule, FormsModule, KnobComponent],
+  imports: [CommonModule, FormsModule, KnobComponent, SelectComponent],
   template: `
     @if (analogSynthViewModel.vm$ | async; as vm) {
     <div class="noise-container">
       <div class="type-selector">
         <label class="label-small">COLOR</label>
-        <select
-          [ngModel]="vm.noiseType"
-          (ngModelChange)="analogSynthViewModel.updateNoiseType($event)"
-          class="synth-select"
-        >
-          <option value="white">White</option>
-          <option value="pink">Pink</option>
-          <option value="brown">Brown</option>
-        </select>
+        <lib-select
+          [options]="noiseOptions"
+          [value]="vm.noiseType"
+          (valueChange)="analogSynthViewModel.updateNoiseType($any($event))"
+        ></lib-select>
       </div>
 
       <div class="knob-wrapper">
@@ -63,6 +60,7 @@ import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
         flex-direction: column;
         align-items: center;
         gap: 5px;
+        width: 80px;
       }
 
       .label-small {
@@ -73,25 +71,6 @@ import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
         font-weight: bold;
       }
 
-      .synth-select {
-        background: #0a0a0a;
-        color: #ffcc00;
-        border: 1px solid #444;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-family: inherit;
-        font-size: 0.75rem;
-        outline: none;
-        cursor: pointer;
-        text-transform: uppercase;
-        font-weight: bold;
-        width: 80px;
-      }
-
-      .synth-select:focus {
-        border-color: #ffcc00;
-      }
-
       .knob-wrapper {
         display: flex;
         justify-content: center;
@@ -100,6 +79,13 @@ import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
   ],
 })
 export class NoiseGeneratorComponent {
-  protected readonly AnalogSynthApi = AnalogSynthApi;
   public analogSynthViewModel = inject(AnalogSynthViewModel);
+
+  public noiseOptions: SelectOption[] = [
+    { label: 'White', value: 'white' },
+    { label: 'Pink', value: 'pink' },
+    { label: 'Brown', value: 'brown' },
+  ];
+
+  protected readonly AnalogSynthApi = AnalogSynthApi;
 }
