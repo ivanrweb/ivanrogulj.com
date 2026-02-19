@@ -1,7 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import { KnobComponent } from '@ivanrogulj.com/knob';
 import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 // eslint-disable-next-line @nx/enforce-module-boundaries
@@ -43,6 +42,34 @@ import {
           (valueChange)="effectsVm.updateDistortionAmount($event / 100)"
           (learn)="synthVm.startLearning(AnalogSynthApi.Knob.DISTORTION_AMOUNT)"
         ></lib-knob>
+
+        <lib-knob
+          label="Tone"
+          [minValue]="0"
+          [maxValue]="100"
+          [measureUnit]="'%'"
+          [value]="fxState.distortion.tone * 100"
+          [isLearningMode]="synthState.learnMode"
+          [isMapped]="
+            synthState.mappedParams[AnalogSynthApi.Knob.DISTORTION_TONE]
+          "
+          (valueChange)="effectsVm.updateDistortionTone($event / 100)"
+          (learn)="synthVm.startLearning(AnalogSynthApi.Knob.DISTORTION_TONE)"
+        ></lib-knob>
+
+        <lib-knob
+          label="Mix"
+          [minValue]="0"
+          [maxValue]="100"
+          [measureUnit]="'%'"
+          [value]="fxState.distortion.mix * 100"
+          [isLearningMode]="synthState.learnMode"
+          [isMapped]="
+            synthState.mappedParams[AnalogSynthApi.Knob.DISTORTION_MIX]
+          "
+          (valueChange)="effectsVm.updateDistortionMix($event / 100)"
+          (learn)="synthVm.startLearning(AnalogSynthApi.Knob.DISTORTION_MIX)"
+        ></lib-knob>
       </div>
     </div>
     } }
@@ -60,14 +87,15 @@ import {
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         transition: opacity 0.3s;
         color: #ffffff;
+      }
 
-        &.disabled {
-          opacity: 0.8;
-          .effect-controls {
-            pointer-events: none;
-            filter: grayscale(100%);
-          }
-        }
+      .effect-unit.disabled {
+        opacity: 0.8;
+      }
+
+      .effect-unit.disabled .effect-controls {
+        pointer-events: none;
+        filter: grayscale(100%);
       }
 
       .effect-header {
@@ -88,7 +116,7 @@ import {
 
       .effect-controls {
         display: flex;
-        justify-content: center;
+        justify-content: space-around;
         gap: 2px;
       }
 

@@ -351,9 +351,11 @@ export class AudioContextService {
   }
 
   //EFFECTS
-  public setDistortionParams(amount: number): void {
+  public setDistortionParams(amount: number, tone: number, mix: number): void {
     if (this.distortionEffect) {
       this.distortionEffect.setParam('amount', amount);
+      this.distortionEffect.setParam('tone', tone);
+      this.distortionEffect.setParam('mix', mix);
     }
   }
 

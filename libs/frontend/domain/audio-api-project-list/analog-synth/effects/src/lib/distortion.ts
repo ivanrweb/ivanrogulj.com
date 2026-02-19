@@ -9,13 +9,17 @@ export class DistortionEffect implements AnalogSynthApi.SynthEffect {
   public input: GainNode;
   public output: GainNode;
 
-  private waveShaper: WaveShaperNode;
+  public waveShaper: WaveShaperNode;
 
   /** Controls the input amplitude entering the WaveShaper. Higher values result in more saturation. */
-  private driveGain: GainNode;
+  public driveGain: GainNode;
 
   /** Compensates for the volume increase caused by the WaveShaper saturation. */
-  private outputGain: GainNode;
+  public outputGain: GainNode;
+
+  public toneFilter: BiquadFilterNode;
+  public dryGain: GainNode;
+  public wetGain: GainNode;
 
   constructor(private context: AudioContext) {
     this.input = context.createGain();
@@ -23,18 +27,32 @@ export class DistortionEffect implements AnalogSynthApi.SynthEffect {
     this.waveShaper = context.createWaveShaper();
     this.driveGain = context.createGain();
     this.outputGain = context.createGain();
+    this.toneFilter = context.createBiquadFilter();
+    this.dryGain = context.createGain();
+    this.wetGain = context.createGain();
+
+    this.toneFilter.type = 'lowpass';
 
     // Signal Routing
+    this.input.connect(this.dryGain);
+    this.dryGain.connect(this.output);
+
     this.input.connect(this.driveGain);
     this.driveGain.connect(this.waveShaper);
-    this.waveShaper.connect(this.outputGain);
-    this.outputGain.connect(this.output);
+    this.waveShaper.connect(this.toneFilter);
+    this.toneFilter.connect(this.outputGain);
+    this.outputGain.connect(this.wetGain);
+    this.wetGain.connect(this.output);
 
     // Initialization
     this.waveShaper.curve = this.makeDistortionCurve(0);
-    this.waveShaper.oversample = '4x'; // Reduces aliasing artifacts
+    this.waveShaper.oversample = '4x';
     this.driveGain.gain.value = 1;
     this.outputGain.gain.value = 1;
+
+    this.toneFilter.frequency.value = 20000;
+    this.dryGain.gain.value = 0;
+    this.wetGain.gain.value = 1;
   }
 
   public connect(target: AudioNode): void {
@@ -51,6 +69,8 @@ export class DistortionEffect implements AnalogSynthApi.SynthEffect {
    * @param value - The value to set.
    */
   public setParam(param: string, value: number): void {
+    const now = this.context.currentTime;
+
     if (param === 'amount') {
       // Normalize input (0-1) to a drive scale (0-1000) for the algorithm
       const distortionAmount = value * 1000;
@@ -60,11 +80,22 @@ export class DistortionEffect implements AnalogSynthApi.SynthEffect {
       // Auto-makeup gain: reduce output volume as distortion increases to maintain perceived loudness
       // value 0 -> gain 1.0; value 1 -> gain 0.1
       const makeupGain = 1 - value * 0.9;
-      this.outputGain.gain.setTargetAtTime(
-        makeupGain,
-        this.context.currentTime,
-        0.02
-      );
+      this.outputGain.gain.setTargetAtTime(makeupGain, now, 0.02);
+    }
+
+    if (param === 'tone') {
+      const minFreq = 500;
+      const maxFreq = 20000;
+      const freq = minFreq * Math.pow(maxFreq / minFreq, value);
+      this.toneFilter.frequency.setTargetAtTime(freq, now, 0.02);
+    }
+
+    if (param === 'mix') {
+      const dryVal = Math.cos(value * 0.5 * Math.PI);
+      const wetVal = Math.cos((1.0 - value) * 0.5 * Math.PI);
+
+      this.dryGain.gain.setTargetAtTime(dryVal, now, 0.02);
+      this.wetGain.gain.setTargetAtTime(wetVal, now, 0.02);
     }
   }
 

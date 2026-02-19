@@ -170,6 +170,8 @@ export namespace AnalogSynthApi {
 
     // Effects
     DISTORTION_AMOUNT = 'distortionAmount',
+    DISTORTION_TONE = 'distortionTone',
+    DISTORTION_MIX = 'distortionMix',
     REVERB_MIX = 'reverbMix',
     REVERB_DECAY = 'reverbDecay',
     DELAY_TIME = 'delayTime',

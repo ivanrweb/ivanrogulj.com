@@ -18,6 +18,8 @@ export interface EffectsState {
   };
   distortion: {
     amount: number; // 0.0 - 1.0
+    tone: number;
+    mix: number;
     enabled: boolean;
   };
 }
@@ -25,7 +27,7 @@ export interface EffectsState {
 const DEFAULT_STATE: EffectsState = {
   reverb: { mix: 0.5, decay: 2.0, enabled: false },
   delay: { time: 0.5, feedback: 0.3, mix: 1, enabled: false },
-  distortion: { amount: 0.5, enabled: false },
+  distortion: { amount: 0.5, tone: 1.0, mix: 1.0, enabled: false },
 };
 
 @Injectable({ providedIn: 'root' })
@@ -49,7 +51,11 @@ export class EffectsViewModel extends ComponentStore<EffectsState> {
 
     // Manually trigger update of service with current values
     if (state.distortion.enabled) {
-      this.audioService.setDistortionParams(state.distortion.amount);
+      this.audioService.setDistortionParams(
+        state.distortion.amount,
+        state.distortion.tone,
+        state.distortion.mix
+      );
     }
     if (state.reverb.enabled) {
       this.audioService.setReverbParams(state.reverb.mix, state.reverb.decay);
@@ -69,14 +75,21 @@ export class EffectsViewModel extends ComponentStore<EffectsState> {
       state$.pipe(
         distinctUntilChanged(
           (prev, curr) =>
-            prev.amount === curr.amount && prev.enabled === curr.enabled
+            prev.amount === curr.amount &&
+            prev.tone === curr.tone &&
+            prev.mix === curr.mix &&
+            prev.enabled === curr.enabled
         ),
         tap((state) => {
           if (state.enabled) {
-            this.audioService.setDistortionParams(state.amount);
+            this.audioService.setDistortionParams(
+              state.amount,
+              state.tone,
+              state.mix
+            );
           } else {
-            // If disabled, send clean signal
-            this.audioService.setDistortionParams(0);
+            // If disabled, send clean signal (stavljamo mix na 0)
+            this.audioService.setDistortionParams(state.amount, state.tone, 0);
           }
         })
       )
@@ -137,6 +150,14 @@ export class EffectsViewModel extends ComponentStore<EffectsState> {
   //Distortion Actions
   public updateDistortionAmount(amount: number): void {
     this.patchState((s) => ({ distortion: { ...s.distortion, amount } }));
+  }
+
+  public updateDistortionTone(tone: number): void {
+    this.patchState((s) => ({ distortion: { ...s.distortion, tone } }));
+  }
+
+  public updateDistortionMix(mix: number): void {
+    this.patchState((s) => ({ distortion: { ...s.distortion, mix } }));
   }
 
   // Reverb Actions
