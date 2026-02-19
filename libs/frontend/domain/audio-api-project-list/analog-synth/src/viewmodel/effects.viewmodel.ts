@@ -22,12 +22,19 @@ export interface EffectsState {
     mix: number;
     enabled: boolean;
   };
+  chorus: {
+    rate: number;
+    depth: number;
+    mix: number;
+    enabled: boolean;
+  };
 }
 
 const DEFAULT_STATE: EffectsState = {
   reverb: { mix: 0.5, decay: 2.0, enabled: false },
   delay: { time: 0.5, feedback: 0.3, mix: 1, enabled: false },
   distortion: { amount: 0.5, tone: 1.0, mix: 1.0, enabled: false },
+  chorus: { rate: 0.27, depth: 0.2, mix: 0.15, enabled: false },
 };
 
 @Injectable({ providedIn: 'root' })
@@ -42,6 +49,7 @@ export class EffectsViewModel extends ComponentStore<EffectsState> {
     this.syncDistortion(this.select((s) => s.distortion));
     this.syncDelay(this.select((s) => s.delay));
     this.syncReverb(this.select((s) => s.reverb));
+    this.syncChorus(this.select((s) => s.chorus));
   }
 
   public refreshState(): void {
@@ -88,7 +96,7 @@ export class EffectsViewModel extends ComponentStore<EffectsState> {
               state.mix
             );
           } else {
-            // If disabled, send clean signal (stavljamo mix na 0)
+            // If disabled, send clean signal
             this.audioService.setDistortionParams(state.amount, state.tone, 0);
           }
         })
@@ -116,6 +124,32 @@ export class EffectsViewModel extends ComponentStore<EffectsState> {
           } else {
             // If disabled, reduce mix to 0
             this.audioService.setDelayParams(state.time, 0, 0);
+          }
+        })
+      )
+  );
+
+  // Chorus sync
+  private readonly syncChorus = this.effect(
+    (state$: Observable<EffectsState['chorus']>) =>
+      state$.pipe(
+        distinctUntilChanged(
+          (prev, curr) =>
+            prev.rate === curr.rate &&
+            prev.depth === curr.depth &&
+            prev.mix === curr.mix &&
+            prev.enabled === curr.enabled
+        ),
+        tap((state) => {
+          if (state.enabled) {
+            this.audioService.setChorusParams(
+              state.rate,
+              state.depth,
+              state.mix
+            );
+          } else {
+            // If disabled, reduce mix to 0
+            this.audioService.setChorusParams(state.rate, state.depth, 0);
           }
         })
       )
@@ -160,7 +194,17 @@ export class EffectsViewModel extends ComponentStore<EffectsState> {
     this.patchState((s) => ({ distortion: { ...s.distortion, mix } }));
   }
 
+  public toggleDistortion(enabled: boolean): void {
+    this.patchState((state) => ({
+      distortion: { ...state.distortion, enabled },
+    }));
+  }
+
   // Reverb Actions
+  public toggleReverb(enabled: boolean): void {
+    this.patchState((state) => ({ reverb: { ...state.reverb, enabled } }));
+  }
+
   public updateReverbMix(mix: number): void {
     this.patchState((state) => ({ reverb: { ...state.reverb, mix } }));
   }
@@ -170,6 +214,10 @@ export class EffectsViewModel extends ComponentStore<EffectsState> {
   }
 
   // Delay Actions
+  public toggleDelay(enabled: boolean): void {
+    this.patchState((state) => ({ delay: { ...state.delay, enabled } }));
+  }
+
   public updateDelayTime(time: number): void {
     this.patchState((state) => ({ delay: { ...state.delay, time } }));
   }
@@ -182,19 +230,22 @@ export class EffectsViewModel extends ComponentStore<EffectsState> {
     this.patchState((state) => ({ delay: { ...state.delay, mix } }));
   }
 
-  // Toggle actions
-
-  public toggleReverb(enabled: boolean): void {
-    this.patchState((state) => ({ reverb: { ...state.reverb, enabled } }));
-  }
-
-  public toggleDelay(enabled: boolean): void {
-    this.patchState((state) => ({ delay: { ...state.delay, enabled } }));
-  }
-
-  public toggleDistortion(enabled: boolean): void {
+  // Chorus Actions
+  public toggleChorus(enabled: boolean): void {
     this.patchState((state) => ({
-      distortion: { ...state.distortion, enabled },
+      chorus: { ...state.chorus, enabled },
     }));
+  }
+
+  public updateChorusRate(rate: number): void {
+    this.patchState((s) => ({ chorus: { ...s.chorus, rate } }));
+  }
+
+  public updateChorusDepth(depth: number): void {
+    this.patchState((s) => ({ chorus: { ...s.chorus, depth } }));
+  }
+
+  public updateChorusMix(mix: number): void {
+    this.patchState((s) => ({ chorus: { ...s.chorus, mix } }));
   }
 }

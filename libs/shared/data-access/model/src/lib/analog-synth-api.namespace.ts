@@ -177,5 +177,8 @@ export namespace AnalogSynthApi {
     DELAY_TIME = 'delayTime',
     DELAY_FEEDBACK = 'delayFeedback',
     DELAY_MIX = 'delayMix',
+    CHORUS_RATE = 'chorusRate',
+    CHORUS_DEPTH = 'chorusDepth',
+    CHORUS_MIX = 'chorusMix',
   }
 }

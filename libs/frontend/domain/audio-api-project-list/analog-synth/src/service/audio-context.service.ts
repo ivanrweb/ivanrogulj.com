@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 import {
+  ChorusEffect,
   DelayEffect,
   DistortionEffect,
   ReverbEffect,
@@ -23,6 +24,7 @@ export class AudioContextService {
   private distortionEffect?: DistortionEffect;
   private reverbEffect?: ReverbEffect;
   private delayEffect?: DelayEffect;
+  private chorusEffect?: ChorusEffect;
 
   private FILTER_MIN_FREQ = 20;
   private FILTER_MAX_FREQ = 10000;
@@ -54,21 +56,24 @@ export class AudioContextService {
     this.distortionEffect = new DistortionEffect(this.context);
     this.reverbEffect = new ReverbEffect(this.context);
     this.delayEffect = new DelayEffect(this.context);
+    this.chorusEffect = new ChorusEffect(this.context);
 
     //CONNECT CHAIN
-    //Bus -> Distortion effect
+    // Bus -> Distortion effect
     this.effectsInputBus.connect(this.distortionEffect.input);
-    // Bus -> Delay Input
-    this.distortionEffect.connect(this.delayEffect.input);
+    // Distortion Output -> Chorus Input
+    this.distortionEffect.connect(this.chorusEffect.input);
+    // Chorus Output -> Delay Input
+    this.chorusEffect.connect(this.delayEffect.input);
     // Delay Output -> Reverb Input
     this.delayEffect.connect(this.reverbEffect.input);
     // Reverb Output -> Compressor
     this.reverbEffect.connect(this.compressorNode);
     // Compressor -> Master Gain
     this.compressorNode.connect(this.masterGain);
-    // Master Gain -> Destination
+    // Master Gain -> Destination (Speakers)
     this.masterGain.connect(this.context.destination);
-    // Master also goes to analyser
+    // Master also goes to analyser (Oscilloscope)
     this.masterGain.connect(this.analyserNode);
 
     console.log('Global audio nodes initialized.');
@@ -371,6 +376,14 @@ export class AudioContextService {
       this.delayEffect.setParam('time', time);
       this.delayEffect.setParam('feedback', feedback);
       this.delayEffect.setParam('mix', mix);
+    }
+  }
+
+  public setChorusParams(rate: number, depth: number, mix: number): void {
+    if (this.chorusEffect) {
+      this.chorusEffect.setParam('rate', rate);
+      this.chorusEffect.setParam('depth', depth);
+      this.chorusEffect.setParam('mix', mix);
     }
   }
 }
