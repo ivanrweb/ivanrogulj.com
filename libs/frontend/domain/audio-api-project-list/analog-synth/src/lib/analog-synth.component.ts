@@ -63,8 +63,9 @@ import { NoiseGeneratorComponent } from '@ivanrogulj.com/noise';
 
             @if (vm.learnMode) {
             <div class="midi-tooltip">
-              Double click on button with mouse first, then assign the physical
-              knob to it by pressing/rotating it.
+              Double click on UI knob/button with mouse first, then assign the
+              physical knob on your MIDI interface to it by rotating/pressing
+              it.
             </div>
             }
           </div>
@@ -88,21 +89,18 @@ import { NoiseGeneratorComponent } from '@ivanrogulj.com/noise';
             <div class="utility-controls">
               <div class="control-group">
                 <label class="control-label">VOICING</label>
-                <button
-                  class="btn-voicing"
-                  [class.poly]="vm.isPolyphonic"
-                  [class.mono]="!vm.isPolyphonic"
-                  (click)="analogSynthViewModel.togglePolyphony()"
-                  title="Toggle Mono/Poly Mode"
-                >
-                  <i class="fad-squareswitch icon-lg"></i>
-                  <span class="voicing-state">{{
+                <div class="voicing-toggle-wrapper">
+                  <i
+                    class="icon-lg"
+                    [class.icon-fad-squareswitch-on]="vm.isPolyphonic"
+                    [class.icon-fad-squareswitch-off]="!vm.isPolyphonic"
+                    (click)="analogSynthViewModel.togglePolyphony()"
+                  ></i>
+                  <span class="voicing-text">{{
                     vm.isPolyphonic ? 'POLY' : 'MONO'
                   }}</span>
-                </button>
+                </div>
               </div>
-
-              <div class="v-separator"></div>
 
               <lib-noise-generator />
             </div>
@@ -305,11 +303,11 @@ import { NoiseGeneratorComponent } from '@ivanrogulj.com/noise';
 
       .utility-controls {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         align-items: center;
-        justify-content: space-evenly;
+        justify-content: center;
         width: 100%;
-        gap: 10px;
+        gap: 20px;
       }
 
       .utility-scope {
@@ -342,56 +340,32 @@ import { NoiseGeneratorComponent } from '@ivanrogulj.com/noise';
         text-transform: uppercase;
       }
 
-      .v-separator {
-        width: 1px;
-        height: 40px;
-        background-color: #333;
-        margin: 0 5px;
-      }
-
-      .btn-voicing {
-        background: #0a0a0a;
-        border: 1px solid #444;
-        border-radius: 6px;
-        cursor: pointer;
+      .voicing-toggle-wrapper {
         display: flex;
-        flex-direction: column;
         align-items: center;
-        justify-content: center;
-        width: 70px;
-        height: 55px;
-        transition: all 0.2s ease;
-        color: #666;
-        gap: 5px;
+        gap: 8px;
       }
 
-      .btn-voicing:hover {
-        border-color: #666;
-        background: #151515;
+      .voicing-text {
+        font-size: 0.6rem;
+        color: #d0d0d0;
+        font-weight: normal;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        transform: translateY(-4px);
+        width: 35px;
+        display: inline-block;
+        text-align: left;
       }
 
       .icon-lg {
-        font-size: 1.5rem;
-      }
-
-      .voicing-state {
-        font-size: 0.65rem;
-        font-weight: 800;
-        letter-spacing: 1px;
-      }
-
-      .btn-voicing.poly {
-        color: #ffcc00;
-        border-color: #ffcc00;
-        background: rgba(255, 204, 0, 0.05);
-        box-shadow: 0 0 8px rgba(255, 204, 0, 0.15);
-      }
-
-      .btn-voicing.mono {
-        color: #ff3333;
-        border-color: #ff3333;
-        background: rgba(255, 51, 51, 0.05);
-        box-shadow: 0 0 8px rgba(255, 51, 51, 0.15);
+        color: #d0d0d0;
+        font-size: 2.4rem;
+        cursor: pointer;
+        display: inline-block;
+        margin-top: -15px;
+        margin-bottom: -15px;
+        transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       .fx-module {
@@ -417,7 +391,6 @@ export class AnalogSynthComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public analogSynthViewModel = inject(AnalogSynthViewModel);
 
-  //User can select from 1 to 8 oscillators
   public readonly oscillatorCount = [1, 2, 3, 4, 5, 6, 7, 8];
 
   public ngOnInit(): void {

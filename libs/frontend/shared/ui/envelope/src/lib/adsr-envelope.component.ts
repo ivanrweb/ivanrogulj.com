@@ -69,12 +69,14 @@ export class AdsrEnvelopeComponent {
     const rWidth = r * 25;
     const sLevel = effectiveHeight - s * effectiveHeight + padding;
 
+    const releaseStartX = 75;
+
     return `
       M 0,${height - padding}
       L ${aWidth},${padding}
       L ${aWidth + dWidth},${sLevel}
-      L ${width - rWidth},${sLevel}
-      L ${width},${height - padding}
+      L ${releaseStartX},${sLevel}
+      L ${releaseStartX + rWidth},${height - padding}
     `;
   });
 }

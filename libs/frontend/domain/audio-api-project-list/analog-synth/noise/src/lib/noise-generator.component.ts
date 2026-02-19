@@ -45,13 +45,17 @@ import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
   `,
   styles: [
     `
+      :host {
+        display: block;
+        width: 100%;
+      }
+
       .noise-container {
         display: flex;
         align-items: center;
-        justify-content: space-around;
+        justify-content: space-evenly;
         width: 100%;
         height: 100%;
-        gap: 10px;
       }
 
       .type-selector {
