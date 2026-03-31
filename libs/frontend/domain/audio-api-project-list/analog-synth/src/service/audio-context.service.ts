@@ -355,6 +355,18 @@ export class AudioContextService {
     return this.context.currentTime;
   }
 
+  public getAudioContext(): AudioContext {
+    return this.context;
+  }
+
+  public getMasterGain(): GainNode | undefined {
+    return this.masterGain;
+  }
+
+  public getDelayNode(): DelayNode | undefined {
+    return this.delayEffect?.delayNode;
+  }
+
   //EFFECTS
   public setDistortionParams(amount: number, tone: number, mix: number): void {
     if (this.distortionEffect) {

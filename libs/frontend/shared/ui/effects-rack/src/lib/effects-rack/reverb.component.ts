@@ -62,7 +62,7 @@ import {
         background: #2a2a2a;
         border: 1px solid #444;
         border-radius: 6px;
-        width: 180px;
+        width: auto;
         display: flex;
         flex-direction: column;
         padding: 10px;
@@ -97,8 +97,8 @@ import {
 
       .effect-controls {
         display: flex;
-        justify-content: space-around;
-        gap: 5px;
+        justify-content: center;
+        gap: 10px;
       }
 
       /* LED Power Button */

@@ -65,6 +65,9 @@
       ],
       "@ivanrogulj.com/knob": ["libs/frontend/shared/ui/knob/src/index.ts"],
       "@ivanrogulj.com/layout": ["libs/frontend/shared/ui/layout/src/index.ts"],
+      "@ivanrogulj.com/lfo-unit": [
+        "libs/frontend/shared/ui/lfo-unit/src/index.ts"
+      ],
       "@ivanrogulj.com/modular-synth": [
         "libs/frontend/domain/audio-api-project-list/modular-synth/src/index.ts"
       ],

@@ -180,5 +180,28 @@ export namespace AnalogSynthApi {
     CHORUS_RATE = 'chorusRate',
     CHORUS_DEPTH = 'chorusDepth',
     CHORUS_MIX = 'chorusMix',
+
+    // LFO
+    LFO1_RATE = 'lfo1Rate',
+    LFO1_DEPTH = 'lfo1Depth',
+    LFO2_RATE = 'lfo2Rate',
+    LFO2_DEPTH = 'lfo2Depth',
+  }
+
+  export enum LfoDestination {
+    NONE = 'none',
+    FILTER_CUTOFF = 'filterCutoff',
+    PITCH = 'pitch',
+    VOLUME = 'volume',
+    DELAY_TIME = 'delayTime',
+  }
+
+  export interface LfoConfig {
+    rate: number;
+    depth: number;
+    waveform: OscillatorType;
+    destination: LfoDestination;
+    keySync: boolean;
+    enabled: boolean;
   }
 }

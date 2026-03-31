@@ -3,7 +3,7 @@ import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 export class DelayEffect implements AnalogSynthApi.SynthEffect {
   public input: GainNode;
   public output: GainNode;
-  private delayNode: DelayNode;
+  public delayNode: DelayNode;
   private feedbackGain: GainNode;
   private wetGain: GainNode;
 

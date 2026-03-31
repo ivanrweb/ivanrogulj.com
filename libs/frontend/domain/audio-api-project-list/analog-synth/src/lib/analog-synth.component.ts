@@ -1,31 +1,17 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  inject,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import { CommonModule } from '@angular/common';
-// eslint-disable-next-line @nx/enforce-module-boundaries
+import { AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common'; // eslint-disable-next-line @nx/enforce-module-boundaries
 import { OscillatorComponent } from '@ivanrogulj.com/oscillator';
-import { AudioContextService } from '../service/audio-context.service';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { FilterComponent } from '@ivanrogulj.com/filter';
-// eslint-disable-next-line @nx/enforce-module-boundaries
+import { AudioContextService } from '../service/audio-context.service'; // eslint-disable-next-line @nx/enforce-module-boundaries
+import { FilterComponent } from '@ivanrogulj.com/filter'; // eslint-disable-next-line @nx/enforce-module-boundaries
 import { GainComponent } from '@ivanrogulj.com/gain';
 import { AnalogSynthViewModel } from '../viewmodel/analog-synth.viewmodel';
-import { FormsModule } from '@angular/forms';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { OscilloscopeComponent } from '@ivanrogulj.com/oscilloscope';
-// eslint-disable-next-line @nx/enforce-module-boundaries
+import { FormsModule } from '@angular/forms'; // eslint-disable-next-line @nx/enforce-module-boundaries
+import { OscilloscopeComponent } from '@ivanrogulj.com/oscilloscope'; // eslint-disable-next-line @nx/enforce-module-boundaries
 import { TextareaComponent } from '@ivanrogulj.com/textarea';
-import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { NoiseGeneratorComponent } from '@ivanrogulj.com/noise';
+import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model'; // eslint-disable-next-line @nx/enforce-module-boundaries
+import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack'; // eslint-disable-next-line @nx/enforce-module-boundaries
+import { NoiseGeneratorComponent } from '@ivanrogulj.com/noise'; // eslint-disable-next-line @nx/enforce-module-boundaries
+import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
 
 @Component({
   selector: 'lib-analog-synth',
@@ -40,6 +26,7 @@ import { NoiseGeneratorComponent } from '@ivanrogulj.com/noise';
     TextareaComponent,
     EffectsRackComponent,
     NoiseGeneratorComponent,
+    LfoRackComponent,
   ],
   providers: [AudioContextService],
   template: `
@@ -122,6 +109,13 @@ import { NoiseGeneratorComponent } from '@ivanrogulj.com/noise';
           <h4 class="module-label">AMPLIFIER</h4>
           <div class="module-content">
             <lib-gain />
+          </div>
+        </div>
+
+        <div class="synth-module lfo-module">
+          <h4 class="module-label">LFO</h4>
+          <div class="module-content">
+            <lib-lfo-rack />
           </div>
         </div>
 
@@ -264,7 +258,7 @@ import { NoiseGeneratorComponent } from '@ivanrogulj.com/noise';
         display: flex;
         flex-direction: column;
         height: 100%;
-        overflow: hidden;
+        overflow: visible;
       }
 
       .module-label {
@@ -369,6 +363,10 @@ import { NoiseGeneratorComponent } from '@ivanrogulj.com/noise';
       }
 
       .fx-module {
+        grid-column: 1 / -1;
+      }
+
+      .lfo-module {
         grid-column: 1 / -1;
       }
 

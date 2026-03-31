@@ -40,7 +40,7 @@ import { CommonModule } from '@angular/common';
         flex-direction: column;
         align-items: center;
         user-select: none;
-        width: 100%;
+        width: 4.5rem;
         font-family: 'Segoe UI', sans-serif;
       }
 
@@ -119,7 +119,7 @@ import { CommonModule } from '@angular/common';
         background: rgba(0, 0, 0, 0.4);
         padding: 2px 6px;
         border-radius: 3px;
-        min-width: 40px;
+        white-space: nowrap;
         text-align: center;
         border: 1px solid #333;
         text-shadow: 0 0 5px rgba(255, 51, 51, 0.4);

@@ -9,6 +9,8 @@ import { OscilloscopeService } from '../service/oscilloscope.service';
 import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 import { SynthPatchApiService } from '@ivanrogulj.com/frontend/shared/data-access/api';
 import { EffectsViewModel } from './effects.viewmodel';
+import { LfoViewModel } from './lfo.viewmodel';
+import { LfoService } from '../service/lfo.service';
 
 export interface AnalogSynthState {
   voices: AnalogSynthApi.Voice[];
@@ -41,6 +43,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   private readonly oscilloscopeService = inject(OscilloscopeService);
   private readonly synthPatchApiService = inject(SynthPatchApiService);
   private readonly effectsViewmodel = inject(EffectsViewModel);
+  private readonly lfoViewModel = inject(LfoViewModel);
+  private readonly lfoService = inject(LfoService);
   private readonly paramControl$ = this.midiService.paramControl$;
 
   constructor() {
@@ -75,6 +79,9 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       const adjustedVelocity =
         this.midiService.getVelocityBetweenZeroAndOne(velocity);
       this.createAndStartVoice(note, frequency, adjustedVelocity);
+      const { lfo1, lfo2 } = this.lfoViewModel.getState();
+      if (lfo1.keySync) this.lfoService.keySync(0);
+      if (lfo2.keySync) this.lfoService.keySync(1);
     });
 
     this.midiService.noteOff$.subscribe(({ note }) => {
@@ -157,6 +164,16 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
               } else if (param === AnalogSynthApi.Knob.RELEASE) {
                 this.updateVolumeEnvelope({ release: value });
               }
+              // --- LFO ---
+              else if (param === AnalogSynthApi.Knob.LFO1_RATE) {
+                this.lfoViewModel.updateLfo1({ rate: value * 20 }); // 0-1 → 0-20 Hz
+              } else if (param === AnalogSynthApi.Knob.LFO1_DEPTH) {
+                this.lfoViewModel.updateLfo1({ depth: value });
+              } else if (param === AnalogSynthApi.Knob.LFO2_RATE) {
+                this.lfoViewModel.updateLfo2({ rate: value * 20 });
+              } else if (param === AnalogSynthApi.Knob.LFO2_DEPTH) {
+                this.lfoViewModel.updateLfo2({ depth: value });
+              }
               // Safety check
               else {
                 console.warn('Unhandled param:', param);
@@ -172,6 +189,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
 
     //now, when nodes exist, tell the effects to apply values from the effects viewmodel
     this.effectsViewmodel.refreshState();
+    this.lfoService.initialize();
   }
 
   public destroyAudioContext(): void {
@@ -307,6 +325,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     };
 
     this.patchState((state) => ({ voices: [...state.voices, newVoice] }));
+    this.lfoService.connectToVoice(newVoice);
     this.updateAllVoiceLevels();
   }
 
@@ -327,6 +346,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     );
 
     const maxReleaseTime = Math.max(safeVolumeRelease, safeFilterRelease);
+
+    this.lfoService.disconnectFromVoice(voice);
 
     setTimeout(() => {
       this.audioContextService.stopAndDisconnectVoice(
