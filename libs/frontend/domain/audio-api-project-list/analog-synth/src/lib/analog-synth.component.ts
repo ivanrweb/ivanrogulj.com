@@ -368,6 +368,11 @@ import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
 
       .lfo-module {
         grid-column: 1 / -1;
+        overflow: visible;
+      }
+
+      .lfo-module .module-content {
+        overflow: visible;
       }
 
       @keyframes fadeIn {

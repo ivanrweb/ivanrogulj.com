@@ -119,10 +119,10 @@ import { AdsrEnvelopeComponent } from '@ivanrogulj.com/envelope';
         width: 100%;
       }
       .adsr-container {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 8px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        justify-items: center;
+        width: 100%;
       }
       .separator {
         width: 80%;
