@@ -29,14 +29,7 @@ export const routes: Routes = [
             (m) => m.AnalogSynthComponent
           ),
       },
-      {
-        path: 'modular-synth',
-        loadComponent: () =>
-          import('@ivanrogulj.com/modular-synth').then(
-            (m) => m.ModularSynthComponent
-          ),
-      },
-      {
+{
         path: 'chord-changer',
         loadComponent: () =>
           import('@ivanrogulj.com/chord-changer').then(

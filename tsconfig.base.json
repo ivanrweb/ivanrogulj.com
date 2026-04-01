@@ -68,10 +68,7 @@
       "@ivanrogulj.com/lfo-unit": [
         "libs/frontend/shared/ui/lfo-unit/src/index.ts"
       ],
-      "@ivanrogulj.com/modular-synth": [
-        "libs/frontend/domain/audio-api-project-list/modular-synth/src/index.ts"
-      ],
-      "@ivanrogulj.com/nav": ["libs/frontend/shared/ui/nav/src/index.ts"],
+"@ivanrogulj.com/nav": ["libs/frontend/shared/ui/nav/src/index.ts"],
       "@ivanrogulj.com/nav-item": [
         "libs/frontend/shared/ui/nav-item/src/index.ts"
       ],
