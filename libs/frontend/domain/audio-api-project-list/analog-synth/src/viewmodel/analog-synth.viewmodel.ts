@@ -487,6 +487,15 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     });
   }
 
+  public unmapParam(param: AnalogSynthApi.Knob): void {
+    this.midiService.unmapParam(param);
+    this.patchState((state) => {
+      const mappedParams = { ...state.mappedParams };
+      delete mappedParams[param];
+      return { mappedParams };
+    });
+  }
+
   public startLearning(param: AnalogSynthApi.Knob): void {
     console.log('midi mapping for: ', param);
     this.patchState({ learnTarget: param });

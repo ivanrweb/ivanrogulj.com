@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common'; // eslint-disable-next-line @nx/enforce-module-boundaries
+import { CommonModule, KeyValuePipe } from '@angular/common'; // eslint-disable-next-line @nx/enforce-module-boundaries
 import { OscillatorComponent } from '@ivanrogulj.com/oscillator';
 import { AudioContextService } from '../service/audio-context.service'; // eslint-disable-next-line @nx/enforce-module-boundaries
 import { FilterComponent } from '@ivanrogulj.com/filter'; // eslint-disable-next-line @nx/enforce-module-boundaries
@@ -27,6 +27,7 @@ import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
     EffectsRackComponent,
     NoiseGeneratorComponent,
     LfoRackComponent,
+    KeyValuePipe,
   ],
   providers: [AudioContextService],
   template: `
@@ -53,6 +54,65 @@ import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
               Double click on UI knob/button with mouse first, then assign the
               physical knob on your MIDI interface to it by rotating/pressing
               it.
+            </div>
+            }
+          </div>
+
+          <div class="midi-btn-wrapper">
+            <button
+              class="btn-midi"
+              (click)="showMidiMapper = !showMidiMapper"
+              [class.active]="showMidiMapper"
+            >
+              <span
+                class="led"
+                [class.on-yellow]="(vm.mappedParams | keyvalue).length > 0"
+              ></span>
+              MIDI MAP
+            </button>
+
+            @if (showMidiMapper) {
+            <div class="midi-mapper-panel">
+              <div class="midi-mapper-header">
+                <span>MIDI MAPPINGS</span>
+                <button class="close-btn" (click)="showMidiMapper = false">
+                  ✕
+                </button>
+              </div>
+              @if ((vm.mappedParams | keyvalue).length === 0) {
+              <div class="no-mappings">No active mappings</div>
+              } @else {
+              <table class="mapper-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Control</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (entry of vm.mappedParams | keyvalue; track entry.key;
+                  let i = $index) { @if (entry.value) {
+                  <tr [class.even]="i % 2 === 0">
+                    <td class="row-num">{{ i + 1 }}</td>
+                    <td class="param-name">
+                      {{ getKnobLabel(entry.key) }}
+                    </td>
+                    <td class="unmap-cell">
+                      <button
+                        class="unmap-btn"
+                        (click)="
+                          analogSynthViewModel.unmapParam($any(entry.key))
+                        "
+                      >
+                        UNMAP
+                      </button>
+                    </td>
+                  </tr>
+                  } }
+                </tbody>
+              </table>
+              }
             </div>
             }
           </div>
@@ -226,6 +286,116 @@ import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
         box-shadow: 0 0 6px #ff0000;
       }
 
+      .led.on-yellow {
+        background: #ffcc00;
+        box-shadow: 0 0 6px #ffcc00;
+      }
+
+      .midi-mapper-panel {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        min-width: 320px;
+        background: #1a1a1a;
+        border: 1px solid #444;
+        border-radius: 6px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+        z-index: 1200;
+        overflow: hidden;
+      }
+
+      .midi-mapper-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        background: #252525;
+        border-bottom: 1px solid #444;
+        font-size: 0.75rem;
+        font-weight: bold;
+        color: #888;
+        letter-spacing: 1px;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        color: #888;
+        cursor: pointer;
+        font-size: 0.85rem;
+        padding: 0 4px;
+        line-height: 1;
+      }
+
+      .close-btn:hover {
+        color: #fff;
+      }
+
+      .no-mappings {
+        padding: 16px 12px;
+        font-size: 0.75rem;
+        color: #555;
+        text-align: center;
+      }
+
+      .mapper-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.75rem;
+      }
+
+      .mapper-table th {
+        padding: 6px 12px;
+        color: #666;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+        text-align: left;
+        background: #222;
+        border-bottom: 1px solid #333;
+      }
+
+      .mapper-table tr {
+        background: #1e1e1e;
+      }
+
+      .mapper-table tr.even {
+        background: #252525;
+      }
+
+      .mapper-table td {
+        padding: 7px 12px;
+        color: #ccc;
+        border-bottom: 1px solid #2a2a2a;
+      }
+
+      .row-num {
+        color: #555;
+        width: 30px;
+      }
+
+      .unmap-cell {
+        text-align: right;
+      }
+
+      .unmap-btn {
+        background: #2a2a2a;
+        border: 1px solid #555;
+        color: #ff6666;
+        padding: 3px 8px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 0.65rem;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+        transition: all 0.15s;
+      }
+
+      .unmap-btn:hover {
+        background: #3a1a1a;
+        border-color: #ff3333;
+        color: #ff3333;
+      }
+
       .midi-tooltip {
         position: absolute;
         top: calc(100% + 10px);
@@ -396,6 +566,40 @@ export class AnalogSynthComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public readonly oscillatorCount = [1, 2, 3, 4, 5, 6, 7, 8];
 
+  public showMidiMapper = false;
+
+  protected readonly knobLabels: Record<AnalogSynthApi.Knob, string> = {
+    [AnalogSynthApi.Knob.ATTACK]: 'Amp Attack',
+    [AnalogSynthApi.Knob.DECAY]: 'Amp Decay',
+    [AnalogSynthApi.Knob.SUSTAIN]: 'Amp Sustain',
+    [AnalogSynthApi.Knob.RELEASE]: 'Amp Release',
+    [AnalogSynthApi.Knob.FILTER_ATTACK]: 'Filter Attack',
+    [AnalogSynthApi.Knob.FILTER_DECAY]: 'Filter Decay',
+    [AnalogSynthApi.Knob.FILTER_SUSTAIN]: 'Filter Sustain',
+    [AnalogSynthApi.Knob.FILTER_RELEASE]: 'Filter Release',
+    [AnalogSynthApi.Knob.OSCILLATOR_COUNT]: 'Oscillator Count',
+    [AnalogSynthApi.Knob.DETUNE_OSCILLATORS_AMOUNT]: 'Detune',
+    [AnalogSynthApi.Knob.MASTER_GAIN]: 'Master Volume',
+    [AnalogSynthApi.Knob.FILTER_FREQUENCY]: 'Filter Cutoff',
+    [AnalogSynthApi.Knob.FILTER_RESONANCE]: 'Filter Resonance',
+    [AnalogSynthApi.Knob.FILTER_ENVELOPE_AMOUNT]: 'Filter Env Amt',
+    [AnalogSynthApi.Knob.DISTORTION_AMOUNT]: 'Distortion Amount',
+    [AnalogSynthApi.Knob.DISTORTION_TONE]: 'Distortion Tone',
+    [AnalogSynthApi.Knob.DISTORTION_MIX]: 'Distortion Mix',
+    [AnalogSynthApi.Knob.REVERB_MIX]: 'Reverb Mix',
+    [AnalogSynthApi.Knob.REVERB_DECAY]: 'Reverb Decay',
+    [AnalogSynthApi.Knob.DELAY_TIME]: 'Delay Time',
+    [AnalogSynthApi.Knob.DELAY_FEEDBACK]: 'Delay Feedback',
+    [AnalogSynthApi.Knob.DELAY_MIX]: 'Delay Mix',
+    [AnalogSynthApi.Knob.CHORUS_RATE]: 'Chorus Rate',
+    [AnalogSynthApi.Knob.CHORUS_DEPTH]: 'Chorus Depth',
+    [AnalogSynthApi.Knob.CHORUS_MIX]: 'Chorus Mix',
+    [AnalogSynthApi.Knob.LFO1_RATE]: 'LFO 1 Rate',
+    [AnalogSynthApi.Knob.LFO1_DEPTH]: 'LFO 1 Depth',
+    [AnalogSynthApi.Knob.LFO2_RATE]: 'LFO 2 Rate',
+    [AnalogSynthApi.Knob.LFO2_DEPTH]: 'LFO 2 Depth',
+  };
+
   public ngOnInit(): void {
     this.analogSynthViewModel.startAudioContext();
   }
@@ -411,4 +615,8 @@ export class AnalogSynthComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   protected readonly AnalogSynthApi = AnalogSynthApi;
+
+  public getKnobLabel(key: string): string {
+    return this.knobLabels[key as AnalogSynthApi.Knob] ?? key;
+  }
 }

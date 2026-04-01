@@ -183,6 +183,15 @@ export class MidiService {
     return velocity / 128;
   }
 
+  public unmapParam(param: AnalogSynthApi.Knob): void {
+    for (const [cc, mappedParam] of this.controlToParamMap.entries()) {
+      if (mappedParam === param) {
+        this.controlToParamMap.delete(cc);
+        break;
+      }
+    }
+  }
+
   public mapControlToParam(param: AnalogSynthApi.Knob): void {
     if (this.lastReceivedCC !== null) {
       this.controlToParamMap.set(this.lastReceivedCC, param);
