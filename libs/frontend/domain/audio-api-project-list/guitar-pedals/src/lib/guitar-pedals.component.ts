@@ -4,16 +4,23 @@ import { KnobComponent } from '@ivanrogulj.com/knob';
 import { SelectComponent, SelectOption } from '@ivanrogulj.com/select';
 import { GuitarPedalsViewModel } from '../viewmodel/guitar-pedals.viewmodel';
 import { PedalboardComponent } from './pedalboard/pedalboard.component';
+import { AudioSettingsComponent } from './audio-settings/audio-settings.component';
 
 @Component({
   selector: 'lib-guitar-pedals',
   standalone: true,
-  imports: [CommonModule, KnobComponent, SelectComponent, PedalboardComponent],
+  imports: [
+    CommonModule,
+    KnobComponent,
+    SelectComponent,
+    PedalboardComponent,
+    AudioSettingsComponent,
+  ],
   template: `
     @if (vm.vm$ | async; as state) {
     <div class="header">
       <div class="title-row">
-        <h2 class="title">Guitar Pedals</h2>
+        <h2 class="title">Guitar Pedalboard</h2>
         <p class="subtitle">Real-time guitar effects via Web Audio API</p>
       </div>
 
@@ -26,6 +33,8 @@ import { PedalboardComponent } from './pedalboard/pedalboard.component';
             (valueChange)="vm.selectInput($event)"
           />
         </div>
+
+        <lib-audio-settings />
 
         <button
           class="start-btn"

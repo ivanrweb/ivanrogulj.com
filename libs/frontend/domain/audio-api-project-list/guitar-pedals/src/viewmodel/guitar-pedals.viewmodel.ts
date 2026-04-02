@@ -42,6 +42,8 @@ export type PedalParams = {
   reverb: ReverbParams;
 };
 
+export type LatencyMode = 'interactive' | 'balanced' | 'playback';
+
 export interface GuitarPedalsState {
   pedalOrder: PedalType[];
   pedals: PedalParams;
@@ -50,6 +52,9 @@ export interface GuitarPedalsState {
   isRunning: boolean;
   inputGain: number;
   masterVolume: number;
+  latencyMode: LatencyMode;
+  sampleRate: number;
+  latencyInfo: { baseMs: number; outputMs: number; totalMs: number } | null;
 }
 
 const defaultState: GuitarPedalsState = {
@@ -65,6 +70,9 @@ const defaultState: GuitarPedalsState = {
   isRunning: false,
   inputGain: 1.0,
   masterVolume: 1.0,
+  latencyMode: 'interactive',
+  sampleRate: 96000,
+  latencyInfo: null,
 };
 
 @Injectable({ providedIn: 'root' })
@@ -77,7 +85,29 @@ export class GuitarPedalsViewModel extends ComponentStore<GuitarPedalsState> {
   public readonly availableInputs$ = this.select((s) => s.availableInputs);
 
   public constructor(private readonly guitarAudioService: GuitarAudioService) {
-    super(defaultState);
+    super({
+      ...defaultState,
+      ...GuitarPedalsViewModel.loadAudioSettings(),
+    });
+  }
+
+  private static loadAudioSettings(): Pick<GuitarPedalsState, 'latencyMode' | 'sampleRate'> {
+    try {
+      const raw = localStorage.getItem('guitar-pedals-audio-settings');
+      if (raw) return JSON.parse(raw);
+    } catch {
+      // ignore
+    }
+    return { latencyMode: defaultState.latencyMode, sampleRate: defaultState.sampleRate };
+  }
+
+  private saveAudioSettings(): void {
+    try {
+      const { latencyMode, sampleRate } = this.get();
+      localStorage.setItem('guitar-pedals-audio-settings', JSON.stringify({ latencyMode, sampleRate }));
+    } catch {
+      // ignore
+    }
   }
 
   public readonly loadInputs = this.effect<void>((trigger$) =>
@@ -94,21 +124,33 @@ export class GuitarPedalsViewModel extends ComponentStore<GuitarPedalsState> {
     )
   );
 
+  public setLatencyMode(value: LatencyMode): void {
+    this.patchState({ latencyMode: value });
+    this.saveAudioSettings();
+  }
+
+  public setSampleRate(value: number): void {
+    this.patchState({ sampleRate: value });
+    this.saveAudioSettings();
+  }
+
   public readonly start = this.effect<string | null>((deviceId$) =>
     deviceId$.pipe(
-      switchMap((deviceId) =>
-        from(this.guitarAudioService.initialize(deviceId ?? undefined)).pipe(
+      switchMap((deviceId) => {
+        const { latencyMode, sampleRate } = this.get();
+        return from(this.guitarAudioService.initialize(deviceId ?? undefined, latencyMode, sampleRate)).pipe(
           tap(() => {
             this.initEffectInstances();
-            this.patchState({ isRunning: true });
+            const latencyInfo = this.guitarAudioService.getLatencyInfo();
+            this.patchState({ isRunning: true, latencyInfo });
             this.rewireChain();
           }),
           catchError((err: unknown) => {
             console.error('Failed to start audio', err);
             return of(undefined);
           })
-        )
-      )
+        );
+      })
     )
   );
 
@@ -118,7 +160,7 @@ export class GuitarPedalsViewModel extends ComponentStore<GuitarPedalsState> {
         from(this.guitarAudioService.stop()).pipe(
           tap(() => {
             this.effectInstances.clear();
-            this.patchState({ isRunning: false });
+            this.patchState({ isRunning: false, latencyInfo: null });
           }),
           catchError((err: unknown) => {
             console.error('Failed to stop audio', err);

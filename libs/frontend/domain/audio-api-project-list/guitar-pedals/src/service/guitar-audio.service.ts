@@ -18,12 +18,22 @@ export class GuitarAudioService {
     return devices.filter((d) => d.kind === 'audioinput');
   }
 
-  public async initialize(deviceId?: string): Promise<void> {
+  public getLatencyInfo(): { baseMs: number; outputMs: number; totalMs: number } | null {
+    if (!this.audioContext) return null;
+    const baseMs = (this.audioContext.baseLatency ?? 0) * 1000;
+    const outputMs = (this.audioContext.outputLatency ?? 0) * 1000;
+    return { baseMs, outputMs, totalMs: baseMs + outputMs };
+  }
+
+  public async initialize(deviceId?: string, latencyHint: AudioContextLatencyCategory = 'interactive', sampleRate = 44100): Promise<void> {
     if (this.audioContext) {
       await this.stop();
     }
 
-    this.audioContext = new AudioContext({ latencyHint: 'interactive' });
+    this.audioContext = new AudioContext({
+      sampleRate,
+      latencyHint,
+    });
 
     const constraints: MediaStreamConstraints = {
       audio: deviceId

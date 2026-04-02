@@ -20,7 +20,7 @@ export class AudioApiProjectListComponent {
       path: 'analog-synth',
     },
     {
-      title: 'Guitar Pedals',
+      title: 'Guitar Pedalboard',
       subtitle: 'Real-time guitar effects with virtual pedalboard',
       iconUrl:
         'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?q=80&w=1470&auto=format&fit=crop',

@@ -18,11 +18,11 @@ export class NavComponent {
       url: 'dashboard',
     },
     {
-      title: 'My Projects',
-      url: 'my-projects',
+      title: 'Web Audio Projects',
+      url: 'web-audio-projects',
     },
     {
-      title: 'JUCE Plugins',
+      title: 'VST Plugins',
       url: 'juce',
     },
   ];

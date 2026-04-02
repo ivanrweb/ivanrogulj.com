@@ -13,7 +13,7 @@ export const routes: Routes = [
       import('@ivanrogulj.com/dashboard').then((m) => m.DashboardComponent),
   },
   {
-    path: 'my-projects',
+    path: 'web-audio-projects',
     children: [
       {
         path: '',
