@@ -13,7 +13,7 @@ export const routes: Routes = [
       import('@ivanrogulj.com/dashboard').then((m) => m.DashboardComponent),
   },
   {
-    path: 'synths',
+    path: 'my-projects',
     children: [
       {
         path: '',
@@ -29,7 +29,14 @@ export const routes: Routes = [
             (m) => m.AnalogSynthComponent
           ),
       },
-{
+      {
+        path: 'guitar-pedals',
+        loadComponent: () =>
+          import('@ivanrogulj.com/guitar-pedals').then(
+            (m) => m.GuitarPedalsComponent
+          ),
+      },
+      {
         path: 'chord-changer',
         loadComponent: () =>
           import('@ivanrogulj.com/chord-changer').then(

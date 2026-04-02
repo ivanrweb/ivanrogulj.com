@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 
 import { NavItem, NavItemComponent } from '@ivanrogulj.com/nav-item';
-import { RouterLink, RouterModule } from '@angular/router';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'lib-nav',
@@ -15,15 +15,15 @@ export class NavComponent {
   public navItems: NavItem[] = [
     {
       title: 'Dashboard',
-      url: 'dashboard'
+      url: 'dashboard',
     },
     {
-      title: 'My Synths',
-      url: 'synths'
+      title: 'My Projects',
+      url: 'my-projects',
     },
     {
       title: 'JUCE Plugins',
-      url: 'juce'
-    }
-  ]
+      url: 'juce',
+    },
+  ];
 }
