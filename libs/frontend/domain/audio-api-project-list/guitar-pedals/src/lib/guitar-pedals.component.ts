@@ -1,235 +1,272 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { KnobComponent } from '@ivanrogulj.com/knob';
+import { SelectComponent, SelectOption } from '@ivanrogulj.com/select';
 import { GuitarPedalsViewModel } from '../viewmodel/guitar-pedals.viewmodel';
 import { PedalboardComponent } from './pedalboard/pedalboard.component';
 
 @Component({
   selector: 'lib-guitar-pedals',
   standalone: true,
-  imports: [CommonModule, FormsModule, KnobComponent, PedalboardComponent],
+  imports: [CommonModule, KnobComponent, SelectComponent, PedalboardComponent],
   template: `
     @if (vm.vm$ | async; as state) {
-      <div class="guitar-pedals-page">
-        <div class="page-header">
-          <h2 class="page-title">Guitar Pedals</h2>
-          <p class="page-subtitle">Real-time guitar effects via Web Audio API</p>
-        </div>
-
-        <div class="controls-bar">
-          <div class="input-select-group">
-            <label class="control-label">Audio Input</label>
-            <select
-              class="device-select"
-              [ngModel]="state.selectedInput"
-              (ngModelChange)="vm.selectInput($event)"
-            >
-              <option [ngValue]="null">Default input</option>
-              @for (device of state.availableInputs; track device.deviceId) {
-                <option [ngValue]="device.deviceId">
-                  {{ device.label || 'Input ' + $index }}
-                </option>
-              }
-            </select>
-          </div>
-
-          <button
-            class="start-btn"
-            [class.running]="state.isRunning"
-            (click)="state.isRunning ? vm.stop() : vm.start(state.selectedInput)"
-          >
-            {{ state.isRunning ? '■ Stop' : '▶ Start' }}
-          </button>
-
-          @if (state.isRunning) {
-            <div class="gain-controls">
-              <lib-knob
-                label="Input"
-                [minValue]="0"
-                [maxValue]="200"
-                [measureUnit]="'%'"
-                [value]="state.inputGain * 100"
-                (valueChange)="vm.setInputGain($event / 100)"
-              />
-              <lib-knob
-                label="Master"
-                [minValue]="0"
-                [maxValue]="100"
-                [measureUnit]="'%'"
-                [value]="state.masterVolume * 100"
-                (valueChange)="vm.setMasterVolume($event / 100)"
-              />
-            </div>
-          }
-        </div>
-
-        @if (state.isRunning) {
-          <div class="board-wrapper">
-            <lib-pedalboard />
-          </div>
-          <div class="drag-hint">
-            <span>Drag pedals to reorder • Click LED to bypass</span>
-          </div>
-        } @else {
-          <div class="idle-state">
-            <div class="idle-icon">🎸</div>
-            <p>Select your audio input and press Start to begin</p>
-            @if (state.availableInputs.length === 0) {
-              <p class="hint">
-                Click Start — the browser will ask for microphone permission
-              </p>
-            }
-          </div>
-        }
+    <div class="header">
+      <div class="title-row">
+        <h2 class="title">Guitar Pedals</h2>
+        <p class="subtitle">Real-time guitar effects via Web Audio API</p>
       </div>
-    }
+
+      <div class="controls-bar">
+        <div class="control-group">
+          <span class="control-label">Audio Input</span>
+          <lib-select
+            [options]="inputOptions()"
+            [value]="state.selectedInput ?? ''"
+            (valueChange)="vm.selectInput($event)"
+          />
+        </div>
+
+        <button
+          class="start-btn"
+          [class.running]="state.isRunning"
+          (click)="state.isRunning ? vm.stop() : vm.start(state.selectedInput)"
+        >
+          {{ state.isRunning ? '■ Stop' : '▶ Start' }}
+        </button>
+
+        <div class="gain-controls" [class.inactive]="!state.isRunning">
+          <lib-knob
+            label="Input"
+            [minValue]="0"
+            [maxValue]="200"
+            [measureUnit]="'%'"
+            [value]="state.inputGain * 100"
+            (valueChange)="vm.setInputGain($event / 100)"
+          />
+          <lib-knob
+            label="Master"
+            [minValue]="0"
+            [maxValue]="100"
+            [measureUnit]="'%'"
+            [value]="state.masterVolume * 100"
+            (valueChange)="vm.setMasterVolume($event / 100)"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="board-section">
+      <lib-pedalboard />
+    </div>
+
+    @if (showHint()) {
+    <div class="drag-hint">
+      <span class="hint-icon">💡</span>
+      <span class="hint-text"
+        >Drag pedals to reorder &nbsp;•&nbsp; Click LED dot to turn the effect
+        On/Off</span
+      >
+      <button class="hint-close" (click)="showHint.set(false)" title="Dismiss">
+        ✕
+      </button>
+    </div>
+    } }
   `,
   styles: [
     `
-      .guitar-pedals-page {
+      :host {
+        display: block;
+        width: 100%;
+        padding: 20px;
+        box-sizing: border-box;
+        background-color: #121212;
+        border-radius: 10px;
+        border: 1px solid #333;
+        color: #e0e0e0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .header {
         display: flex;
-        flex-direction: column;
-        gap: 24px;
-        padding: 24px;
-        min-height: 100vh;
-        background: #111;
-        color: #fff;
-        font-family: monospace;
-      }
-
-      .page-header {
-        border-bottom: 1px solid #333;
-        padding-bottom: 16px;
-      }
-
-      .page-title {
-        margin: 0 0 4px;
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #fff;
-        letter-spacing: 1px;
-      }
-
-      .page-subtitle {
-        margin: 0;
-        color: #666;
-        font-size: 0.85rem;
-      }
-
-      .controls-bar {
-        display: flex;
-        align-items: center;
-        gap: 20px;
         flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        background: #1a1a1a;
+        border: 1px solid #333;
+        border-radius: 8px;
+        padding: 15px 20px;
+        margin-bottom: 20px;
       }
 
-      .input-select-group {
+      .title-row {
         display: flex;
         flex-direction: column;
         gap: 4px;
       }
 
-      .control-label {
-        font-size: 0.7rem;
-        color: #888;
-        letter-spacing: 1px;
+      .title {
+        margin: 0;
+        font-weight: 900;
+        letter-spacing: 2px;
+        color: #999;
+        font-size: 1.2rem;
         text-transform: uppercase;
       }
 
-      .device-select {
-        background: #222;
-        border: 1px solid #444;
-        border-radius: 4px;
-        color: #fff;
-        padding: 6px 10px;
-        font-size: 0.85rem;
-        font-family: monospace;
-        min-width: 220px;
-        cursor: pointer;
+      .subtitle {
+        margin: 0;
+        color: #999;
+        font-size: 0.8rem;
       }
 
-      .device-select:focus {
-        outline: 1px solid #ffcc00;
+      .controls-bar {
+        display: flex;
+        align-items: flex-end;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .control-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 180px;
+      }
+
+      .control-label {
+        font-size: 0.65rem;
+        color: #666;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-weight: bold;
       }
 
       .start-btn {
-        padding: 8px 20px;
-        border-radius: 6px;
+        padding: 6px 18px;
+        border-radius: 4px;
         border: 1px solid #555;
         background: #2a2a2a;
-        color: #fff;
-        font-size: 0.9rem;
-        font-family: monospace;
+        color: #d0d0d0;
+        font-size: 0.8rem;
+        font-family: inherit;
         cursor: pointer;
         letter-spacing: 1px;
+        text-transform: uppercase;
+        font-weight: bold;
         transition: all 0.2s;
       }
 
       .start-btn:hover {
         background: #333;
-        border-color: #888;
+        border-color: #d0d0d0;
       }
 
       .start-btn.running {
-        background: #3a1a1a;
+        background: #2a1414;
         border-color: #e74c3c;
         color: #e74c3c;
       }
 
       .start-btn.running:hover {
-        background: #4a2020;
+        background: #3a1a1a;
       }
 
       .gain-controls {
         display: flex;
         gap: 8px;
         align-items: center;
+        transition: opacity 0.3s;
       }
 
-      .board-wrapper {
-        overflow-x: auto;
-        padding-bottom: 8px;
+      .gain-controls.inactive {
+        opacity: 0.3;
+        pointer-events: none;
+      }
+
+      .board-section {
+        position: relative;
+      }
+
+      .board-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.4);
+        border-radius: 12px;
+        color: #666;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: default;
+        pointer-events: all;
       }
 
       .drag-hint {
-        text-align: center;
-        color: #444;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 10px;
+        padding: 8px 14px;
+        background: #1a1a1a;
+        border: 1px solid #333;
+        border-radius: 6px;
+        color: #999;
         font-size: 0.75rem;
         letter-spacing: 0.5px;
       }
 
-      .idle-state {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        padding: 60px 20px;
-        color: #555;
+      .hint-icon {
+        font-size: 0.85rem;
+      }
+
+      .hint-text {
+        flex: 1;
         text-align: center;
       }
 
-      .idle-icon {
-        font-size: 3rem;
+      .hint-close {
+        background: none;
+        border: none;
+        color: #999;
+        font-size: 0.75rem;
+        cursor: pointer;
+        padding: 0 2px;
+        line-height: 1;
+        transition: color 0.2s;
       }
 
-      .idle-state p {
-        margin: 0;
-        font-size: 0.9rem;
-      }
-
-      .hint {
-        color: #444;
-        font-size: 0.8rem;
+      .hint-close:hover {
+        color: #aaa;
       }
     `,
   ],
 })
 export class GuitarPedalsComponent implements OnInit {
   public readonly vm = inject(GuitarPedalsViewModel);
+  public readonly showHint = signal(true);
+
+  private readonly availableInputs = signal<MediaDeviceInfo[]>([]);
+
+  public readonly inputOptions = computed<SelectOption[]>(() => {
+    const devices = this.availableInputs();
+    return [
+      { label: 'Default Input', value: '' },
+      ...devices.map((d, i) => ({
+        label: d.label || `Input ${i + 1}`,
+        value: d.deviceId,
+      })),
+    ];
+  });
 
   public ngOnInit(): void {
     this.vm.loadInputs();
+    this.vm.availableInputs$.subscribe((inputs) => {
+      this.availableInputs.set(inputs);
+    });
   }
 }

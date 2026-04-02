@@ -66,7 +66,6 @@ interface Cable {
               @case ('delay') { <lib-delay-pedal /> }
               @case ('reverb') { <lib-reverb-pedal /> }
             }
-            <div class="drag-handle" title="Drag to reorder">⠿</div>
           </div>
         }
 
@@ -100,9 +99,11 @@ interface Cable {
         position: relative;
         display: flex;
         flex-direction: row;
-        align-items: flex-start;
+        flex-wrap: wrap;
+        align-items: stretch;
+        justify-content: center;
         gap: 20px;
-        padding: 40px 24px 24px;
+        padding: 10px 14px;
         background: repeating-linear-gradient(
           0deg,
           #1a1008 0px,
@@ -112,21 +113,18 @@ interface Cable {
         );
         border: 2px solid #3a2a10;
         border-radius: 12px;
-        min-height: 220px;
-        overflow: visible;
       }
 
       .source-node {
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: flex-start;
+        justify-content: center;
         gap: 4px;
-        padding-top: 8px;
       }
 
       .source-icon {
-        font-size: 1.8rem;
+        font-size: 5rem;
       }
 
       .jack-row-source {
@@ -177,15 +175,7 @@ interface Cable {
         outline-offset: 4px;
       }
 
-      .drag-handle {
-        text-align: center;
-        color: #555;
-        font-size: 0.8rem;
-        padding: 2px 0;
-        cursor: grab;
-      }
-
-      .cable-svg {
+.cable-svg {
         position: absolute;
         top: 0;
         left: 0;
