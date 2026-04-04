@@ -6,11 +6,13 @@ import { Router } from '@angular/router';
   selector: 'lib-not-found',
   standalone: true,
   imports: [],
-  templateUrl: './not-found.component.html',
-  styleUrl: './not-found.component.scss',
+  template: `
+    <p>Page not found</p>
+    <button (click)="goToDashboard()">Return to dashboard</button>
+  `,
 })
 export class NotFoundComponent {
-  constructor(private readonly router: Router){}
+  constructor(private readonly router: Router) {}
 
   public goToDashboard(): void {
     this.router.navigateByUrl('/');

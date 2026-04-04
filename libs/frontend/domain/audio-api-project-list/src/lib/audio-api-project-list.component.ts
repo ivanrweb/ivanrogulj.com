@@ -7,8 +7,15 @@ import { TileItem } from '@ivanrogulj.com/tile-item';
   selector: 'lib-audio-api-project-list',
   standalone: true,
   imports: [TileListComponent],
-  templateUrl: './audio-api-project-list.component.html',
-  styleUrl: './audio-api-project-list.component.scss',
+  template: `<lib-tile-list [items]="audioApiProjectList"></lib-tile-list>`,
+  styles: [
+    `
+      :host {
+        display: block;
+        padding: 2rem 0 0 2rem;
+      }
+    `,
+  ],
 })
 export class AudioApiProjectListComponent {
   public audioApiProjectList: TileItem[] = [
