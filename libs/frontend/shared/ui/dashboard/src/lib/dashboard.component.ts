@@ -25,83 +25,7 @@ import { Component } from '@angular/core';
       <main class="grid-layout">
         <section class="card">
           <div class="card-icon">
-            <svg
-              viewBox="0 0 100 50"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect x="5" y="5" width="90" height="40" rx="4" fill="#E0E0E0" />
-              <rect x="5" y="5" width="90" height="10" fill="#333333" />
-              <rect
-                x="10"
-                y="15"
-                width="10"
-                height="30"
-                stroke="#333"
-                stroke-width="1"
-              />
-              <rect
-                x="20"
-                y="15"
-                width="10"
-                height="30"
-                stroke="#333"
-                stroke-width="1"
-              />
-              <rect
-                x="30"
-                y="15"
-                width="10"
-                height="30"
-                stroke="#333"
-                stroke-width="1"
-              />
-              <rect
-                x="40"
-                y="15"
-                width="10"
-                height="30"
-                stroke="#333"
-                stroke-width="1"
-              />
-              <rect
-                x="50"
-                y="15"
-                width="10"
-                height="30"
-                stroke="#333"
-                stroke-width="1"
-              />
-              <rect
-                x="60"
-                y="15"
-                width="10"
-                height="30"
-                stroke="#333"
-                stroke-width="1"
-              />
-              <rect
-                x="70"
-                y="15"
-                width="10"
-                height="30"
-                stroke="#333"
-                stroke-width="1"
-              />
-              <rect
-                x="80"
-                y="15"
-                width="10"
-                height="30"
-                stroke="#333"
-                stroke-width="1"
-              />
-              <rect x="17" y="15" width="6" height="18" fill="#1A1A1A" />
-              <rect x="27" y="15" width="6" height="18" fill="#1A1A1A" />
-              <rect x="47" y="15" width="6" height="18" fill="#1A1A1A" />
-              <rect x="57" y="15" width="6" height="18" fill="#1A1A1A" />
-              <rect x="67" y="15" width="6" height="18" fill="#1A1A1A" />
-            </svg>
+            <img src="svg/synth.svg" alt="Online Synth" />
           </div>
           <h3>Online Synth</h3>
           <p>
@@ -116,34 +40,7 @@ import { Component } from '@angular/core';
 
         <section class="card">
           <div class="card-icon">
-            <svg
-              viewBox="0 0 100 100"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect
-                x="20"
-                y="10"
-                width="60"
-                height="80"
-                rx="8"
-                fill="#e74c3c"
-                stroke="#333"
-                stroke-width="3"
-              />
-              <circle cx="35" cy="30" r="8" fill="#1A1A1A" />
-              <circle cx="65" cy="30" r="8" fill="#1A1A1A" />
-              <circle cx="50" cy="50" r="8" fill="#1A1A1A" />
-              <circle
-                cx="50"
-                cy="75"
-                r="6"
-                fill="#E0E0E0"
-                stroke="#333"
-                stroke-width="2"
-              />
-              <circle cx="50" cy="15" r="3" fill="#ffcc00" />
-            </svg>
+            <img src="svg/pedal.svg" alt="Guitar Pedalboard" />
           </div>
           <h3>Guitar Pedalboard</h3>
           <p>
@@ -159,56 +56,7 @@ import { Component } from '@angular/core';
 
         <section class="card">
           <div class="card-icon">
-            <svg
-              viewBox="0 0 100 100"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect
-                x="15"
-                y="10"
-                width="70"
-                height="80"
-                rx="4"
-                fill="#E0E0E0"
-                stroke="#333"
-                stroke-width="3"
-              />
-              <line
-                x1="25"
-                y1="30"
-                x2="75"
-                y2="30"
-                stroke="#1A1A1A"
-                stroke-width="4"
-              />
-              <line
-                x1="25"
-                y1="45"
-                x2="65"
-                y2="45"
-                stroke="#1A1A1A"
-                stroke-width="4"
-              />
-              <line
-                x1="25"
-                y1="60"
-                x2="75"
-                y2="60"
-                stroke="#1A1A1A"
-                stroke-width="4"
-              />
-              <text
-                x="60"
-                y="80"
-                font-family="monospace"
-                font-size="24"
-                font-weight="bold"
-                fill="#ff007f"
-              >
-                +/-
-              </text>
-            </svg>
+            <img src="svg/chord-changer.svg" alt="Chord Changer" />
           </div>
           <h3>Chord Changer</h3>
           <p>
@@ -221,59 +69,7 @@ import { Component } from '@angular/core';
 
         <section class="card">
           <div class="card-icon">
-            <svg
-              viewBox="0 0 100 100"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M50 10 C20 10, 10 40, 50 90 C90 40, 80 10, 50 10 Z"
-                fill="#E0E0E0"
-                stroke="#333"
-                stroke-width="2"
-              />
-              <circle cx="50" cy="45" r="12" fill="#1A1A1A" />
-              <line
-                x1="42"
-                y1="20"
-                x2="42"
-                y2="70"
-                stroke="#1A1A1A"
-                stroke-width="1"
-              />
-              <line
-                x1="46"
-                y1="20"
-                x2="46"
-                y2="70"
-                stroke="#1A1A1A"
-                stroke-width="1"
-              />
-              <line
-                x1="50"
-                y1="20"
-                x2="50"
-                y2="70"
-                stroke="#1A1A1A"
-                stroke-width="1"
-              />
-              <line
-                x1="54"
-                y1="20"
-                x2="54"
-                y2="70"
-                stroke="#1A1A1A"
-                stroke-width="1"
-              />
-              <line
-                x1="58"
-                y1="20"
-                x2="58"
-                y2="70"
-                stroke="#1A1A1A"
-                stroke-width="1"
-              />
-            </svg>
+            <img src="svg/vst.svg" alt="VST Plugins" />
           </div>
           <h3>VST Plugins & Patches</h3>
           <p>
@@ -290,38 +86,7 @@ import { Component } from '@angular/core';
 
         <section class="card full-width">
           <div class="card-icon">
-            <svg
-              viewBox="0 0 100 50"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect
-                x="5"
-                y="5"
-                width="90"
-                height="40"
-                rx="4"
-                fill="#1A1A1A"
-                stroke="#00E5FF"
-                stroke-width="2"
-              />
-              <path
-                d="M15 15 L25 25 L15 35"
-                stroke="#FF007F"
-                stroke-width="3"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <line
-                x1="30"
-                y1="35"
-                x2="50"
-                y2="35"
-                stroke="#00E5FF"
-                stroke-width="3"
-                stroke-linecap="round"
-              />
-            </svg>
+            <img src="svg/blog.svg" alt="Blog" />
           </div>
           <h3>The Blog: Music & Code</h3>
           <div class="blog-content">
@@ -343,6 +108,12 @@ import { Component } from '@angular/core';
   styles: [
     `
       @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+
+      :host {
+        display: block;
+        width: 100%;
+        background-color: #0b0c10;
+      }
 
       .portfolio-container {
         background-color: #0b0c10;
@@ -459,6 +230,13 @@ import { Component } from '@angular/core';
         width: 60px;
         height: 60px;
         margin-bottom: 1.5rem;
+        flex-shrink: 0;
+      }
+
+      .card-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
       }
 
       .card h3 {
