@@ -1,18 +1,8 @@
-import {
-  Component,
-  ElementRef,
-  HostListener,
-  inject,
-  signal,
-  ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, HostListener, inject, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SelectComponent, SelectOption } from '@ivanrogulj.com/select';
-import {
-  GuitarPedalsViewModel,
-  LatencyMode,
-} from '../../viewmodel/guitar-pedals.viewmodel';
+import { GuitarPedalsViewModel, LatencyMode } from '../../viewmodel/guitar-pedals.viewmodel';
 
 @Component({
   selector: 'lib-audio-settings',
@@ -27,7 +17,7 @@ import {
         title="Audio Settings"
         #triggerBtn
       >
-        ⚙
+        SETTINGS ⚙
       </button>
 
       @if (isOpen()) {
