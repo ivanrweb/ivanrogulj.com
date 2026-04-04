@@ -12,9 +12,13 @@ import { RouterOutlet } from '@angular/router';
   `,
   styles: [
     `
+      :host {
+        display: block;
+        background-color: #0b0c10;
+      }
+
       #wrapper {
-        margin: 2rem auto;
-        width: 95%;
+        margin: 0 auto;
         max-width: 1600px;
       }
 
@@ -26,7 +30,6 @@ import { RouterOutlet } from '@angular/router';
 
       @media (max-width: 768px) {
         #wrapper {
-          margin: 0 auto;
           width: 100%;
         }
       }
