@@ -12,9 +12,9 @@ import { Component } from '@angular/core';
           <p class="intro-text">
             Hi! My name is Ivan Rogulj and I'm a software developer and
             musician. This is a space where you can try out my online synths,
-            virtual guitar rig, VST plugins, PureData and synth patches, as well
-            as learn about various topics on audio and web programming in my
-            blog articles.
+            virtual guitar rig, download my VST plugins, PureData and synth
+            patches, as well as learn about various topics on audio and web
+            programming in my blog articles.
           </p>
           <p class="free-badge">
             All of my projects are free for you to use and download. Enjoy!
@@ -103,7 +103,7 @@ import { Component } from '@angular/core';
               <rect x="67" y="15" width="6" height="18" fill="#1A1A1A" />
             </svg>
           </div>
-          <h3>Online Synths</h3>
+          <h3>Online Synth</h3>
           <p>
             Plug & Play! Connect your MIDI device and play directly in your
             browser - no downloads required. For optimal performance, Google
@@ -149,8 +149,8 @@ import { Component } from '@angular/core';
           <p>
             Plug & Play! Experience real-time guitar effects powered by the Web
             Audio API without any installations to your device. Simply plug your
-            guitar into an audio interface and start building your dream rig
-            with virtual pedal effects right away. While you can jam without
+            guitar into an audio interface and start building your rig with
+            virtual pedal effects right away. While you can jam without
             registering, creating a free account lets you save your custom
             pedalboard configurations and discover public tones shared by fellow
             musicians.
@@ -275,11 +275,11 @@ import { Component } from '@angular/core';
               />
             </svg>
           </div>
-          <h3>DAW Plugins & Patches</h3>
+          <h3>VST Plugins & Patches</h3>
           <p>
-            Audio DAW plugins are made in C++ JUCE framework, all compatible
-            with popular DAWs like Ableton, FL Studio and LogicPro - and free
-            for download (.vst3 and .au extensions).
+            VST plugins are made in C++ JUCE framework, all compatible with
+            popular DAWs like Ableton, FL Studio and LogicPro - and free for
+            download (.vst3 and .au extensions).
           </p>
           <p class="small-text">
             You will also find downloadable synth patches for Yamaha DX7 and
