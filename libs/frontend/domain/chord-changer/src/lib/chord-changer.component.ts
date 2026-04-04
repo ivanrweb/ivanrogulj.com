@@ -109,41 +109,41 @@ import { ChordChangerService } from '../service/chord-changer.service';
   `,
   styles: [
     `
+      @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+
       :host {
         display: block;
         width: 100%;
-        padding: 20px;
+        padding: 2rem;
         box-sizing: border-box;
-        background-color: #121212;
-        border-radius: 10px;
-        border: 1px solid #333;
-        color: #e0e0e0;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #c5c6c7;
+        font-family: 'Inter', sans-serif;
       }
 
       .changer-dashboard {
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 1.5rem;
       }
 
       .changer-header {
-        background: #1a1a1a;
-        padding: 15px 20px;
+        background: #1f2833;
+        padding: 1.25rem 1.5rem;
         border-radius: 8px;
         border: 1px solid #333;
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
-        gap: 20px;
+        gap: 1.25rem;
       }
 
       .changer-title {
         margin: 0;
-        font-weight: 900;
+        font-family: 'Fira Code', monospace;
+        font-weight: 700;
         letter-spacing: 2px;
-        color: #888;
+        color: #66fcf1;
         font-size: 1.2rem;
         text-transform: uppercase;
       }
@@ -151,137 +151,159 @@ import { ChordChangerService } from '../service/chord-changer.service';
       .transpose-controls {
         display: flex;
         align-items: center;
-        gap: 15px;
+        gap: 1rem;
       }
 
       .control-label {
-        font-size: 0.75rem;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.7rem;
         color: #888;
-        font-weight: bold;
-        letter-spacing: 1px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
       }
 
       .btn-group {
         display: flex;
-        gap: 4px;
-        background: #0a0a0a;
+        gap: 3px;
+        background: #0b0c10;
         padding: 4px;
         border-radius: 6px;
         border: 1px solid #333;
       }
 
       .btn-step {
-        background: #222;
+        background: #1f2833;
         border: 1px solid #333;
-        color: #aaa;
-        padding: 6px 10px;
+        color: #888;
+        padding: 5px 10px;
         border-radius: 4px;
         cursor: pointer;
-        font-weight: bold;
-        font-size: 0.8rem;
-        transition: all 0.2s;
-        min-width: 36px;
+        font-family: 'Fira Code', monospace;
+        font-weight: 700;
+        font-size: 0.78rem;
+        transition: all 0.15s ease;
+        min-width: 34px;
         text-align: center;
       }
 
       .btn-step:hover {
-        background: #333;
-        color: #fff;
+        background: #2a3545;
+        color: #c5c6c7;
+        border-color: #555;
       }
 
       .btn-step.active {
-        background: #ffcc00;
-        color: #000;
-        border-color: #d4a000;
-        box-shadow: 0 0 8px rgba(255, 204, 0, 0.4);
+        background: rgba(102, 252, 241, 0.12);
+        color: #66fcf1;
+        border-color: #66fcf1;
+        box-shadow: 0 0 8px rgba(102, 252, 241, 0.25);
       }
 
       .btn-zero {
-        margin: 0 4px;
+        margin: 0 3px;
+        color: #c5c6c7;
+      }
+
+      .btn-zero.active {
+        background: rgba(255, 0, 127, 0.12);
+        color: #ff007f;
+        border-color: #ff007f;
+        box-shadow: 0 0 8px rgba(255, 0, 127, 0.25);
       }
 
       .main-content {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 20px;
+        gap: 1.5rem;
         min-height: 400px;
+      }
+
+      @media (max-width: 768px) {
+        .main-content {
+          grid-template-columns: 1fr;
+        }
       }
 
       .section-label {
         display: block;
-        font-size: 0.7rem;
-        font-weight: bold;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.65rem;
+        font-weight: 700;
         color: #888;
         letter-spacing: 1.5px;
         text-transform: uppercase;
-        margin-bottom: 8px;
-        padding-left: 4px;
+        margin-bottom: 0.5rem;
       }
 
       .editor-section,
       .output-section {
         display: flex;
         flex-direction: column;
-        height: 100%;
       }
 
       .chord-textarea {
         flex-grow: 1;
-        background: #1e1e1e;
+        background: #1f2833;
         border: 1px solid #333;
         border-radius: 6px;
-        color: #d0d0d0;
-        padding: 15px;
-        font-family: 'Courier New', Courier, monospace;
-        font-size: 0.95rem;
-        line-height: 1.5;
+        color: #c5c6c7;
+        padding: 1rem;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.9rem;
+        line-height: 1.6;
         resize: none;
         outline: none;
-        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-        transition: border-color 0.2s;
+        transition: border-color 0.2s ease;
         white-space: pre;
+        min-height: 300px;
       }
 
       .chord-textarea:focus {
-        border-color: #555;
+        border-color: #66fcf1;
+        box-shadow: 0 0 0 1px rgba(102, 252, 241, 0.15);
+      }
+
+      .chord-textarea::placeholder {
+        color: #444;
       }
 
       .transposed-output {
         flex-grow: 1;
-        background: #0a0a0a;
+        background: #1f2833;
         border: 1px solid #333;
         border-radius: 6px;
-        padding: 15px;
+        padding: 1rem;
         overflow-y: auto;
+        min-height: 300px;
       }
 
       .transposed-output pre {
         margin: 0;
-        color: #ffcc00;
-        font-family: 'Courier New', Courier, monospace;
-        font-size: 0.95rem;
-        line-height: 1.5;
+        color: #66fcf1;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.9rem;
+        line-height: 1.6;
         white-space: pre-wrap;
       }
 
       .analysis-footer {
         display: flex;
-        gap: 15px;
+        gap: 1rem;
         flex-wrap: wrap;
       }
 
       .analysis-card {
-        background: #1e1e1e;
+        background: #1f2833;
         border: 1px solid #333;
-        border-radius: 6px;
-        padding: 12px 15px;
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 0.6rem;
       }
 
       .key-card {
-        min-width: 150px;
+        min-width: 160px;
       }
 
       .prob-list {
@@ -294,14 +316,16 @@ import { ChordChangerService } from '../service/chord-changer.service';
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: #2a2a2a;
+        background: rgba(102, 252, 241, 0.05);
+        border: 1px solid rgba(102, 252, 241, 0.1);
         padding: 4px 10px;
         border-radius: 4px;
       }
 
       .prob-name {
-        color: #ff3333;
-        font-weight: bold;
+        font-family: 'Fira Code', monospace;
+        color: #66fcf1;
+        font-weight: 700;
         font-size: 0.9rem;
       }
 
@@ -315,37 +339,40 @@ import { ChordChangerService } from '../service/chord-changer.service';
       }
 
       .card-title {
-        font-size: 0.65rem;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.62rem;
         color: #888;
-        font-weight: bold;
+        font-weight: 700;
         letter-spacing: 1px;
+        text-transform: uppercase;
       }
 
       .pill-container {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
+        gap: 6px;
       }
 
       .chord-pill {
-        background: #2a2a2a;
-        border: 1px solid #444;
-        color: #ffcc00;
-        padding: 4px 10px;
+        background: rgba(255, 0, 127, 0.08);
+        border: 1px solid rgba(255, 0, 127, 0.35);
+        color: #ff007f;
+        padding: 3px 10px;
         border-radius: 12px;
+        font-family: 'Fira Code', monospace;
         font-size: 0.85rem;
-        font-weight: bold;
-        font-family: 'Courier New', Courier, monospace;
+        font-weight: 700;
       }
 
       .progression-pill {
-        background: #1a1a1a;
-        border: 1px solid #555;
-        color: #00ccff;
-        padding: 4px 10px;
+        background: rgba(69, 162, 158, 0.08);
+        border: 1px solid rgba(69, 162, 158, 0.35);
+        color: #45a29e;
+        padding: 3px 10px;
         border-radius: 4px;
+        font-family: 'Fira Code', monospace;
         font-size: 0.85rem;
-        font-weight: bold;
+        font-weight: 700;
       }
 
       .empty-text {
