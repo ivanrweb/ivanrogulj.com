@@ -25,15 +25,16 @@ import { GuitarPedalsViewModel } from '../../viewmodel/guitar-pedals.viewmodel';
     }
   `,
   styles: [`
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap');
     .amp {
-      background: linear-gradient(180deg, #1e1e1e 0%, #2a2a2a 100%);
-      border: 2px solid #555;
+      background: linear-gradient(180deg, #162030 0%, #1f2833 100%);
+      border: 2px solid #2a3a4a;
       border-radius: 8px;
       min-width: 150px;
       height: 100%;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.03);
       overflow: hidden;
       box-sizing: border-box;
     }
@@ -42,15 +43,15 @@ import { GuitarPedalsViewModel } from '../../viewmodel/guitar-pedals.viewmodel';
       align-items: center;
       gap: 6px;
       padding: 6px 10px;
-      background: #111;
-      border-bottom: 1px solid #333;
+      background: #0b0c10;
+      border-bottom: 1px solid #2a3a4a;
     }
     .jack {
       width: 12px;
       height: 12px;
       border-radius: 50%;
-      background: #888;
-      border: 2px solid #555;
+      background: #666;
+      border: 2px solid #444;
       box-shadow: inset 0 1px 3px rgba(0,0,0,0.8);
     }
     .jack-label {
@@ -68,8 +69,9 @@ import { GuitarPedalsViewModel } from '../../viewmodel/guitar-pedals.viewmodel';
       min-height: 0;
     }
     .amp-label {
+      font-family: 'Fira Code', monospace;
       font-weight: bold;
-      color: #aaa;
+      color: #66fcf1;
       font-size: 0.75rem;
       letter-spacing: 2px;
       text-align: center;
@@ -82,10 +84,10 @@ import { GuitarPedalsViewModel } from '../../viewmodel/guitar-pedals.viewmodel';
       gap: 4px;
       align-content: space-evenly;
       justify-content: center;
-      background: #111;
+      background: #0b0c10;
       padding: 8px;
       border-radius: 4px;
-      border: 1px solid #333;
+      border: 1px solid #2a3a4a;
       flex: 1;
       min-height: 0;
     }
@@ -93,15 +95,15 @@ import { GuitarPedalsViewModel } from '../../viewmodel/guitar-pedals.viewmodel';
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: #1e1e1e;
-      border: 1px solid #3a3a3a;
+      background: #1f2833;
+      border: 1px solid #2a3a4a;
       box-shadow: inset 0 1px 3px rgba(0,0,0,0.9);
       transition: background 0.3s, box-shadow 0.3s, border-color 0.3s;
     }
     .amp.active .grill-dot {
-      background: #ffcc00;
-      border-color: #d4a000;
-      box-shadow: 0 0 4px rgba(255, 204, 0, 0.5);
+      background: #66fcf1;
+      border-color: #45a29e;
+      box-shadow: 0 0 4px rgba(102, 252, 241, 0.5);
     }
   `]
 })

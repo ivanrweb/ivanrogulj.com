@@ -84,16 +84,16 @@ import { AudioSettingsComponent } from './audio-settings/audio-settings.componen
   `,
   styles: [
     `
+      @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+
       :host {
         display: block;
         width: 100%;
         padding: 20px;
         box-sizing: border-box;
-        background-color: #121212;
-        border-radius: 10px;
-        border: 1px solid #333;
-        color: #e0e0e0;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #0b0c10;
+        color: #c5c6c7;
+        font-family: 'Inter', sans-serif;
       }
 
       .header {
@@ -102,7 +102,7 @@ import { AudioSettingsComponent } from './audio-settings/audio-settings.componen
         align-items: center;
         justify-content: space-between;
         gap: 16px;
-        background: #1a1a1a;
+        background: #1f2833;
         border: 1px solid #333;
         border-radius: 8px;
         padding: 15px 20px;
@@ -119,14 +119,15 @@ import { AudioSettingsComponent } from './audio-settings/audio-settings.componen
         margin: 0;
         font-weight: 900;
         letter-spacing: 2px;
-        color: #999;
+        color: #66fcf1;
         font-size: 1.2rem;
         text-transform: uppercase;
+        font-family: 'Fira Code', monospace;
       }
 
       .subtitle {
         margin: 0;
-        color: #999;
+        color: #888;
         font-size: 0.8rem;
       }
 
@@ -146,20 +147,21 @@ import { AudioSettingsComponent } from './audio-settings/audio-settings.componen
 
       .control-label {
         font-size: 0.65rem;
-        color: #666;
+        color: #888;
         letter-spacing: 1px;
         text-transform: uppercase;
         font-weight: bold;
+        font-family: 'Fira Code', monospace;
       }
 
       .start-btn {
         padding: 6px 18px;
         border-radius: 4px;
-        border: 1px solid #555;
-        background: #2a2a2a;
-        color: #d0d0d0;
+        border: 1px solid #333;
+        background: #1f2833;
+        color: #c5c6c7;
         font-size: 0.8rem;
-        font-family: inherit;
+        font-family: 'Fira Code', monospace;
         cursor: pointer;
         letter-spacing: 1px;
         text-transform: uppercase;
@@ -168,18 +170,18 @@ import { AudioSettingsComponent } from './audio-settings/audio-settings.componen
       }
 
       .start-btn:hover {
-        background: #333;
-        border-color: #d0d0d0;
+        border-color: #66fcf1;
+        color: #66fcf1;
       }
 
       .start-btn.running {
-        background: #2a1414;
-        border-color: #e74c3c;
-        color: #e74c3c;
+        background: rgba(255, 0, 127, 0.1);
+        border-color: #ff007f;
+        color: #ff007f;
       }
 
       .start-btn.running:hover {
-        background: #3a1a1a;
+        background: rgba(255, 0, 127, 0.2);
       }
 
       .gain-controls {
@@ -221,12 +223,13 @@ import { AudioSettingsComponent } from './audio-settings/audio-settings.componen
         gap: 8px;
         margin-top: 10px;
         padding: 8px 14px;
-        background: #1a1a1a;
+        background: #1f2833;
         border: 1px solid #333;
         border-radius: 6px;
-        color: #999;
+        color: #888;
         font-size: 0.75rem;
         letter-spacing: 0.5px;
+        font-family: 'Fira Code', monospace;
       }
 
       .hint-icon {
@@ -241,7 +244,7 @@ import { AudioSettingsComponent } from './audio-settings/audio-settings.componen
       .hint-close {
         background: none;
         border: none;
-        color: #999;
+        color: #888;
         font-size: 0.75rem;
         cursor: pointer;
         padding: 0 2px;
@@ -250,7 +253,7 @@ import { AudioSettingsComponent } from './audio-settings/audio-settings.componen
       }
 
       .hint-close:hover {
-        color: #aaa;
+        color: #c5c6c7;
       }
     `,
   ],
