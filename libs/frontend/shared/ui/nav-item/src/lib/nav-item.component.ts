@@ -7,8 +7,22 @@ import { NavItem } from './nav-item.interface';
   selector: 'lib-nav-item',
   standalone: true,
   imports: [RouterLink],
-  templateUrl: './nav-item.component.html',
-  styleUrl: './nav-item.component.scss',
+  template: `<a [routerLink]="item.url">{{ item.title }}</a>`,
+  styles: [
+    `
+      a {
+        color: #000;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: bold;
+        transition: color 0.1s ease;
+      }
+
+      a:hover {
+        color: #808080;
+      }
+    `,
+  ],
 })
 export class NavItemComponent {
   @Input()
