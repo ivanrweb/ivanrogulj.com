@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'lib-dashboard',
@@ -10,11 +11,11 @@ import { Component } from '@angular/core';
           <h1 class="glitch-title">Software & Music</h1>
           <h2 class="subtitle">Explore the intersection</h2>
           <p class="intro-text">
-            Hi! My name is Ivan Rogulj and I'm a software developer and
-            musician. This is a space where you can try out my online synths,
-            virtual guitar rig, download my VST plugins, PureData and synth
-            patches, as well as learn about various topics on audio and web
-            programming in my blog articles.
+            Hi! My name is Ivan and I'm a software developer and musician. This
+            is a space where you can try out my online synths, virtual guitar
+            rig, download my VST plugins, PureData and synth patches, as well as
+            learn about various topics on audio and web programming in my blog
+            articles.
           </p>
           <p class="free-badge">
             All of my projects are free for you to use and download. Enjoy!
@@ -23,7 +24,7 @@ import { Component } from '@angular/core';
       </header>
 
       <main class="grid-layout">
-        <section class="card">
+        <section class="card" (click)="navigate('web-audio-projects/analog-synth')">
           <div class="card-icon">
             <img src="svg/synth.svg" alt="Online Synth" />
           </div>
@@ -38,7 +39,7 @@ import { Component } from '@angular/core';
           </p>
         </section>
 
-        <section class="card">
+        <section class="card" (click)="navigate('web-audio-projects/guitar-pedals')">
           <div class="card-icon">
             <img src="svg/pedal.svg" alt="Guitar Pedalboard" />
           </div>
@@ -54,7 +55,7 @@ import { Component } from '@angular/core';
           </p>
         </section>
 
-        <section class="card">
+        <section class="card" (click)="navigate('web-audio-projects/chord-changer')">
           <div class="card-icon">
             <img src="svg/chord-changer.svg" alt="Chord Changer" />
           </div>
@@ -67,7 +68,7 @@ import { Component } from '@angular/core';
           </p>
         </section>
 
-        <section class="card">
+        <section class="card" (click)="navigate('juce')">
           <div class="card-icon">
             <img src="svg/vst.svg" alt="VST Plugins" />
           </div>
@@ -214,6 +215,7 @@ import { Component } from '@angular/core';
           border-color 0.3s ease;
         display: flex;
         flex-direction: column;
+        cursor: pointer;
       }
 
       .card:hover {
@@ -285,4 +287,10 @@ import { Component } from '@angular/core';
     `,
   ],
 })
-export class DashboardComponent {}
+export class DashboardComponent {
+  private readonly router = inject(Router);
+
+  public navigate(path: string): void {
+    this.router.navigateByUrl(path);
+  }
+}

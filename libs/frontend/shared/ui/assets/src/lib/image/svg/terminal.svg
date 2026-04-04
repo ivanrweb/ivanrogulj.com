@@ -1,0 +1,6 @@
+<svg width="28" height="18" viewBox="0 0 28 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <text x="0" y="14" font-family="Fira Code, monospace" font-size="15" fill="#66fcf1">&gt;</text>
+  <rect x="17" y="2" width="7" height="12" fill="#66fcf1" rx="1">
+    <animate attributeName="opacity" values="1;0;1" dur="1.1s" repeatCount="indefinite"/>
+  </rect>
+</svg>
