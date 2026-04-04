@@ -13,9 +13,9 @@ import { Router } from '@angular/router';
           <p class="intro-text">
             Hi! My name is Ivan and I'm a software developer and musician. This
             is a space where you can try out my online synths, virtual guitar
-            rig, download my VST plugins, PureData and synth patches, as well as
-            learn about various topics on audio and web programming in my blog
-            articles.
+            rig, download my custom VST plugins, PureData and synth patches, as
+            well as learn about various topics on audio and web programming in
+            blog articles.
           </p>
           <p class="free-badge">
             All of my projects are free for you to use and download. Enjoy!
@@ -24,11 +24,14 @@ import { Router } from '@angular/router';
       </header>
 
       <main class="grid-layout">
-        <section class="card" (click)="navigate('web-audio-projects/analog-synth')">
+        <section
+          class="card"
+          (click)="navigate('web-audio-projects/analog-synth')"
+        >
           <div class="card-icon">
             <img src="svg/synth.svg" alt="Online Synth" />
           </div>
-          <h3>Online Synth</h3>
+          <h3>Virtual analog Synth</h3>
           <p>
             Plug & Play! Connect your MIDI device and play directly in your
             browser - no downloads required. For optimal performance, Google
@@ -39,7 +42,10 @@ import { Router } from '@angular/router';
           </p>
         </section>
 
-        <section class="card" (click)="navigate('web-audio-projects/guitar-pedals')">
+        <section
+          class="card"
+          (click)="navigate('web-audio-projects/guitar-pedals')"
+        >
           <div class="card-icon">
             <img src="svg/pedal.svg" alt="Guitar Pedalboard" />
           </div>
@@ -55,7 +61,10 @@ import { Router } from '@angular/router';
           </p>
         </section>
 
-        <section class="card" (click)="navigate('web-audio-projects/chord-changer')">
+        <section
+          class="card"
+          (click)="navigate('web-audio-projects/chord-changer')"
+        >
           <div class="card-icon">
             <img src="svg/chord-changer.svg" alt="Chord Changer" />
           </div>
