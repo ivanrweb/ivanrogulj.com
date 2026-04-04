@@ -12,7 +12,7 @@ import { TileItem } from '@ivanrogulj.com/tile-item';
     `
       :host {
         display: block;
-        padding: 2rem 0 0 2rem;
+        padding: 2rem 2rem 0 2rem;
       }
     `,
   ],
