@@ -10,11 +10,11 @@ import { Component } from '@angular/core';
           <h1 class="glitch-title">Software & Music</h1>
           <h2 class="subtitle">Explore the intersection</h2>
           <p class="intro-text">
-            Hi! My name is Ivan Rogulj and I'm a software developer and
-            musician. This is a space where you can try out my online synths,
-            virtual guitar rig, download my VST plugins, PureData and synth
-            patches, as well as learn about various topics on audio and web
-            programming in my blog articles.
+            Hi! My name is Ivan and I'm a software developer and musician. This
+            is a space where you can try out my online synths, virtual guitar
+            rig, download my VST plugins, PureData and synth patches, as well as
+            learn about various topics on audio and web programming in my blog
+            articles.
           </p>
           <p class="free-badge">
             All of my projects are free for you to use and download. Enjoy!

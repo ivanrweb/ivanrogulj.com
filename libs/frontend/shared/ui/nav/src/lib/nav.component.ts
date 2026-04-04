@@ -10,7 +10,8 @@ import { RouterLink } from '@angular/router';
     <nav>
       <div class="nav-inner">
         <a class="brand" [routerLink]="['/']">
-          <span class="brand-bracket">//</span> ivan rogulj
+          <img class="prompt" src="svg/terminal.svg" alt="" />
+          ivan rogulj
         </a>
 
         <div class="links" [class.open]="menuOpen()">
@@ -71,9 +72,9 @@ import { RouterLink } from '@angular/router';
         color: #fff;
       }
 
-      .brand-bracket {
-        color: #66fcf1;
-        margin-right: 0.3rem;
+      .prompt {
+        vertical-align: middle;
+        margin-right: 0.25rem;
       }
 
       .links {
