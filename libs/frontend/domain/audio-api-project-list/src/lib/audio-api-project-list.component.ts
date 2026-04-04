@@ -12,7 +12,7 @@ import { TileItem } from '@ivanrogulj.com/tile-item';
     `
       :host {
         display: block;
-        padding: 2rem 0 0 2rem;
+        padding: 2rem 2rem 0 2rem;
       }
     `,
   ],
@@ -21,23 +21,23 @@ export class AudioApiProjectListComponent {
   public audioApiProjectList: TileItem[] = [
     {
       title: 'Analog Synth',
-      subtitle: '3 oscillators, filter and envelopes',
-      iconUrl:
-        'https://images.unsplash.com/photo-1721332149346-00e39ce5c24f?q=80&w=1936&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      description:
+        'Plug & Play! Connect your MIDI device and play a fully-featured polyphonic analog synthesizer directly in your browser — no downloads required. Features 3 oscillators with selectable waveforms, a resonant low-pass filter with ADSR envelope, LFO modulation, and a built-in effects chain including distortion, chorus, delay, and reverb. Save your custom presets and explore patches shared by the community.',
+      iconUrl: 'svg/analog-synth.svg',
       path: 'analog-synth',
     },
     {
       title: 'Guitar Pedalboard',
-      subtitle: 'Real-time guitar effects with virtual pedalboard',
-      iconUrl:
-        'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?q=80&w=1470&auto=format&fit=crop',
+      description:
+        'Experience real-time guitar effects powered by the Web Audio API — no installations required. Plug your guitar into any audio interface, select your input device, and start building your rig with a drag-and-drop virtual pedalboard. Stack and reorder distortion, chorus, delay, and reverb pedals in any combination. For the best low-latency experience, use Google Chrome with a dedicated audio interface.',
+      iconUrl: 'svg/guitar-pedals.svg',
       path: 'guitar-pedals',
     },
     {
-      title: 'Chord changer',
-      subtitle: 'Paste song and transpose tonality',
-      iconUrl:
-        'https://images.unsplash.com/photo-1721332149346-00e39ce5c24f?q=80&w=1936&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      title: 'Chord Changer',
+      description:
+        'Paste your song lyrics and chords to instantly transpose them to any key. The tool automatically detects the current key of the song, extracts all chords, and lets you shift the entire piece up or down by any number of semitones. Supports all standard chord notations including sus, maj7, add9, and slash chords. Export the result as a formatted PDF ready to print or save.',
+      iconUrl: 'svg/chord-changer.svg',
       path: 'chord-changer',
     },
   ];

@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 export interface TileItem {
   title: string;
-  subtitle: string;
+  description: string;
   iconUrl: string;
   path: string;
 }
@@ -14,56 +14,75 @@ export interface TileItem {
   template: `
     @if (item) {
       <div class="tile" (click)="navigate()">
-        @if (item.iconUrl) {
-          <img [src]="item.iconUrl" alt="Tile Icon" class="tile-icon">
-        }
+        <div class="tile-image">
+          <img [src]="item.iconUrl" [alt]="item.title" />
+        </div>
         <div class="tile-content">
           <h3 class="tile-title">{{ item.title }}</h3>
-          <p class="tile-subtitle">{{ item.subtitle }}</p>
+          <p class="tile-description">{{ item.description }}</p>
         </div>
       </div>
     }
   `,
   styles: [
     `
+      @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+
       .tile {
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 200px;
-        height: 200px;
-        border: 1px solid #ddd;
+        flex-direction: row;
+        align-items: stretch;
+        background-color: #1f2833;
+        border: 1px solid #333;
         border-radius: 8px;
         overflow: hidden;
-        background-color: #f9f9f9;
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
       }
 
-      .tile-icon {
+      .tile:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        border-color: #ff007f;
+      }
+
+      .tile-image {
+        flex-shrink: 0;
+        width: 180px;
+        overflow: hidden;
+        background-color: #111;
+      }
+
+      .tile-image img {
         width: 100%;
-        height: 50%;
+        height: 100%;
         object-fit: cover;
+        display: block;
       }
 
       .tile-content {
         display: flex;
         flex-direction: column;
         justify-content: center;
-        align-items: center;
-        height: 50%;
-        text-align: center;
-        padding: 5px;
+        padding: 1.8rem 2rem;
       }
 
       .tile-title {
-        margin: 0;
-        font-size: 1.1em;
-        font-weight: bold;
+        font-family: 'Fira Code', monospace;
+        font-size: 1.3rem;
+        color: #66fcf1;
+        margin: 0 0 1rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 0.5rem;
       }
 
-      .tile-subtitle {
-        margin: 5px 0 0 0;
-        color: #666;
-        font-size: 0.9em;
+      .tile-description {
+        font-family: 'Inter', sans-serif;
+        font-size: 1rem;
+        font-weight: 300;
+        color: #c5c6c7;
+        margin: 0;
+        line-height: 1.6;
       }
     `,
   ],
