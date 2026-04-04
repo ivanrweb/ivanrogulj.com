@@ -82,6 +82,8 @@ import { GuitarPedalsViewModel, LatencyMode } from '../../viewmodel/guitar-pedal
   `,
   styles: [
     `
+      @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap');
+
       .settings-wrapper {
         position: relative;
       }
@@ -89,10 +91,11 @@ import { GuitarPedalsViewModel, LatencyMode } from '../../viewmodel/guitar-pedal
       .settings-btn {
         padding: 6px 10px;
         border-radius: 4px;
-        border: 1px solid #555;
-        background: #2a2a2a;
-        color: #999;
-        font-size: 0.9rem;
+        border: 1px solid #333;
+        background: #1f2833;
+        color: #888;
+        font-size: 0.78rem;
+        font-family: 'Fira Code', monospace;
         cursor: pointer;
         transition: all 0.2s;
         line-height: 1;
@@ -100,9 +103,8 @@ import { GuitarPedalsViewModel, LatencyMode } from '../../viewmodel/guitar-pedal
 
       .settings-btn:hover,
       .settings-btn.open {
-        background: #333;
-        border-color: #aaa;
-        color: #d0d0d0;
+        border-color: #66fcf1;
+        color: #66fcf1;
       }
 
       .popover {
@@ -110,13 +112,13 @@ import { GuitarPedalsViewModel, LatencyMode } from '../../viewmodel/guitar-pedal
         top: calc(100% + 8px);
         left: 50%;
         transform: translateX(-50%);
-        background: #1e1e1e;
-        border: 1px solid #444;
+        background: #1f2833;
+        border: 1px solid #333;
         border-radius: 8px;
         padding: 14px 16px;
         min-width: 260px;
         z-index: 100;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
       }
 
       .popover-header {
@@ -124,7 +126,8 @@ import { GuitarPedalsViewModel, LatencyMode } from '../../viewmodel/guitar-pedal
         font-weight: bold;
         letter-spacing: 1.5px;
         text-transform: uppercase;
-        color: #888;
+        color: #66fcf1;
+        font-family: 'Fira Code', monospace;
         margin-bottom: 12px;
       }
 
@@ -139,6 +142,7 @@ import { GuitarPedalsViewModel, LatencyMode } from '../../viewmodel/guitar-pedal
       .setting-label {
         font-size: 0.7rem;
         color: #888;
+        font-family: 'Fira Code', monospace;
         letter-spacing: 0.5px;
         white-space: nowrap;
       }
@@ -163,7 +167,7 @@ import { GuitarPedalsViewModel, LatencyMode } from '../../viewmodel/guitar-pedal
       }
 
       .latency-total-row {
-        border-top: 1px solid #2a2a2a;
+        border-top: 1px solid #333;
         margin-top: 4px;
         padding-top: 4px;
       }
@@ -175,7 +179,7 @@ import { GuitarPedalsViewModel, LatencyMode } from '../../viewmodel/guitar-pedal
 
       .latency-note {
         font-size: 0.6rem;
-        color: #444;
+        color: #555;
         margin-top: 4px;
         text-align: right;
       }
@@ -183,7 +187,8 @@ import { GuitarPedalsViewModel, LatencyMode } from '../../viewmodel/guitar-pedal
       .latency-value {
         font-size: 0.8rem;
         font-weight: bold;
-        color: #ffcc00;
+        color: #66fcf1;
+        font-family: 'Fira Code', monospace;
         letter-spacing: 0.5px;
       }
 

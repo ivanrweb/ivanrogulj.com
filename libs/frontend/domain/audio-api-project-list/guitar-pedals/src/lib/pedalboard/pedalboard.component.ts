@@ -106,12 +106,12 @@ interface Cable {
         padding: 10px 14px;
         background: repeating-linear-gradient(
           0deg,
-          #1a1008 0px,
-          #1a1008 2px,
-          #1c1209 2px,
-          #1c1209 20px
+          #0e0a05 0px,
+          #0e0a05 2px,
+          #100c06 2px,
+          #100c06 20px
         );
-        border: 2px solid #3a2a10;
+        border: 2px solid #2a1a08;
         border-radius: 12px;
       }
 
@@ -171,7 +171,7 @@ interface Cable {
       }
 
       .pedal-slot.drag-over {
-        outline: 2px dashed #ffcc00;
+        outline: 2px dashed #ff007f;
         outline-offset: 4px;
       }
 
