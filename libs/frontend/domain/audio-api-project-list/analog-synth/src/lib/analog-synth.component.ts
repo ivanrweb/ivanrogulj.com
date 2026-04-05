@@ -191,16 +191,18 @@ import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
   `,
   styles: [
     `
+      @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+
       :host {
         display: block;
         width: 100%;
         padding: 20px;
         box-sizing: border-box;
-        background-color: #121212;
+        background-color: #0b0c10;
         border-radius: 10px;
         border: 1px solid #333;
-        color: #e0e0e0;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #c5c6c7;
+        font-family: 'Inter', sans-serif;
       }
 
       .synth-dashboard {
@@ -212,7 +214,7 @@ import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
       }
 
       .synth-header {
-        background: #1a1a1a;
+        background: #1f2833;
         padding: 15px 20px;
         border-radius: 8px;
         border: 1px solid #333;
@@ -234,9 +236,10 @@ import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
 
       .synth-title {
         margin: 0;
-        font-weight: 900;
+        font-family: 'Fira Code', monospace;
+        font-weight: 700;
         letter-spacing: 2px;
-        color: #888;
+        color: #66fcf1;
         font-size: 1.2rem;
         text-transform: uppercase;
       }
@@ -248,29 +251,33 @@ import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
       }
 
       .btn-midi {
-        background: #2a2a2a;
-        border: 1px solid #444;
-        color: #ccc;
+        background: #0b0c10;
+        border: 1px solid #333;
+        color: #c5c6c7;
         padding: 6px 12px;
         border-radius: 4px;
         cursor: pointer;
         display: flex;
         align-items: center;
         gap: 8px;
-        font-size: 0.8rem;
-        font-weight: bold;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 1px;
         transition: all 0.2s;
         height: 33px;
         box-sizing: border-box;
       }
 
       .btn-midi:hover {
-        background: #333;
+        background: #1f2833;
+        border-color: #555;
       }
 
       .btn-midi.active {
-        border-color: #ff3333;
-        color: #fff;
+        background: rgba(255, 0, 127, 0.1);
+        border-color: #ff007f;
+        color: #ff007f;
       }
 
       .led {
@@ -282,13 +289,13 @@ import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
       }
 
       .led.on {
-        background: #ff0000;
-        box-shadow: 0 0 6px #ff0000;
+        background: #ff007f;
+        box-shadow: 0 0 6px #ff007f;
       }
 
       .led.on-yellow {
-        background: #ffcc00;
-        box-shadow: 0 0 6px #ffcc00;
+        background: #66fcf1;
+        box-shadow: 0 0 6px #66fcf1;
       }
 
       .midi-mapper-panel {
@@ -296,8 +303,8 @@ import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
         top: calc(100% + 8px);
         left: 0;
         min-width: 320px;
-        background: #1a1a1a;
-        border: 1px solid #444;
+        background: #1f2833;
+        border: 1px solid #333;
         border-radius: 6px;
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
         z-index: 1200;
@@ -309,12 +316,14 @@ import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
         justify-content: space-between;
         align-items: center;
         padding: 8px 12px;
-        background: #252525;
-        border-bottom: 1px solid #444;
-        font-size: 0.75rem;
-        font-weight: bold;
+        background: #0b0c10;
+        border-bottom: 1px solid #333;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.7rem;
+        font-weight: 700;
         color: #888;
-        letter-spacing: 1px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
       }
 
       .close-btn {
@@ -328,7 +337,7 @@ import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
       }
 
       .close-btn:hover {
-        color: #fff;
+        color: #c5c6c7;
       }
 
       .no-mappings {
@@ -336,36 +345,38 @@ import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
         font-size: 0.75rem;
         color: #555;
         text-align: center;
+        font-family: 'Fira Code', monospace;
       }
 
       .mapper-table {
         width: 100%;
         border-collapse: collapse;
         font-size: 0.75rem;
+        font-family: 'Fira Code', monospace;
       }
 
       .mapper-table th {
         padding: 6px 12px;
-        color: #666;
-        font-weight: bold;
+        color: #888;
+        font-weight: 700;
         letter-spacing: 0.5px;
         text-align: left;
-        background: #222;
+        background: #0b0c10;
         border-bottom: 1px solid #333;
       }
 
       .mapper-table tr {
-        background: #1e1e1e;
+        background: #1f2833;
       }
 
       .mapper-table tr.even {
-        background: #252525;
+        background: rgba(102, 252, 241, 0.03);
       }
 
       .mapper-table td {
         padding: 7px 12px;
-        color: #ccc;
-        border-bottom: 1px solid #2a2a2a;
+        color: #c5c6c7;
+        border-bottom: 1px solid #333;
       }
 
       .row-num {
@@ -378,22 +389,22 @@ import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
       }
 
       .unmap-btn {
-        background: #2a2a2a;
-        border: 1px solid #555;
-        color: #ff6666;
+        background: #0b0c10;
+        border: 1px solid rgba(255, 0, 127, 0.35);
+        color: #ff007f;
         padding: 3px 8px;
         border-radius: 3px;
         cursor: pointer;
+        font-family: 'Fira Code', monospace;
         font-size: 0.65rem;
-        font-weight: bold;
+        font-weight: 700;
         letter-spacing: 0.5px;
         transition: all 0.15s;
       }
 
       .unmap-btn:hover {
-        background: #3a1a1a;
-        border-color: #ff3333;
-        color: #ff3333;
+        background: rgba(255, 0, 127, 0.1);
+        border-color: #ff007f;
       }
 
       .midi-tooltip {
@@ -401,11 +412,12 @@ import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
         top: calc(100% + 10px);
         left: 0;
         width: 250px;
-        background: #1a1a1a;
-        border: 1px solid #ffcc00;
-        color: #ffcc00;
+        background: #1f2833;
+        border: 1px solid #66fcf1;
+        color: #66fcf1;
         padding: 8px 12px;
         border-radius: 6px;
+        font-family: 'Fira Code', monospace;
         font-size: 0.75rem;
         text-align: left;
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
@@ -421,7 +433,7 @@ import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
       }
 
       .synth-module {
-        background: #1e1e1e;
+        background: #1f2833;
         border: 1px solid #333;
         border-radius: 6px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
@@ -434,15 +446,17 @@ import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
       .module-label {
         margin: 0;
         padding: 8px 0;
-        font-size: 0.7rem;
-        font-weight: bold;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.65rem;
+        font-weight: 700;
         color: #888;
         letter-spacing: 1.5px;
         text-transform: uppercase;
         width: 100%;
         text-align: center;
-        background: #252525;
+        background: #0b0c10;
         border-bottom: 1px solid #333;
+        border-radius: 6px 6px 0 0;
       }
 
       .module-content {
@@ -497,9 +511,10 @@ import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
       }
 
       .control-label {
+        font-family: 'Fira Code', monospace;
         font-size: 0.6rem;
         color: #888;
-        font-weight: bold;
+        font-weight: 700;
         letter-spacing: 1px;
         text-transform: uppercase;
       }
@@ -511,9 +526,10 @@ import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
       }
 
       .voicing-text {
+        font-family: 'Fira Code', monospace;
         font-size: 0.6rem;
-        color: #d0d0d0;
-        font-weight: normal;
+        color: #c5c6c7;
+        font-weight: 700;
         letter-spacing: 1px;
         text-transform: uppercase;
         transform: translateY(-4px);
@@ -523,7 +539,7 @@ import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
       }
 
       .icon-lg {
-        color: #d0d0d0;
+        color: #c5c6c7;
         font-size: 2.4rem;
         cursor: pointer;
         display: inline-block;
