@@ -1,6 +1,6 @@
 export default {
   displayName: 'admin-app',
-  preset: '../jest.preset.js',
+  preset: '../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
   coverageDirectory: '../coverage/admin-app',
   transform: {

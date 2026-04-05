@@ -94,7 +94,7 @@ import { Router } from '@angular/router';
           </p>
         </section>
 
-        <section class="card full-width">
+        <section class="card full-width" (click)="navigate('articles')">
           <div class="card-icon">
             <img src="svg/blog.svg" alt="Blog" />
           </div>

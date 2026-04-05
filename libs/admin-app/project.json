@@ -1,9 +1,9 @@
 {
   "name": "admin-app",
-  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "prefix": "app",
-  "sourceRoot": "admin-app/src",
+  "sourceRoot": "libs/admin-app/src",
   "tags": [],
   "targets": {
     "build": {
@@ -11,17 +11,17 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/admin-app",
-        "browser": "admin-app/src/main.ts",
+        "browser": "libs/admin-app/src/main.ts",
         "polyfills": ["zone.js"],
-        "tsConfig": "admin-app/tsconfig.app.json",
+        "tsConfig": "libs/admin-app/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
           {
             "glob": "**/*",
-            "input": "admin-app/public"
+            "input": "libs/admin-app/public"
           }
         ],
-        "styles": ["admin-app/src/styles.scss"]
+        "styles": ["libs/admin-app/src/styles.scss"]
       },
       "configurations": {
         "production": {
@@ -76,7 +76,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "admin-app/jest.config.ts"
+        "jestConfig": "libs/admin-app/jest.config.ts"
       }
     },
     "serve-static": {
@@ -84,7 +84,7 @@
       "executor": "@nx/web:file-server",
       "options": {
         "buildTarget": "admin-app:build",
-        "port": 4200,
+        "port": 4201,
         "staticFilePath": "dist/admin-app/browser",
         "spa": true
       }
