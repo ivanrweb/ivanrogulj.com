@@ -47,7 +47,7 @@ export class OscilloscopeService {
     canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Update dynamic color
-    const dynamicColor = '#ff3333';
+    const dynamicColor = '#66fcf1';
 
     // Set stroke style and neon glow
     canvasCtx.lineWidth = 1;

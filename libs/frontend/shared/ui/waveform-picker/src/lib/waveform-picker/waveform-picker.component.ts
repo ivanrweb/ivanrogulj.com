@@ -26,7 +26,7 @@ import { NgIcon } from '@ng-icons/core';
         display: flex;
         gap: 8px;
         padding: 6px;
-        background: #111;
+        background: #0b0c10;
         border-radius: 6px;
         border: 1px solid #333;
         box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8);
@@ -42,8 +42,8 @@ import { NgIcon } from '@ng-icons/core';
         cursor: pointer;
         border: 1px solid #333;
         border-radius: 4px;
-        color: #d0d0d0;
-        background: #1a1a1a;
+        color: #c5c6c7;
+        background: #1f2833;
         transition: all 0.2s ease-in-out;
 
         ng-icon {
@@ -54,15 +54,14 @@ import { NgIcon } from '@ng-icons/core';
         &:hover {
           border-color: #555;
           color: #ffffff;
-          background: #222;
+          background: #2a3545;
         }
 
         &.selected {
-          border-color: #ff3333;
-          color: #ff3333;
-          background: rgba(255, 51, 51, 0.1);
-          box-shadow: 0 0 8px rgba(255, 51, 51, 0.4);
-          text-shadow: 0 0 5px rgba(255, 51, 51, 0.6);
+          border-color: #66fcf1;
+          color: #66fcf1;
+          background: rgba(102, 252, 241, 0.1);
+          box-shadow: 0 0 8px rgba(102, 252, 241, 0.3);
         }
       }
     `,

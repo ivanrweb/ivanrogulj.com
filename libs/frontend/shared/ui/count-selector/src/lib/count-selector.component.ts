@@ -48,16 +48,17 @@ import { CommonModule } from '@angular/common';
         gap: 4px;
       }
       .label {
+        font-family: 'Fira Code', monospace;
         font-size: 10px;
         color: #888;
-        font-weight: 600;
+        font-weight: 700;
         letter-spacing: 1px;
         text-transform: uppercase;
       }
       .digital-container {
         display: flex;
         align-items: center;
-        background: #1a1a1a;
+        background: #0b0c10;
         padding: 4px;
         border-radius: 6px;
         border: 1px solid #333;
@@ -68,8 +69,8 @@ import { CommonModule } from '@angular/common';
         position: relative;
         width: 36px;
         height: 40px;
-        background: #0a0a0a;
-        border: 1px solid #222;
+        background: #0b0c10;
+        border: 1px solid #333;
         border-radius: 4px;
         display: flex;
         justify-content: center;
@@ -79,20 +80,20 @@ import { CommonModule } from '@angular/common';
       i[class^='icon-fad-digital'] {
         font-style: normal;
         font-size: 28px;
-        color: #ff3333;
+        color: #66fcf1;
         line-height: 1;
         z-index: 2;
       }
       .glow {
         position: absolute;
         filter: blur(5px);
-        opacity: 0.6;
+        opacity: 0.5;
         z-index: 1;
       }
       .step-btn {
-        background: #333;
-        border: 1px solid #444;
-        color: #ccc;
+        background: #1f2833;
+        border: 1px solid #333;
+        color: #c5c6c7;
         width: 24px;
         height: 24px;
         border-radius: 3px;
@@ -106,19 +107,19 @@ import { CommonModule } from '@angular/common';
         transition: all 0.1s;
       }
       .step-btn:hover:not(.disabled) {
-        background: #444;
-        border-color: #666;
+        background: #2a3545;
+        border-color: #555;
         color: #fff;
       }
       .step-btn:active:not(.disabled) {
-        background: #222;
+        background: #0b0c10;
         transform: translateY(1px);
       }
       .step-btn.disabled {
         opacity: 0.3;
         cursor: default;
-        background: #222;
-        border-color: #222;
+        background: #0b0c10;
+        border-color: #333;
         color: #555;
       }
     `,

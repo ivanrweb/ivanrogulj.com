@@ -23,7 +23,7 @@ import { CommonModule } from '@angular/common';
       .visualizer-container {
         width: 100%;
         height: 60px;
-        background: #0a0a0a;
+        background: #0b0c10;
         border: 1px solid #333;
         border-radius: 4px;
         margin-top: 10px;
@@ -39,10 +39,11 @@ import { CommonModule } from '@angular/common';
 
       .envelope-path {
         fill: none;
-        stroke: #ff3333;
+        stroke: #66fcf1;
         stroke-width: 2;
         stroke-linecap: round;
         stroke-linejoin: round;
+        filter: drop-shadow(0 0 3px rgba(102, 252, 241, 0.5));
       }
     `,
   ],
