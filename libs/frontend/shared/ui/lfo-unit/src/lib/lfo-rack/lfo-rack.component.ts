@@ -42,7 +42,7 @@ import { SequencerComponent } from '../sequencer/sequencer.component';
         justify-content: flex-start;
         padding-right: 20px;
         box-sizing: border-box;
-        overflow: hidden;
+        overflow: visible;
       }
 
       .lfo-section lib-lfo-unit {

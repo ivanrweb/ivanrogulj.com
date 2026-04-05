@@ -108,7 +108,8 @@ import { ArticleApiService } from '../../services/article-api.service';
       }
       .content {
         padding: 2rem;
-        max-width: 900px;
+        max-width: 1100px;
+        margin: 0 auto;
       }
       .error {
         font-family: 'Fira Code', monospace;
