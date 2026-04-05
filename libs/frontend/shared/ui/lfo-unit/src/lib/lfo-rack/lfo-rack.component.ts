@@ -20,6 +20,11 @@ import { SequencerComponent } from '../sequencer/sequencer.component';
   `,
   styles: [
     `
+      :host {
+        display: block;
+        width: 100%;
+      }
+
       .rack-layout {
         display: flex;
         width: 100%;
@@ -34,14 +39,14 @@ import { SequencerComponent } from '../sequencer/sequencer.component';
         flex-wrap: nowrap;
         gap: 10px;
         align-items: flex-start;
+        justify-content: flex-start;
         padding-right: 20px;
         box-sizing: border-box;
         overflow: hidden;
       }
 
       .lfo-section lib-lfo-unit {
-        flex: 1;
-        min-width: 0;
+        flex: 0 0 auto;
       }
 
       .seq-divider {

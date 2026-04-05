@@ -227,7 +227,9 @@ function midiToName(midi: number): string {
         background: #0b0c10;
         border: 1px solid #333;
         border-radius: 4px;
-        padding: 2px 6px;
+        padding: 0 6px;
+        height: 32px;
+        box-sizing: border-box;
       }
 
       .bpm-btn {
@@ -255,7 +257,9 @@ function midiToName(midi: number): string {
         display: flex;
         flex-direction: column;
         align-items: center;
-        min-width: 36px;
+        justify-content: center;
+        min-width: 44px;
+        height: 28px;
         cursor: pointer;
       }
 
@@ -280,6 +284,7 @@ function midiToName(midi: number): string {
 
       .bpm-input {
         width: 44px;
+        height: 20px;
         background: transparent;
         border: none;
         border-bottom: 1px solid #66fcf1;

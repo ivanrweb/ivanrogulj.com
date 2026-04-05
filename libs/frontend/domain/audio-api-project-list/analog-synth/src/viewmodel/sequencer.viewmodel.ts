@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy, inject } from '@angular/core';
+import { inject, Injectable, OnDestroy } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
 import { AudioContextService } from '../service/audio-context.service';
 import { AnalogSynthViewModel } from './analog-synth.viewmodel';
@@ -55,7 +55,7 @@ export class SequencerViewModel
       isPlaying: false,
       currentStep: -1,
       armedStepIndex: null,
-      rowCount: 2,
+      rowCount: 4,
     });
 
     this.midiService.noteOn$.subscribe(({ note, velocity }) => {
