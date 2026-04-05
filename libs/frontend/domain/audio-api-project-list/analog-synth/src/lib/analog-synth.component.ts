@@ -173,7 +173,7 @@ import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
         </div>
 
         <div class="synth-module lfo-module">
-          <h4 class="module-label">LFO</h4>
+          <h4 class="module-label">LFO & SEQUENCER</h4>
           <div class="module-content">
             <lib-lfo-rack />
           </div>

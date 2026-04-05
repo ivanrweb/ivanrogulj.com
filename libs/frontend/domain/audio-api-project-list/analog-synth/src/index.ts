@@ -6,3 +6,4 @@ export * from './service/lfo.service';
 export * from './viewmodel/analog-synth.viewmodel';
 export * from './viewmodel/effects.viewmodel';
 export * from './viewmodel/lfo.viewmodel';
+export * from './viewmodel/sequencer.viewmodel';
