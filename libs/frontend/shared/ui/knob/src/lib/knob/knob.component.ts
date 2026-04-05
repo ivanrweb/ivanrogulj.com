@@ -41,7 +41,7 @@ import { CommonModule } from '@angular/common';
         align-items: center;
         user-select: none;
         width: 4.5rem;
-        font-family: 'Segoe UI', sans-serif;
+        font-family: 'Inter', sans-serif;
       }
 
       .knob-container {
@@ -51,15 +51,15 @@ import { CommonModule } from '@angular/common';
         align-items: center;
         justify-content: center;
         position: relative;
-        background: radial-gradient(circle, #222 0%, #050505 100%);
+        background: radial-gradient(circle, #1f2833 0%, #0b0c10 100%);
         border-radius: 50%;
         box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.9),
           0 1px 0 rgba(255, 255, 255, 0.1);
         margin-bottom: 4px;
 
         &.learning-mode {
-          border: 2px solid #ff3333;
-          box-shadow: 0 0 10px #ff3333;
+          border: 2px solid #ff007f;
+          box-shadow: 0 0 10px #ff007f;
         }
       }
 
@@ -103,6 +103,7 @@ import { CommonModule } from '@angular/common';
       }
 
       .knob-label {
+        font-family: 'Fira Code', monospace;
         font-size: 0.6rem;
         font-weight: 700;
         color: #888;
@@ -114,15 +115,15 @@ import { CommonModule } from '@angular/common';
 
       .value-display {
         font-size: 0.7rem;
-        color: #ff3333;
-        font-family: 'Consolas', monospace;
+        color: #66fcf1;
+        font-family: 'Fira Code', monospace;
         background: rgba(0, 0, 0, 0.4);
         padding: 2px 6px;
         border-radius: 3px;
         white-space: nowrap;
         text-align: center;
         border: 1px solid #333;
-        text-shadow: 0 0 5px rgba(255, 51, 51, 0.4);
+        text-shadow: 0 0 5px rgba(102, 252, 241, 0.3);
       }
 
       .unit {
@@ -132,7 +133,7 @@ import { CommonModule } from '@angular/common';
       }
 
       .is-mapped {
-        color: #ccc;
+        color: #c5c6c7;
       }
 
       .is-mapped::after {
@@ -140,11 +141,11 @@ import { CommonModule } from '@angular/common';
         display: inline-block;
         width: 6px;
         height: 6px;
-        background-color: #ffcc00;
+        background-color: #66fcf1;
         border-radius: 50%;
         margin-left: 5px;
         vertical-align: middle;
-        box-shadow: 0 0 5px #ffcc00;
+        box-shadow: 0 0 5px #66fcf1;
       }
     `,
   ],

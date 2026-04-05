@@ -48,14 +48,16 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
       }
 
       .ai-prompt-button {
-        background: #2a2a2a;
-        border: 1px solid #444;
-        color: #ccc;
+        background: #0b0c10;
+        border: 1px solid #333;
+        color: #c5c6c7;
         padding: 6px 12px;
         border-radius: 4px;
         cursor: pointer;
-        font-size: 0.8rem;
-        font-weight: bold;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 1px;
         transition: all 0.2s;
         white-space: nowrap;
         height: 33px;
@@ -67,12 +69,14 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
       }
 
       .ai-prompt-button:hover {
-        background: #333;
+        background: #1f2833;
+        border-color: #555;
       }
 
       .ai-prompt-button.active {
-        border-color: #ff3333;
-        color: #fff;
+        background: rgba(255, 0, 127, 0.1);
+        border-color: #ff007f;
+        color: #ff007f;
       }
 
       .ai-prompt-popup {
@@ -80,8 +84,8 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
         top: calc(100% + 10px);
         right: 0;
         width: 300px;
-        background: #1a1a1a;
-        border: 1px solid #444;
+        background: #1f2833;
+        border: 1px solid #333;
         border-radius: 8px;
         padding: 15px;
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
@@ -96,31 +100,34 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
         width: 100%;
         min-height: 120px;
         padding: 10px;
-        background: #0a0a0a;
+        background: #0b0c10;
         border: 1px solid #333;
-        color: #e0e0e0;
+        color: #c5c6c7;
         border-radius: 6px;
+        font-family: 'Fira Code', monospace;
         font-size: 13px;
         resize: vertical;
         box-sizing: border-box;
       }
 
       .generate-button {
-        background: #2a2a2a;
-        border: 1px solid #444;
-        color: #eee;
+        background: #0b0c10;
+        border: 1px solid #333;
+        color: #c5c6c7;
         padding: 10px;
         border-radius: 4px;
         cursor: pointer;
+        font-family: 'Fira Code', monospace;
         font-size: 0.7rem;
-        font-weight: bold;
+        font-weight: 700;
+        letter-spacing: 1px;
         transition: all 0.2s;
       }
 
       .generate-button:hover {
-        background: #ff3333;
-        color: #fff;
-        border-color: #ff3333;
+        background: rgba(102, 252, 241, 0.1);
+        border-color: #66fcf1;
+        color: #66fcf1;
       }
 
       @keyframes fadeIn {
