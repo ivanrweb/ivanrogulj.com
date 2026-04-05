@@ -67,18 +67,21 @@ import { ArticleApiService } from '../../services/article-api.service';
   `,
   styles: [
     `
+      @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+
       .page {
         min-height: 100vh;
-        background: #1a1a2e;
-        color: #e2e8f0;
+        background: #0b0c10;
+        color: #c5c6c7;
+        font-family: 'Inter', sans-serif;
       }
       .header {
-        background: #16213e;
+        background: #1f2833;
         padding: 1.25rem 2rem;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        border-bottom: 1px solid #334155;
+        border-bottom: 1px solid #333;
       }
       .header-left {
         display: flex;
@@ -86,28 +89,36 @@ import { ArticleApiService } from '../../services/article-api.service';
         gap: 1.5rem;
       }
       .back-link {
-        color: #94a3b8;
+        font-family: 'Fira Code', monospace;
+        color: #45a29e;
         text-decoration: none;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
+        transition: color 0.2s;
         &:hover {
-          color: #e2e8f0;
+          color: #66fcf1;
         }
       }
       h1 {
         margin: 0;
+        font-family: 'Fira Code', monospace;
         font-size: 1.25rem;
+        color: #66fcf1;
+        text-transform: uppercase;
+        letter-spacing: 2px;
       }
       .content {
         padding: 2rem;
         max-width: 900px;
-        margin: 0 auto;
       }
       .error {
+        font-family: 'Fira Code', monospace;
         color: #f87171;
-        background: #450a0a;
+        background: rgba(248, 113, 113, 0.08);
+        border: 1px solid rgba(248, 113, 113, 0.3);
         padding: 0.75rem 1rem;
-        border-radius: 8px;
+        border-radius: 4px;
         margin-bottom: 1.5rem;
+        font-size: 0.875rem;
       }
       .form-grid {
         display: grid;
@@ -123,87 +134,130 @@ import { ArticleApiService } from '../../services/article-api.service';
         grid-column: 1 / -1;
       }
       label {
-        color: #94a3b8;
-        font-size: 0.875rem;
+        font-family: 'Fira Code', monospace;
+        color: #888;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
       }
       input[type='text'],
       select {
         padding: 0.75rem;
-        background: #0f3460;
-        border: 1px solid #334155;
-        border-radius: 8px;
-        color: #e2e8f0;
+        background: #1f2833;
+        border: 1px solid #333;
+        border-radius: 4px;
+        color: #c5c6c7;
+        font-family: 'Inter', sans-serif;
         font-size: 1rem;
+        transition: border-color 0.2s;
         &:focus {
           outline: none;
-          border-color: #6366f1;
+          border-color: #45a29e;
         }
       }
       select option {
-        background: #0f3460;
+        background: #1f2833;
       }
       .checkbox-label {
         display: flex;
         align-items: center;
         gap: 0.5rem;
         cursor: pointer;
-        color: #e2e8f0;
-        font-size: 0.95rem;
+        font-family: 'Fira Code', monospace;
+        color: #888;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
         input[type='checkbox'] {
           width: 1rem;
           height: 1rem;
           cursor: pointer;
+          accent-color: #66fcf1;
         }
       }
       quill-editor {
         display: block;
-        border-radius: 8px;
+        border-radius: 4px;
         overflow: hidden;
       }
       :host ::ng-deep .ql-toolbar {
-        background: #0f3460;
-        border-color: #334155;
+        background: #1f2833;
+        border-color: #333;
       }
       :host ::ng-deep .ql-toolbar .ql-stroke {
-        stroke: #94a3b8;
+        stroke: #888;
       }
       :host ::ng-deep .ql-toolbar .ql-fill {
-        fill: #94a3b8;
+        fill: #888;
       }
-      :host ::ng-deep .ql-toolbar button:hover .ql-stroke {
-        stroke: #e2e8f0;
+      :host ::ng-deep .ql-toolbar button:hover .ql-stroke,
+      :host ::ng-deep .ql-toolbar .ql-active .ql-stroke {
+        stroke: #66fcf1;
       }
-      :host ::ng-deep .ql-toolbar button:hover .ql-fill {
-        fill: #e2e8f0;
+      :host ::ng-deep .ql-toolbar button:hover .ql-fill,
+      :host ::ng-deep .ql-toolbar .ql-active .ql-fill {
+        fill: #66fcf1;
+      }
+      :host ::ng-deep .ql-toolbar .ql-picker-label {
+        color: #888;
+        &:hover { color: #66fcf1; }
+      }
+      :host ::ng-deep .ql-toolbar .ql-picker-options {
+        background: #1f2833;
+        border-color: #333;
+        color: #c5c6c7;
       }
       :host ::ng-deep .ql-container {
-        background: #16213e;
-        border-color: #334155;
+        background: #0b0c10;
+        border-color: #333;
         min-height: 300px;
+        font-family: 'Inter', sans-serif;
       }
       :host ::ng-deep .ql-editor {
-        color: #e2e8f0;
+        color: #c5c6c7;
         font-size: 1rem;
         min-height: 300px;
+        line-height: 1.7;
       }
       :host ::ng-deep .ql-editor.ql-blank::before {
-        color: #475569;
+        color: #555;
+      }
+      :host ::ng-deep .ql-editor h1,
+      :host ::ng-deep .ql-editor h2,
+      :host ::ng-deep .ql-editor h3 {
+        color: #66fcf1;
+        font-family: 'Fira Code', monospace;
+      }
+      :host ::ng-deep .ql-editor a { color: #45a29e; }
+      :host ::ng-deep .ql-editor blockquote {
+        border-left: 3px solid #45a29e;
+        color: #888;
+      }
+      :host ::ng-deep .ql-editor pre {
+        background: #1f2833;
+        color: #66fcf1;
+        border-radius: 4px;
       }
       .btn {
         padding: 0.625rem 1.25rem;
-        border-radius: 8px;
-        font-size: 0.9rem;
+        border-radius: 4px;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.85rem;
         cursor: pointer;
-        border: none;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.2s;
+        border: 1px solid;
       }
       .btn-primary {
-        background: #6366f1;
-        color: white;
+        background: rgba(255, 0, 127, 0.1);
+        color: #ff007f;
+        border-color: #ff007f;
         &:hover:not(:disabled) {
-          background: #4f46e5;
+          background: rgba(255, 0, 127, 0.2);
         }
         &:disabled {
-          opacity: 0.6;
+          opacity: 0.5;
           cursor: not-allowed;
         }
       }

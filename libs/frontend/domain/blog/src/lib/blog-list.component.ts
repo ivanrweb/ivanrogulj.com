@@ -90,8 +90,6 @@ interface BlogListState {
       display: flex;
       gap: 0.75rem;
       padding: 1.5rem 2rem;
-      max-width: 1000px;
-      margin: 0 auto;
       flex-wrap: wrap;
     }
 
@@ -120,8 +118,6 @@ interface BlogListState {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 1.5rem;
-      max-width: 1000px;
-      margin: 0 auto;
       padding: 0 2rem 4rem;
     }
 
@@ -174,6 +170,10 @@ interface BlogListState {
       color: #888;
       line-height: 1.6;
       flex-grow: 1;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
     }
 
     .read-more {
@@ -212,8 +212,17 @@ export class BlogListComponent implements OnInit {
   }
 
   public excerpt(html: string): string {
-    const text = html.replace(/<[^>]*>/g, '');
-    return text.length > 150 ? text.slice(0, 150) + '...' : text;
+    const stripped = html.replace(/<[^>]*>/g, '');
+    const decoded = stripped
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/\s+/g, ' ')
+      .trim();
+    return decoded.length > 150 ? decoded.slice(0, 150) + '...' : decoded;
   }
 
   public categoryLabel(category: ArticleCategory): string {
