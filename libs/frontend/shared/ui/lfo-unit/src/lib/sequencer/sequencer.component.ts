@@ -1,5 +1,11 @@
-import { Component, inject, HostListener } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  Component,
+  inject,
+  HostListener,
+  ViewChild,
+  ElementRef,
+} from '@angular/core';
+import { CommonModule, SlicePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { SequencerViewModel } from '@ivanrogulj.com/analog-synth';
@@ -17,7 +23,7 @@ function midiToName(midi: number): string {
 @Component({
   selector: 'lib-sequencer',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SlicePipe],
   template: `
     @if (vm.vm$ | async; as state) {
     <div class="seq-root">
@@ -25,13 +31,41 @@ function midiToName(midi: number): string {
         <span class="seq-title">STEP SEQUENCER</span>
         <div class="seq-controls">
           <div class="bpm-control">
-            <button class="bpm-btn" (click)="vm.setBpm(state.bpm - 1)">-</button>
+            <button
+              class="bpm-btn"
+              (mousedown)="startBpmChange(-1)"
+              (mouseup)="stopBpmChange()"
+              (mouseleave)="stopBpmChange()"
+            >-</button>
+
             <div class="bpm-display">
-              <span class="bpm-val">{{ state.bpm }}</span>
+              @if (bpmEditMode) {
+              <input
+                #bpmInput
+                class="bpm-input"
+                type="number"
+                min="10"
+                max="999"
+                [(ngModel)]="bpmInputValue"
+                (blur)="commitBpmEdit()"
+                (keydown.enter)="commitBpmEdit()"
+                (keydown.escape)="bpmEditMode = false"
+                (click)="$event.stopPropagation()"
+              />
+              } @else {
+              <span class="bpm-val" (click)="startBpmEdit(state.bpm)">{{ state.bpm }}</span>
               <span class="bpm-unit">BPM</span>
+              }
             </div>
-            <button class="bpm-btn" (click)="vm.setBpm(state.bpm + 1)">+</button>
+
+            <button
+              class="bpm-btn"
+              (mousedown)="startBpmChange(1)"
+              (mouseup)="stopBpmChange()"
+              (mouseleave)="stopBpmChange()"
+            >+</button>
           </div>
+
           <button
             class="play-btn"
             [class.playing]="state.isPlaying"
@@ -44,7 +78,7 @@ function midiToName(midi: number): string {
       </div>
 
       <div class="steps-grid">
-        @for (step of state.steps; track $index) {
+        @for (step of state.steps | slice:0:(state.rowCount * 8); track $index) {
         <div
           class="step-wrap"
           [class.drag-over]="dragOverIndex === $index"
@@ -60,7 +94,7 @@ function midiToName(midi: number): string {
             [draggable]="step.active"
             (dragstart)="onDragStart($index)"
             (dragend)="dragOverIndex = null"
-            (click)="onStepClick($index, step.active, state.armedStepIndex)"
+            (click)="onStepClick($index, state.armedStepIndex)"
             (contextmenu)="$event.preventDefault(); openPicker($index)"
           >
             @if (state.armedStepIndex === $index) {
@@ -80,7 +114,7 @@ function midiToName(midi: number): string {
           @if (activePickerIndex === $index) {
           <div
             class="note-picker"
-            [class.picker-up]="isBottomRow($index)"
+            [class.picker-up]="isBottomRow($index, state.rowCount)"
             (click)="$event.stopPropagation()"
           >
             <div class="picker-header">
@@ -136,6 +170,14 @@ function midiToName(midi: number): string {
         </div>
         }
       </div>
+
+      @if (state.rowCount < 8) {
+      <button class="add-row-btn" (click)="vm.addRow()">
+        <span class="add-row-line"></span>
+        <span class="add-row-label">+ ADD ROW</span>
+        <span class="add-row-line"></span>
+      </button>
+      }
     </div>
     }
   `,
@@ -153,6 +195,7 @@ function midiToName(midi: number): string {
         display: flex;
         flex-direction: column;
         gap: 10px;
+        width: 100%;
       }
 
       .seq-header {
@@ -203,6 +246,7 @@ function midiToName(midi: number): string {
         padding: 0;
         line-height: 1;
         transition: color 0.1s;
+        user-select: none;
       }
 
       .bpm-btn:hover { color: #66fcf1; }
@@ -212,6 +256,7 @@ function midiToName(midi: number): string {
         flex-direction: column;
         align-items: center;
         min-width: 36px;
+        cursor: pointer;
       }
 
       .bpm-val {
@@ -219,6 +264,12 @@ function midiToName(midi: number): string {
         font-weight: 700;
         color: #66fcf1;
         line-height: 1;
+        border-bottom: 1px dashed transparent;
+        transition: border-color 0.15s;
+      }
+
+      .bpm-val:hover {
+        border-bottom-color: rgba(102, 252, 241, 0.4);
       }
 
       .bpm-unit {
@@ -226,6 +277,25 @@ function midiToName(midi: number): string {
         color: #555;
         letter-spacing: 1px;
       }
+
+      .bpm-input {
+        width: 44px;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid #66fcf1;
+        color: #66fcf1;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-align: center;
+        outline: none;
+        padding: 0;
+        line-height: 1;
+        -moz-appearance: textfield;
+      }
+
+      .bpm-input::-webkit-inner-spin-button,
+      .bpm-input::-webkit-outer-spin-button { -webkit-appearance: none; }
 
       .play-btn {
         background: #0b0c10;
@@ -259,12 +329,12 @@ function midiToName(midi: number): string {
         display: grid;
         grid-template-columns: repeat(8, 1fr);
         gap: 4px;
+        width: 100%;
       }
 
       .step-wrap {
         position: relative;
         border-radius: 4px;
-        transition: box-shadow 0.1s;
       }
 
       .step-wrap.drag-over > .step-btn {
@@ -289,15 +359,13 @@ function midiToName(midi: number): string {
         user-select: none;
         min-height: 54px;
         box-sizing: border-box;
+        width: 100%;
       }
 
       .step-btn[draggable='true'] { cursor: grab; }
       .step-btn[draggable='true']:active { cursor: grabbing; }
 
-      .step-btn:hover {
-        border-color: #444;
-        background: #1a2030;
-      }
+      .step-btn:hover { border-color: #444; background: #1a2030; }
 
       .step-btn.active {
         background: rgba(102, 252, 241, 0.07);
@@ -370,6 +438,46 @@ function midiToName(midi: number): string {
         transition: width 0.1s;
       }
 
+      /* Add row button */
+      .add-row-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px 0;
+        color: #555;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.6rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        transition: color 0.15s;
+      }
+
+      .add-row-btn:hover {
+        color: #66fcf1;
+      }
+
+      .add-row-btn:hover .add-row-line {
+        background: rgba(102, 252, 241, 0.3);
+      }
+
+      .add-row-label {
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .add-row-line {
+        flex: 1;
+        height: 1px;
+        background: #2a3040;
+        border-radius: 1px;
+        transition: background 0.15s;
+      }
+
+      /* Note picker */
       .note-picker {
         position: absolute;
         top: calc(100% + 6px);
@@ -565,10 +673,16 @@ function midiToName(midi: number): string {
 export class SequencerComponent {
   public readonly vm = inject(SequencerViewModel);
 
+  @ViewChild('bpmInput') private bpmInputRef?: ElementRef<HTMLInputElement>;
+
   public activePickerIndex: number | null = null;
   public dragOverIndex: number | null = null;
+  public bpmEditMode = false;
+  public bpmInputValue = '';
+
   private dragSourceIndex: number | null = null;
   private clipboard: { note: number; velocity: number } | null = null;
+  private bpmInterval: ReturnType<typeof setInterval> | null = null;
 
   public readonly octaves = [2, 3, 4, 5, 6, 7];
   public readonly noteNames = NOTE_NAMES;
@@ -589,12 +703,40 @@ export class SequencerComponent {
     return NOTE_NAMES.indexOf(name);
   }
 
-  public onStepClick(index: number, isActive: boolean, armedIndex: number | null): void {
+  public onStepClick(index: number, armedIndex: number | null): void {
     if (armedIndex === index) {
       this.vm.disarm();
     } else {
       this.vm.armStep(index);
     }
+  }
+
+  public startBpmChange(delta: number): void {
+    this.vm.setBpm(this.vm.getState().bpm + delta);
+    this.bpmInterval = setInterval(() => {
+      this.vm.setBpm(this.vm.getState().bpm + delta);
+    }, 80);
+  }
+
+  public stopBpmChange(): void {
+    if (this.bpmInterval !== null) {
+      clearInterval(this.bpmInterval);
+      this.bpmInterval = null;
+    }
+  }
+
+  public startBpmEdit(currentBpm: number): void {
+    this.bpmInputValue = String(currentBpm);
+    this.bpmEditMode = true;
+    setTimeout(() => this.bpmInputRef?.nativeElement?.focus(), 0);
+  }
+
+  public commitBpmEdit(): void {
+    const val = parseInt(this.bpmInputValue, 10);
+    if (!isNaN(val)) {
+      this.vm.setBpm(val);
+    }
+    this.bpmEditMode = false;
   }
 
   public onDragStart(index: number): void {
@@ -605,19 +747,9 @@ export class SequencerComponent {
     const source = this.dragSourceIndex;
     this.dragOverIndex = null;
     this.dragSourceIndex = null;
-
     if (source === null || source === targetIndex) return;
-
-    const steps = this.vm.getState().steps;
-    const sourceStep = steps[source];
-
-    // Move: copy note+velocity to target, clear source
-    this.vm.setStepData({
-      index: targetIndex,
-      note: sourceStep.note,
-      velocity: sourceStep.velocity,
-      active: true,
-    });
+    const sourceStep = this.vm.getState().steps[source];
+    this.vm.setStepData({ index: targetIndex, note: sourceStep.note, velocity: sourceStep.velocity, active: true });
     this.vm.setStepData({ index: source, active: false });
   }
 
@@ -630,20 +762,23 @@ export class SequencerComponent {
   }
 
   public setOctave(stepIndex: number, currentNote: number, octave: number): void {
-    const noteClass = currentNote % 12;
-    const newNote = (octave + 1) * 12 + noteClass;
+    const newNote = (octave + 1) * 12 + (currentNote % 12);
     this.vm.setStepData({ index: stepIndex, note: Math.max(0, Math.min(127, newNote)) });
   }
 
   public setNoteName(stepIndex: number, currentNote: number, name: string): void {
     const octave = Math.floor(currentNote / 12) - 1;
-    const noteClass = NOTE_NAMES.indexOf(name);
-    const newNote = (octave + 1) * 12 + noteClass;
+    const newNote = (octave + 1) * 12 + NOTE_NAMES.indexOf(name);
     this.vm.setStepData({ index: stepIndex, note: Math.max(0, Math.min(127, newNote)) });
   }
 
-  public isBottomRow(index: number): boolean {
-    return Math.floor(index / 8) >= 5;
+  public isBottomRow(index: number, rowCount: number): boolean {
+    return Math.floor(index / 8) >= rowCount - 2;
+  }
+
+  @HostListener('document:mouseup')
+  public onDocumentMouseUp(): void {
+    this.stopBpmChange();
   }
 
   @HostListener('document:keydown', ['$event'])
@@ -655,6 +790,16 @@ export class SequencerComponent {
       event.preventDefault();
       this.vm.setStepData({ index: armedStepIndex, active: false });
       this.vm.disarm();
+      return;
+    }
+
+    if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+      if (armedStepIndex === null) return;
+      const step = steps[armedStepIndex];
+      if (!step.active) return;
+      event.preventDefault();
+      const newNote = Math.max(0, Math.min(127, step.note + (event.key === 'ArrowUp' ? 1 : -1)));
+      this.vm.setStepData({ index: armedStepIndex, note: newNote });
       return;
     }
 
@@ -670,12 +815,7 @@ export class SequencerComponent {
     if ((event.ctrlKey || event.metaKey) && event.key === 'v') {
       if (armedStepIndex === null || this.clipboard === null) return;
       event.preventDefault();
-      this.vm.setStepData({
-        index: armedStepIndex,
-        note: this.clipboard.note,
-        velocity: this.clipboard.velocity,
-        active: true,
-      });
+      this.vm.setStepData({ index: armedStepIndex, note: this.clipboard.note, velocity: this.clipboard.velocity, active: true });
       this.vm.disarm();
       return;
     }

@@ -82,6 +82,12 @@ import { SelectComponent, SelectOption } from '@ivanrogulj.com/select';
   `,
   styles: [
     `
+      :host {
+        display: block;
+        width: 100%;
+        min-width: 0;
+      }
+
       .lfo-unit {
         background: #2a2a2a;
         border: 1px solid #444;
@@ -90,7 +96,9 @@ import { SelectComponent, SelectOption } from '@ivanrogulj.com/select';
         display: flex;
         flex-direction: column;
         gap: 10px;
-        min-width: 160px;
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         color: #fff;
         transition: opacity 0.3s;

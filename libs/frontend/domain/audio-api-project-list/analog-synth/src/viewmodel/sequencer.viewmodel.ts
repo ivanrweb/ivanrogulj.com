@@ -16,10 +16,12 @@ export interface SequencerState {
   isPlaying: boolean;
   currentStep: number;
   armedStepIndex: number | null;
+  rowCount: number;
 }
 
-const STEP_COUNT = 64;
+const MAX_ROWS = 8;
 const ROW_SIZE = 8;
+const STEP_COUNT = MAX_ROWS * ROW_SIZE;
 
 @Injectable({ providedIn: 'root' })
 export class SequencerViewModel
@@ -53,6 +55,7 @@ export class SequencerViewModel
       isPlaying: false,
       currentStep: -1,
       armedStepIndex: null,
+      rowCount: 2,
     });
 
     this.midiService.noteOn$.subscribe(({ note, velocity }) => {
@@ -110,9 +113,14 @@ export class SequencerViewModel
     })
   );
 
+  public readonly addRow = this.updater((state) => ({
+    ...state,
+    rowCount: Math.min(MAX_ROWS, state.rowCount + 1),
+  }));
+
   public readonly setBpm = this.updater((state, bpm: number) => ({
     ...state,
-    bpm: Math.max(20, Math.min(300, bpm)),
+    bpm: Math.max(10, Math.min(999, bpm)),
   }));
 
   private readonly setCurrentStep = this.updater(
@@ -151,14 +159,17 @@ export class SequencerViewModel
    * If not, loop back to step 0 immediately.
    */
   private getNextStepIndex(current: number): number {
+    const { rowCount, steps } = this.get();
+    const effectiveCount = rowCount * ROW_SIZE;
     const next = current + 1;
 
-    if (next >= STEP_COUNT) return 0;
+    if (next >= effectiveCount) return 0;
 
     // End of a row — check if remaining rows have any active steps
     if (next % ROW_SIZE === 0) {
-      const { steps } = this.get();
-      const hasActiveInRemainingRows = steps.slice(next).some((s) => s.active);
+      const hasActiveInRemainingRows = steps
+        .slice(next, effectiveCount)
+        .some((s) => s.active);
       if (!hasActiveInRemainingRows) return 0;
     }
 

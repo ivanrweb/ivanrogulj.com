@@ -31,12 +31,17 @@ import { SequencerComponent } from '../sequencer/sequencer.component';
       .lfo-section {
         flex: 0 0 50%;
         display: flex;
-        flex-wrap: wrap;
-        gap: 15px;
-        justify-content: center;
+        flex-wrap: nowrap;
+        gap: 10px;
         align-items: flex-start;
         padding-right: 20px;
         box-sizing: border-box;
+        overflow: hidden;
+      }
+
+      .lfo-section lib-lfo-unit {
+        flex: 1;
+        min-width: 0;
       }
 
       .seq-divider {
