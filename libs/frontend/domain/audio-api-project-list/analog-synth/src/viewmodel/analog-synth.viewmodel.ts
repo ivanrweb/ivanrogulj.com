@@ -553,4 +553,21 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     const spreadFactor = (index / (totalOscillators - 1) - 0.5) * 2;
     return spreadFactor * amount;
   }
+
+  public triggerNoteOn(note: number, velocity: number): void {
+    if (this.get().voices.some((v) => v.note === note)) return;
+    const frequency = this.midiService.getFrequency(note);
+    const adjustedVelocity = this.midiService.getVelocityBetweenZeroAndOne(velocity);
+    this.createAndStartVoice(note, frequency, adjustedVelocity);
+    const { lfo1, lfo2 } = this.lfoViewModel.getState();
+    if (lfo1.keySync) this.lfoService.keySync(0);
+    if (lfo2.keySync) this.lfoService.keySync(1);
+  }
+
+  public triggerNoteOff(note: number): void {
+    const voice = this.get().voices.find((v) => v.note === note);
+    if (voice) {
+      this.stopVoice(voice.id);
+    }
+  }
 }
