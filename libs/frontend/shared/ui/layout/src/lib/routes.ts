@@ -53,4 +53,14 @@ export const routes: Routes = [
         (m) => m.JuceProjectListComponent
       ),
   },
+  {
+    path: 'articles',
+    loadComponent: () =>
+      import('@ivanrogulj.com/blog').then((m) => m.BlogListComponent),
+  },
+  {
+    path: 'articles/:slug',
+    loadComponent: () =>
+      import('@ivanrogulj.com/blog').then((m) => m.ArticleDetailComponent),
+  },
 ];

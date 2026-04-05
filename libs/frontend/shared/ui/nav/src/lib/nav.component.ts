@@ -165,5 +165,6 @@ export class NavComponent {
     { title: 'Dashboard', url: 'dashboard' },
     { title: 'Web Audio Projects', url: 'web-audio-projects' },
     { title: 'VST Plugins', url: 'juce' },
+    { title: 'Articles', url: 'articles' },
   ];
 }
