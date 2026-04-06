@@ -83,7 +83,7 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
         position: absolute;
         top: calc(100% + 10px);
         right: 0;
-        width: 300px;
+        width: 400px;
         background: #1f2833;
         border: 1px solid #333;
         border-radius: 8px;
@@ -98,7 +98,7 @@ import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
 
       .ai-textarea {
         width: 100%;
-        min-height: 120px;
+        min-height: 150px;
         padding: 10px;
         background: #0b0c10;
         border: 1px solid #333;

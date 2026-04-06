@@ -46,15 +46,17 @@ export class SequencerViewModel
 
   constructor() {
     const cMajorRow: number[] = [60, 62, 64, 65, 67, 69, 71, 72];
-    const defaultSteps: SequencerStep[] = Array.from({ length: STEP_COUNT }, (_, i) =>
-      i < ROW_SIZE
-        ? { active: true, note: cMajorRow[i], velocity: 100 }
-        : { active: false, note: 60, velocity: 100 }
+    const defaultSteps: SequencerStep[] = Array.from(
+      { length: STEP_COUNT },
+      (_, i) =>
+        i < ROW_SIZE
+          ? { active: true, note: cMajorRow[i], velocity: 100 }
+          : { active: false, note: 60, velocity: 100 }
     );
 
     super({
       steps: defaultSteps,
-      bpm: 120,
+      bpm: 90,
       isPlaying: false,
       currentStep: -1,
       armedStepIndex: null,

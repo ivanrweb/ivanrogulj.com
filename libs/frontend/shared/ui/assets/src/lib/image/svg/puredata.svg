@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- P -->
+  <text
+    x="4"
+    y="46"
+    font-family="monospace"
+    font-weight="700"
+    font-size="40"
+    fill="#c5c6c7"
+  >P</text>
+  <!-- d -->
+  <text
+    x="30"
+    y="46"
+    font-family="monospace"
+    font-weight="700"
+    font-size="40"
+    fill="#66fcf1"
+  >d</text>
+</svg>
