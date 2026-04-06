@@ -77,18 +77,17 @@ import {
   styles: [
     `
       .effect-unit {
-        background: #2a2a2a;
-        border: 1px solid #444;
+        background: #0d1117;
+        border: 1px solid #2a3545;
         border-radius: 6px;
         width: auto;
         display: flex;
         flex-direction: column;
         padding: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7), 0 2px 4px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
         transition: opacity 0.3s;
         color: #ffffff;
       }
-
       .effect-unit.disabled {
         opacity: 0.8;
       }
@@ -103,7 +102,7 @@ import {
         justify-content: space-between;
         align-items: center;
         margin-bottom: 15px;
-        border-bottom: 2px solid #555;
+        border-bottom: 1px solid #2a3545;
         padding-bottom: 5px;
       }
 

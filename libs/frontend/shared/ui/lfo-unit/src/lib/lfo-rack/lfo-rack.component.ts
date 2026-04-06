@@ -37,10 +37,9 @@ import { SequencerComponent } from '../sequencer/sequencer.component';
         flex: 0 0 50%;
         display: flex;
         flex-wrap: nowrap;
-        gap: 10px;
         align-items: flex-start;
-        justify-content: flex-start;
-        padding-right: 20px;
+        justify-content: space-evenly;
+        padding: 0 20px;
         box-sizing: border-box;
         overflow: visible;
       }
