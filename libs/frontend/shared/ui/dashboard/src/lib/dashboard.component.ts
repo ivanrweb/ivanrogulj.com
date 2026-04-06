@@ -1,9 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { AvatarComponent } from '@ivanrogulj.com/avatar';
 
 @Component({
   selector: 'lib-dashboard',
   standalone: true,
+  imports: [AvatarComponent],
   template: `
     <div class="portfolio-container">
       <header class="hero-section">
@@ -15,27 +18,35 @@ import { Router } from '@angular/router';
             <span class="hero-divider">·</span>
             <span class="hero-tag">musician</span>
           </div>
-          <h1 class="hero-title">Software &amp; Music</h1>
-          <p class="hero-desc">
-            <img
-              class="term-prompt"
-              src="svg/terminal.svg"
-              alt=""
-            />Browser-based audio tools built on the Web Audio API — synths,
-            effects, and utilities.
-          </p>
-          <p class="hero-desc">
-            <img class="term-prompt" src="svg/terminal.svg" alt="" />VST plugins
-            (C++/JUCE) and PureData patches.
-          </p>
-          <p class="hero-desc">
-            <img class="term-prompt" src="svg/terminal.svg" alt="" />Learn about
-            audio and tech in blog articles.
-          </p>
-          <p class="hero-desc">
-            <img class="term-prompt" src="svg/terminal.svg" alt="" />Everything
-            is free.
-          </p>
+          <h1 class="hero-title">Explore Software &amp; Music intersection</h1>
+          <div class="hero-body">
+            <div class="hero-lines">
+              <p class="hero-desc">
+                <img
+                  class="term-prompt"
+                  src="svg/terminal.svg"
+                  alt=""
+                />Browser-based audio tools built on the Web Audio API — synths,
+                effects, and utilities.
+              </p>
+              <p class="hero-desc">
+                <img class="term-prompt" src="svg/terminal.svg" alt="" />VST
+                plugins (C++/JUCE) and PureData patches.
+              </p>
+              <p class="hero-desc">
+                <img class="term-prompt" src="svg/terminal.svg" alt="" />Learn
+                about audio and tech in blog articles.
+              </p>
+              <p class="hero-desc">
+                <img
+                  class="term-prompt"
+                  src="svg/terminal.svg"
+                  alt=""
+                />Everything is free.
+              </p>
+            </div>
+            <lib-avatar [size]="200" initials="IR" />
+          </div>
           <div class="hero-stack">
             <span class="stack-tag">Web Audio API</span>
             <span class="stack-tag">MIDI</span>
@@ -224,12 +235,26 @@ import { Router } from '@angular/router';
 
       .hero-title {
         font-family: 'Fira Code', monospace;
-        font-size: clamp(2rem, 2.5rem, 3rem);
+        font-size: clamp(1.5rem, 2rem, 2.5rem);
         font-weight: 700;
         color: #66fcf1;
         margin: 0 0 1.25rem 0;
         letter-spacing: 1px;
         line-height: 1.1;
+      }
+
+      .hero-body {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 3rem;
+        margin-bottom: 2rem;
+      }
+
+      .hero-lines {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
       }
 
       .hero-desc {
