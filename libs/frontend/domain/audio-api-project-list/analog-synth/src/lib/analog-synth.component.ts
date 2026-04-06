@@ -20,6 +20,7 @@ import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model'; // es
 import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack'; // eslint-disable-next-line @nx/enforce-module-boundaries
 import { NoiseGeneratorComponent } from '@ivanrogulj.com/noise'; // eslint-disable-next-line @nx/enforce-module-boundaries
 import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
+import { MidiService } from '../service/midi.service';
 
 @Component({
   selector: 'lib-analog-synth',
@@ -47,6 +48,23 @@ import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
         </div>
 
         <div class="header-right">
+          @if (midiService.connectedInputs().length > 0) {
+          <div class="midi-device-list" (click)="showMidiDropdown = !showMidiDropdown">
+            <span class="midi-device-label">MIDI IN</span>
+            <span class="midi-device-chip">{{ midiService.connectedInputs()[0].name }}</span>
+            @if (midiService.connectedInputs().length > 1) {
+            <span class="midi-device-extra">+{{ midiService.connectedInputs().length - 1 }}</span>
+            }
+            @if (showMidiDropdown) {
+            <div class="midi-device-dropdown">
+              @for (input of midiService.connectedInputs(); track input.id) {
+              <div class="midi-device-dropdown-item">{{ input.name }}</div>
+              }
+            </div>
+            }
+          </div>
+          }
+
           <div class="midi-btn-wrapper">
             <button
               class="btn-midi"
@@ -249,6 +267,74 @@ import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
         color: #66fcf1;
         font-size: 1.2rem;
         text-transform: uppercase;
+      }
+
+      .midi-device-list {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        position: relative;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .midi-device-label {
+        font-family: 'Fira Code', monospace;
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: #888;
+        letter-spacing: 1.5px;
+        white-space: nowrap;
+      }
+
+      .midi-device-chip {
+        font-family: 'Fira Code', monospace;
+        font-size: 0.7rem;
+        color: #66fcf1;
+        background: rgba(102, 252, 241, 0.08);
+        border: 1px solid rgba(102, 252, 241, 0.25);
+        border-radius: 4px;
+        padding: 3px 8px;
+        white-space: nowrap;
+        max-width: 160px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .midi-device-extra {
+        font-family: 'Fira Code', monospace;
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: #888;
+        white-space: nowrap;
+      }
+
+      .midi-device-dropdown {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        background: #1f2833;
+        border: 1px solid #333;
+        border-radius: 6px;
+        z-index: 100;
+        min-width: 180px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+      }
+
+      .midi-device-dropdown-item {
+        font-family: 'Fira Code', monospace;
+        font-size: 0.75rem;
+        color: #c5c6c7;
+        padding: 8px 12px;
+        border-bottom: 1px solid #2a3545;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        &:last-child {
+          border-bottom: none;
+        }
       }
 
       .midi-btn-wrapper {
@@ -588,10 +674,12 @@ export class AnalogSynthComponent implements OnInit, AfterViewInit, OnDestroy {
   public oscilloscopeCanvas!: ElementRef<HTMLCanvasElement>;
 
   public analogSynthViewModel = inject(AnalogSynthViewModel);
+  public midiService = inject(MidiService);
 
   public readonly oscillatorCount = [1, 2, 3, 4, 5, 6, 7, 8];
 
   public showMidiMapper = false;
+  public showMidiDropdown = false;
 
   protected readonly knobLabels: Record<AnalogSynthApi.Knob, string> = {
     [AnalogSynthApi.Knob.ATTACK]: 'Amp Attack',

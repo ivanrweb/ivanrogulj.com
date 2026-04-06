@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { filter, fromEventPattern, Observable, Subject, take, tap } from 'rxjs';
 import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 
@@ -27,6 +27,8 @@ export class MidiService {
 
   private midiAccess: MIDIAccess | null = null;
 
+  public readonly connectedInputs = signal<MIDIInput[]>([]);
+
   private mappingInProgress = false;
   private pendingParam: AnalogSynthApi.Knob | null = null;
 
@@ -47,6 +49,8 @@ export class MidiService {
     midiAccess.inputs.forEach((input) => {
       input.addEventListener('midimessage', this.handleInput);
     });
+
+    this.refreshInputs();
   };
 
   public failMIDI = (): void => {
@@ -57,16 +61,19 @@ export class MidiService {
     const port = event.port;
     if (!port) return;
 
-    if (port.state === 'connected') {
-      window.alert(
-        'Connected device: ' + port.name + ', IN/OUT type: ' + port.type
-      );
-    } else if (port.state === 'disconnected') {
-      window.alert(
-        'Disconnected device: ' + port.name + ', IN/OUT type: ' + port.type
-      );
+    if (port.type === 'input' && port.state === 'connected') {
+      (port as MIDIInput).addEventListener('midimessage', this.handleInput);
     }
+
+    this.refreshInputs();
   };
+
+  private refreshInputs(): void {
+    if (!this.midiAccess) return;
+    const inputs: MIDIInput[] = [];
+    this.midiAccess.inputs.forEach((input) => inputs.push(input));
+    this.connectedInputs.set(inputs);
+  }
 
   public handleInput = (event: MIDIMessageEvent): void => {
     const data = event.data;
