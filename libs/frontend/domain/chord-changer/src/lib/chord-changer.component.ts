@@ -1,7 +1,8 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChordChangerService } from '../service/chord-changer.service';
+import { PdfExportService } from '../service/pdf-export.service';
 
 @Component({
   selector: 'lib-chord-changer',
@@ -11,6 +12,8 @@ import { ChordChangerService } from '../service/chord-changer.service';
     <div class="changer-dashboard">
       <div class="changer-header">
         <h3 class="changer-title">CHORD CHANGER</h3>
+
+        <button class="btn-export" (click)="exportPdf()">EXPORT AS PDF</button>
 
         <div class="transpose-controls">
           <span class="control-label">TRANSPOSE</span>
@@ -62,39 +65,43 @@ import { ChordChangerService } from '../service/chord-changer.service';
               currentOffset() > 0 ? '+' + currentOffset() : currentOffset()
             }})</label
           >
-          <div class="transposed-output">
-            <pre>{{ analysis().transposedText }}</pre>
-          </div>
+          <textarea
+            class="chord-textarea"
+            [ngModel]="outputText()"
+            (ngModelChange)="outputText.set($event)"
+          ></textarea>
         </div>
       </div>
 
       <div class="analysis-footer">
-        <div class="analysis-card key-card">
-          <span class="card-title">PROBABLE KEYS</span>
-          <div class="prob-list">
-            @for (key of analysis().probableKeys; track key.name) {
-            <div class="prob-row">
-              <span class="prob-name">{{ key.name }}</span>
-              <span class="prob-val">{{ key.probability }}%</span>
+        <div class="footer-left">
+          <div class="analysis-card key-card">
+            <span class="card-title">PROBABLE KEYS</span>
+            <div class="prob-list">
+              @for (key of analysis().probableKeys; track key.name) {
+              <div class="prob-row">
+                <span class="prob-name">{{ key.name }}</span>
+                <span class="prob-val">{{ key.probability }}%</span>
+              </div>
+              } @if (analysis().probableKeys.length === 0) {
+              <span class="empty-text">N/A</span>
+              }
             </div>
-            } @if (analysis().probableKeys.length === 0) {
-            <span class="empty-text">N/A</span>
-            }
+          </div>
+
+          <div class="analysis-card flex-grow">
+            <span class="card-title">CURRENT CHORDS</span>
+            <div class="pill-container">
+              @for (chord of analysis().uniqueChords; track chord) {
+              <span class="chord-pill">{{ chord }}</span>
+              } @if (analysis().uniqueChords.length === 0) {
+              <span class="empty-text">No chords detected</span>
+              }
+            </div>
           </div>
         </div>
 
-        <div class="analysis-card flex-grow">
-          <span class="card-title">CURRENT CHORDS</span>
-          <div class="pill-container">
-            @for (chord of analysis().uniqueChords; track chord) {
-            <span class="chord-pill">{{ chord }}</span>
-            } @if (analysis().uniqueChords.length === 0) {
-            <span class="empty-text">No chords detected</span>
-            }
-          </div>
-        </div>
-
-        <div class="analysis-card flex-grow">
+        <div class="analysis-card">
           <span class="card-title">PROGRESSION (BASED ON TOP KEY)</span>
           <div class="pill-container">
             @for (numeral of analysis().progression; track numeral) {
@@ -267,29 +274,45 @@ import { ChordChangerService } from '../service/chord-changer.service';
         color: #444;
       }
 
-      .transposed-output {
-        flex-grow: 1;
-        background: #1f2833;
-        border: 1px solid #333;
-        border-radius: 6px;
-        padding: 1rem;
-        overflow-y: auto;
-        min-height: 300px;
+      .btn-export {
+        background: rgba(102, 252, 241, 0.08);
+        border: 1px solid #66fcf1;
+        color: #66fcf1;
+        padding: 6px 14px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: 'Fira Code', monospace;
+        font-weight: 700;
+        font-size: 0.72rem;
+        letter-spacing: 1px;
+        transition: all 0.15s ease;
+        white-space: nowrap;
       }
 
-      .transposed-output pre {
-        margin: 0;
-        color: #66fcf1;
-        font-family: 'Fira Code', monospace;
-        font-size: 0.9rem;
-        line-height: 1.6;
-        white-space: pre-wrap;
+      .btn-export:hover {
+        background: rgba(102, 252, 241, 0.18);
+        box-shadow: 0 0 8px rgba(102, 252, 241, 0.25);
       }
 
       .analysis-footer {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+      }
+
+      .footer-left {
         display: flex;
         gap: 1rem;
-        flex-wrap: wrap;
+      }
+
+      @media (max-width: 768px) {
+        .analysis-footer {
+          grid-template-columns: 1fr;
+        }
+
+        .footer-left {
+          flex-wrap: wrap;
+        }
       }
 
       .analysis-card {
@@ -334,7 +357,7 @@ import { ChordChangerService } from '../service/chord-changer.service';
         font-size: 0.8rem;
       }
 
-      .flex-grow {
+      .footer-left .flex-grow {
         flex-grow: 1;
       }
 
@@ -385,21 +408,30 @@ import { ChordChangerService } from '../service/chord-changer.service';
 })
 export class ChordChangerComponent {
   private changerService = inject(ChordChangerService);
+  private pdfExportService = inject(PdfExportService);
 
   public negativeSteps = [-6, -5, -4, -3, -2, -1];
   public positiveSteps = [1, 2, 3, 4, 5, 6];
 
   public inputText = signal<string>('');
   public currentOffset = signal<number>(0);
+  public outputText = signal<string>('');
 
-  public analysis = computed(() => {
-    return this.changerService.processText(
-      this.inputText(),
-      this.currentOffset()
-    );
-  });
+  public analysis = computed(() =>
+    this.changerService.processText(this.inputText(), this.currentOffset())
+  );
+
+  constructor() {
+    effect(() => {
+      this.outputText.set(this.analysis().transposedText);
+    });
+  }
 
   public setOffset(step: number): void {
     this.currentOffset.set(step);
+  }
+
+  public exportPdf(): void {
+    this.pdfExportService.exportText(this.outputText());
   }
 }

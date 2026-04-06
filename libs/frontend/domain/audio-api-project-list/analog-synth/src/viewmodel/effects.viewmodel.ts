@@ -31,7 +31,7 @@ export interface EffectsState {
 }
 
 const DEFAULT_STATE: EffectsState = {
-  reverb: { mix: 0.5, decay: 2.0, enabled: false },
+  reverb: { mix: 0.5, decay: 2.0, enabled: true },
   delay: { time: 0.5, feedback: 0.3, mix: 1, enabled: false },
   distortion: { amount: 0.5, tone: 1.0, mix: 1.0, enabled: false },
   chorus: { rate: 0.27, depth: 0.2, mix: 0.15, enabled: false },

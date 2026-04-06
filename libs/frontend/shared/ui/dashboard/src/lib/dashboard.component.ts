@@ -81,20 +81,23 @@ import { Router } from '@angular/router';
           <div class="card-icon">
             <img src="svg/vst.svg" alt="VST Plugins" />
           </div>
-          <h3>VST Plugins & Patches</h3>
+          <h3>VST Plugins</h3>
           <p>
             VST plugins are made in C++ JUCE framework, all compatible with
             popular DAWs like Ableton, FL Studio and LogicPro - and free for
             download (.vst3 and .au extensions).
           </p>
-          <p class="small-text">
-            You will also find downloadable synth patches for Yamaha DX7 and
-            Behringer DeepMind (.sysex extension), as well as PureData projects
-            (.pd extension).
-          </p>
         </section>
 
-        <section class="card full-width" (click)="navigate('articles')">
+        <section class="card" (click)="navigate('juce')">
+          <div class="card-icon">
+            <img src="svg/vst.svg" alt="PureData projects" />
+          </div>
+          <h3>PureData Projects & Patches</h3>
+          <p>Downloadable PureData projects (.pd extension).</p>
+        </section>
+
+        <section class="card" (click)="navigate('articles')">
           <div class="card-icon">
             <img src="svg/blog.svg" alt="Blog" />
           </div>
