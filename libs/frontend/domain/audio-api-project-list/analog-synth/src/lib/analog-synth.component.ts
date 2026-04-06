@@ -1,4 +1,12 @@
-import { AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  inject,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { CommonModule, KeyValuePipe } from '@angular/common'; // eslint-disable-next-line @nx/enforce-module-boundaries
 import { OscillatorComponent } from '@ivanrogulj.com/oscillator';
 import { AudioContextService } from '../service/audio-context.service'; // eslint-disable-next-line @nx/enforce-module-boundaries
@@ -200,7 +208,6 @@ import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
         box-sizing: border-box;
         background-color: #0b0c10;
         border-radius: 10px;
-        border: 1px solid #333;
         color: #c5c6c7;
         font-family: 'Inter', sans-serif;
       }

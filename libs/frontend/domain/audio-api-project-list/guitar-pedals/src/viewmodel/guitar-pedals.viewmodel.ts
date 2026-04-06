@@ -2,7 +2,12 @@ import { Injectable } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
 import { catchError, from, of, switchMap, tap } from 'rxjs';
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { DistortionEffect, ChorusEffect, DelayEffect, ReverbEffect } from '@ivanrogulj.com/effects';
+import {
+  ChorusEffect,
+  DelayEffect,
+  DistortionEffect,
+  ReverbEffect,
+} from '@ivanrogulj.com/effects';
 import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 import { GuitarAudioService } from '../service/guitar-audio.service';
 
@@ -63,7 +68,7 @@ const defaultState: GuitarPedalsState = {
     distortion: { amount: 0.3, tone: 0.7, mix: 0.8, enabled: true },
     chorus: { rate: 0.3, depth: 0.4, mix: 0.5, enabled: false },
     delay: { time: 0.4, feedback: 0.3, mix: 0.4, enabled: false },
-    reverb: { mix: 0.3, decay: 1.5, enabled: false },
+    reverb: { mix: 0.5, decay: 1.5, enabled: true },
   },
   selectedInput: null,
   availableInputs: [],
@@ -77,34 +82,44 @@ const defaultState: GuitarPedalsState = {
 
 @Injectable({ providedIn: 'root' })
 export class GuitarPedalsViewModel extends ComponentStore<GuitarPedalsState> {
-  private effectInstances: Map<PedalType, AnalogSynthApi.SynthEffect> = new Map();
+  private effectInstances: Map<PedalType, AnalogSynthApi.SynthEffect> =
+    new Map();
 
   public readonly vm$ = this.select((s) => s);
   public readonly pedalOrder$ = this.select((s) => s.pedalOrder);
   public readonly isRunning$ = this.select((s) => s.isRunning);
   public readonly availableInputs$ = this.select((s) => s.availableInputs);
 
-  public constructor(private readonly guitarAudioService: GuitarAudioService) {
+  constructor(private readonly guitarAudioService: GuitarAudioService) {
     super({
       ...defaultState,
       ...GuitarPedalsViewModel.loadAudioSettings(),
     });
   }
 
-  private static loadAudioSettings(): Pick<GuitarPedalsState, 'latencyMode' | 'sampleRate'> {
+  private static loadAudioSettings(): Pick<
+    GuitarPedalsState,
+    'latencyMode' | 'sampleRate'
+  > {
     try {
       const raw = localStorage.getItem('guitar-pedals-audio-settings');
       if (raw) return JSON.parse(raw);
     } catch {
       // ignore
     }
-    return { latencyMode: defaultState.latencyMode, sampleRate: defaultState.sampleRate };
+    return {
+      latencyMode: defaultState.latencyMode,
+      sampleRate: defaultState.sampleRate,
+    };
   }
 
   private saveAudioSettings(): void {
     try {
       const { latencyMode, sampleRate } = this.get();
-      localStorage.setItem('guitar-pedals-audio-settings', JSON.stringify({ latencyMode, sampleRate }));
+      localStorage.setItem(
+        'guitar-pedals-audio-settings',
+        JSON.stringify({ latencyMode, sampleRate })
+      );
     } catch {
       // ignore
     }
@@ -114,7 +129,9 @@ export class GuitarPedalsViewModel extends ComponentStore<GuitarPedalsState> {
     trigger$.pipe(
       switchMap(() =>
         from(this.guitarAudioService.getAvailableInputs()).pipe(
-          tap((inputs: MediaDeviceInfo[]) => this.patchState({ availableInputs: inputs })),
+          tap((inputs: MediaDeviceInfo[]) =>
+            this.patchState({ availableInputs: inputs })
+          ),
           catchError((err: unknown) => {
             console.error('Failed to get inputs', err);
             return of([]);
@@ -138,7 +155,13 @@ export class GuitarPedalsViewModel extends ComponentStore<GuitarPedalsState> {
     deviceId$.pipe(
       switchMap((deviceId) => {
         const { latencyMode, sampleRate } = this.get();
-        return from(this.guitarAudioService.initialize(deviceId ?? undefined, latencyMode, sampleRate)).pipe(
+        return from(
+          this.guitarAudioService.initialize(
+            deviceId ?? undefined,
+            latencyMode,
+            sampleRate
+          )
+        ).pipe(
           tap(() => {
             this.initEffectInstances();
             const latencyInfo = this.guitarAudioService.getLatencyInfo();
@@ -185,7 +208,9 @@ export class GuitarPedalsViewModel extends ComponentStore<GuitarPedalsState> {
 
   public togglePedal(type: PedalType): void {
     const pedals = { ...this.get().pedals };
-    (pedals[type] as { enabled: boolean }).enabled = !(pedals[type] as { enabled: boolean }).enabled;
+    (pedals[type] as { enabled: boolean }).enabled = !(
+      pedals[type] as { enabled: boolean }
+    ).enabled;
     this.patchState({ pedals });
     this.rewireChain();
   }
@@ -213,7 +238,8 @@ export class GuitarPedalsViewModel extends ComponentStore<GuitarPedalsState> {
     const effect = this.effectInstances.get('delay');
     if (!effect) return;
     if (params.time !== undefined) effect.setParam('time', params.time);
-    if (params.feedback !== undefined) effect.setParam('feedback', params.feedback);
+    if (params.feedback !== undefined)
+      effect.setParam('feedback', params.feedback);
     if (params.mix !== undefined) effect.setParam('mix', params.mix);
   }
 

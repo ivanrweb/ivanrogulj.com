@@ -3,24 +3,25 @@ import { CommonModule } from '@angular/common';
 import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import {
-  LfoViewModel,
-  LfoState,
   AnalogSynthViewModel,
-} from '@ivanrogulj.com/analog-synth';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { KnobComponent } from '@ivanrogulj.com/knob';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { WaveformPickerComponent } from '@ivanrogulj.com/waveform-picker';
-// eslint-disable-next-line @nx/enforce-module-boundaries
+  LfoState,
+  LfoViewModel,
+} from '@ivanrogulj.com/analog-synth'; // eslint-disable-next-line @nx/enforce-module-boundaries
+import { KnobComponent } from '@ivanrogulj.com/knob'; // eslint-disable-next-line @nx/enforce-module-boundaries
+import { WaveformPickerComponent } from '@ivanrogulj.com/waveform-picker'; // eslint-disable-next-line @nx/enforce-module-boundaries
 import { SelectComponent, SelectOption } from '@ivanrogulj.com/select';
 
 @Component({
   selector: 'lib-lfo-unit',
   standalone: true,
-  imports: [CommonModule, KnobComponent, WaveformPickerComponent, SelectComponent],
+  imports: [
+    CommonModule,
+    KnobComponent,
+    WaveformPickerComponent,
+    SelectComponent,
+  ],
   template: `
-    @if (lfoVm.vm$ | async; as vm) {
-    @if (synthVm.vm$ | async; as synthState) {
+    @if (lfoVm.vm$ | async; as vm) { @if (synthVm.vm$ | async; as synthState) {
     <div class="lfo-unit" [class.disabled]="!config(vm).enabled">
       <div class="lfo-header">
         <span class="lfo-title">LFO {{ lfoIndex }}</span>
@@ -177,14 +178,17 @@ export class LfoUnitComponent {
 
   public readonly waveforms: OscillatorType[] = [
     'sine',
-    'sawtooth',
-    'square',
     'triangle',
+    'square',
+    'sawtooth',
   ];
 
   public readonly destinationOptions: SelectOption[] = [
     { label: 'None', value: AnalogSynthApi.LfoDestination.NONE },
-    { label: 'Filter Cutoff', value: AnalogSynthApi.LfoDestination.FILTER_CUTOFF },
+    {
+      label: 'Filter Cutoff',
+      value: AnalogSynthApi.LfoDestination.FILTER_CUTOFF,
+    },
     { label: 'Pitch', value: AnalogSynthApi.LfoDestination.PITCH },
     { label: 'Volume', value: AnalogSynthApi.LfoDestination.VOLUME },
     { label: 'Delay Time', value: AnalogSynthApi.LfoDestination.DELAY_TIME },

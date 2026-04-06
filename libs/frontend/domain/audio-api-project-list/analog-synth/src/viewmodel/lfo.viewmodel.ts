@@ -9,12 +9,21 @@ export interface LfoState {
   lfo2: AnalogSynthApi.LfoConfig;
 }
 
-const DEFAULT_LFO: AnalogSynthApi.LfoConfig = {
-  rate: 2,
+const DEFAULT_LFO_1: AnalogSynthApi.LfoConfig = {
+  rate: 0,
   depth: 0,
   waveform: 'sine',
   destination: AnalogSynthApi.LfoDestination.NONE,
   keySync: false,
+  enabled: true,
+};
+
+const DEFAULT_LFO_2: AnalogSynthApi.LfoConfig = {
+  rate: 2,
+  depth: 0,
+  waveform: 'triangle',
+  destination: AnalogSynthApi.LfoDestination.NONE,
+  keySync: true,
   enabled: false,
 };
 
@@ -24,10 +33,16 @@ export class LfoViewModel extends ComponentStore<LfoState> {
   private readonly lfoService = inject(LfoService);
 
   constructor() {
-    super({ lfo1: { ...DEFAULT_LFO }, lfo2: { ...DEFAULT_LFO } });
+    super({ lfo1: { ...DEFAULT_LFO_1 }, lfo2: { ...DEFAULT_LFO_2 } });
 
-    this.syncLfo(this.select((s) => s.lfo1), 0);
-    this.syncLfo(this.select((s) => s.lfo2), 1);
+    this.syncLfo(
+      this.select((s) => s.lfo1),
+      0
+    );
+    this.syncLfo(
+      this.select((s) => s.lfo2),
+      1
+    );
   }
 
   private syncLfo(
@@ -36,9 +51,7 @@ export class LfoViewModel extends ComponentStore<LfoState> {
   ): void {
     this.effect((c$: Observable<AnalogSynthApi.LfoConfig>) =>
       c$.pipe(
-        distinctUntilChanged(
-          (a, b) => JSON.stringify(a) === JSON.stringify(b)
-        ),
+        distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
         tap((config) => this.lfoService.applyConfig(index, config))
       )
     )(config$);
