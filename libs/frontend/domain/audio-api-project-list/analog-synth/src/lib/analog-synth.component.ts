@@ -555,6 +555,8 @@ import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
       .lfo-module {
         grid-column: 1 / -1;
         overflow: visible;
+        position: relative;
+        z-index: 10;
       }
 
       .lfo-module .module-content {

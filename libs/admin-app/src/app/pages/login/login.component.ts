@@ -55,69 +55,86 @@ interface LoginState {
   `,
   styles: [
     `
+      @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+
       .login-wrapper {
         display: flex;
         align-items: center;
         justify-content: center;
         min-height: 100vh;
-        background: #1a1a2e;
+        background: #0b0c10;
+        font-family: 'Inter', sans-serif;
       }
       .login-card {
-        background: #16213e;
+        background: #1f2833;
         padding: 2.5rem;
-        border-radius: 12px;
+        border-radius: 8px;
         width: 100%;
         max-width: 400px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        border: 1px solid #333;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
       }
       h1 {
-        color: #e2e8f0;
-        margin-bottom: 2rem;
+        font-family: 'Fira Code', monospace;
+        color: #66fcf1;
+        margin: 0 0 2rem;
         font-size: 1.5rem;
         text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 2px;
       }
       .field {
         margin-bottom: 1.25rem;
       }
       label {
         display: block;
-        color: #94a3b8;
-        font-size: 0.875rem;
+        font-family: 'Fira Code', monospace;
+        color: #888;
+        font-size: 0.8rem;
         margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
       }
       input {
         width: 100%;
         padding: 0.75rem;
-        background: #0f3460;
-        border: 1px solid #334155;
-        border-radius: 8px;
-        color: #e2e8f0;
+        background: #0b0c10;
+        border: 1px solid #333;
+        border-radius: 4px;
+        color: #c5c6c7;
+        font-family: 'Inter', sans-serif;
         font-size: 1rem;
         box-sizing: border-box;
         &:focus {
           outline: none;
-          border-color: #6366f1;
+          border-color: #45a29e;
         }
       }
       .error {
         color: #f87171;
         font-size: 0.875rem;
         margin-bottom: 1rem;
+        font-family: 'Fira Code', monospace;
       }
       button {
         width: 100%;
         padding: 0.875rem;
-        background: #6366f1;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 1rem;
+        background: rgba(102, 252, 241, 0.1);
+        color: #66fcf1;
+        border: 1px solid #45a29e;
+        border-radius: 4px;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.9rem;
         cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.2s;
         &:hover:not(:disabled) {
-          background: #4f46e5;
+          background: rgba(102, 252, 241, 0.2);
+          border-color: #66fcf1;
         }
         &:disabled {
-          opacity: 0.6;
+          opacity: 0.5;
           cursor: not-allowed;
         }
       }

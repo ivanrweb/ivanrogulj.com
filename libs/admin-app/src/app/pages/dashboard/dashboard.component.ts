@@ -25,79 +25,101 @@ import { RouterLink } from '@angular/router';
   `,
   styles: [
     `
+      @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+
       .dashboard {
         min-height: 100vh;
-        background: #1a1a2e;
-        color: #e2e8f0;
+        background: #0b0c10;
+        color: #c5c6c7;
+        font-family: 'Inter', sans-serif;
       }
       .header {
-        background: #16213e;
+        background: #1f2833;
         padding: 1.25rem 2rem;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        border-bottom: 1px solid #334155;
+        border-bottom: 1px solid #333;
         h1 {
           margin: 0;
+          font-family: 'Fira Code', monospace;
           font-size: 1.25rem;
-          color: #e2e8f0;
+          color: #66fcf1;
+          text-transform: uppercase;
+          letter-spacing: 2px;
         }
       }
       .logout-btn {
         padding: 0.5rem 1rem;
         background: transparent;
-        border: 1px solid #475569;
-        color: #94a3b8;
-        border-radius: 6px;
+        border: 1px solid #333;
+        color: #888;
+        border-radius: 4px;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.8rem;
         cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.2s;
         &:hover {
-          background: #334155;
-          color: #e2e8f0;
+          border-color: #ff007f;
+          color: #ff007f;
         }
       }
       .content {
         padding: 2rem;
         max-width: 900px;
-        margin: 0 auto;
       }
       .panel {
-        background: #16213e;
-        border-radius: 12px;
+        background: #1f2833;
+        border-radius: 8px;
         padding: 2rem;
-        border: 1px solid #334155;
+        border: 1px solid #333;
         h2 {
-          color: #e2e8f0;
+          font-family: 'Fira Code', monospace;
+          color: #66fcf1;
           margin: 0 0 0.75rem;
+          font-size: 1.1rem;
+          text-transform: uppercase;
+          letter-spacing: 1px;
         }
         p {
-          color: #94a3b8;
+          color: #888;
           margin: 0 0 1.5rem;
         }
       }
       .actions {
         display: flex;
         gap: 1rem;
+        flex-wrap: wrap;
       }
       .btn {
         display: inline-block;
-        padding: 0.75rem 1.5rem;
-        border-radius: 8px;
-        font-size: 0.9rem;
+        padding: 0.625rem 1.25rem;
+        border-radius: 4px;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.85rem;
         text-decoration: none;
         cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.2s;
       }
       .btn-primary {
-        background: #6366f1;
-        color: white;
+        background: rgba(255, 0, 127, 0.1);
+        color: #ff007f;
+        border: 1px solid #ff007f;
         &:hover {
-          background: #4f46e5;
+          background: rgba(255, 0, 127, 0.2);
         }
       }
       .btn-secondary {
-        background: #334155;
-        color: #e2e8f0;
+        background: rgba(102, 252, 241, 0.05);
+        color: #45a29e;
+        border: 1px solid #333;
         &:hover {
-          background: #475569;
+          border-color: #45a29e;
+          color: #66fcf1;
         }
       }
     `,

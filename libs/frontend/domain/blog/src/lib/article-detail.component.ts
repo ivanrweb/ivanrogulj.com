@@ -23,7 +23,7 @@ import { ArticleApiService } from '@ivanrogulj.com/frontend/shared/data-access/a
             <span class="date">{{ article()!.createdAt.slice(0, 10) }}</span>
           </div>
           <h1>{{ article()!.title }}</h1>
-          <div class="body ql-editor" [innerHTML]="article()!.content"></div>
+          <div class="body" [innerHTML]="article()!.content"></div>
         </article>
       }
     </div>
@@ -35,8 +35,6 @@ import { ArticleApiService } from '@ivanrogulj.com/frontend/shared/data-access/a
 
     .article-nav {
       padding: 1.5rem 2rem;
-      max-width: 780px;
-      margin: 0 auto;
     }
 
     .back-link {
@@ -55,8 +53,6 @@ import { ArticleApiService } from '@ivanrogulj.com/frontend/shared/data-access/a
     }
 
     .article-content {
-      max-width: 780px;
-      margin: 0 auto;
       padding: 0 2rem 6rem;
     }
 
@@ -123,6 +119,9 @@ import { ArticleApiService } from '@ivanrogulj.com/frontend/shared/data-access/a
       pre { padding: 1rem; overflow-x: auto; }
       ul, ol { padding-left: 1.5rem; margin-bottom: 1.25rem; }
       li { margin-bottom: 0.4rem; }
+      white-space: pre-wrap;
+      overflow-wrap: break-word;
+      word-break: break-word;
     }
   `],
 })
