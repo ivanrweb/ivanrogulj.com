@@ -11,7 +11,7 @@ import { RouterLink } from '@angular/router';
       <div class="nav-inner">
         <a class="brand" [routerLink]="['/']">
           <img class="prompt" src="svg/terminal.svg" alt="" />
-          ivan rogulj
+          welcome!
         </a>
 
         <div class="links" [class.open]="menuOpen()">
