@@ -303,9 +303,9 @@ function midiToName(midi: number): string {
       .bpm-input::-webkit-outer-spin-button { -webkit-appearance: none; }
 
       .play-btn {
-        background: #0b0c10;
-        border: 1px solid #333;
-        color: #c5c6c7;
+        background: rgba(102, 252, 241, 0.08);
+        border: 1px solid #66fcf1;
+        color: #66fcf1;
         padding: 5px 10px;
         border-radius: 4px;
         cursor: pointer;
@@ -320,7 +320,7 @@ function midiToName(midi: number): string {
         white-space: nowrap;
       }
 
-      .play-btn:hover { border-color: #555; color: #fff; }
+      .play-btn:hover { background: rgba(102, 252, 241, 0.18); box-shadow: 0 0 8px rgba(102, 252, 241, 0.25); }
 
       .play-btn.playing {
         background: rgba(255, 0, 127, 0.1);
