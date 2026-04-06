@@ -45,7 +45,7 @@ import { AvatarComponent } from '@ivanrogulj.com/avatar';
                 />Everything is free.
               </p>
             </div>
-            <lib-avatar [size]="200" initials="IR" />
+            <lib-avatar [size]="200" initials="IR" src="avatar.jpg" />
           </div>
           <div class="hero-stack">
             <span class="stack-tag">Web Audio API</span>

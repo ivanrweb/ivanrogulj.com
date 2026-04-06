@@ -87,7 +87,7 @@ import { ArticleApiService } from '@ivanrogulj.com/frontend/shared/data-access/a
       font-family: 'Inter', sans-serif;
       font-size: 1.05rem;
       line-height: 1.8;
-      color: #c5c6c7;
+      color: #f0f0f0;
 
       h1, h2, h3 {
         font-family: 'Fira Code', monospace;
