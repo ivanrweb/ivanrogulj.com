@@ -76,6 +76,6 @@ export class AuthService {
   }
 
   public googleLogin(): void {
-    window.location.href = '/api/auth/google';
+    window.location.href = '/api/auth/user/google';
   }
 }
