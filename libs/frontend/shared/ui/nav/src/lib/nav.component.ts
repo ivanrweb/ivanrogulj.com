@@ -1,6 +1,7 @@
-import { Component, Input, signal } from '@angular/core';
+import { Component, inject, Input, signal } from '@angular/core';
 import { NavItem, NavItemComponent } from '@ivanrogulj.com/nav-item';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '@ivanrogulj.com/auth';
 
 @Component({
   selector: 'lib-nav',
@@ -11,7 +12,9 @@ import { RouterLink } from '@angular/router';
       <div class="nav-inner">
         <a class="brand" [routerLink]="['/']">
           <img class="prompt" src="svg/terminal.svg" alt="" />
-          welcome!
+          @if (authService.currentUser()?.firstName) {
+          {{ authService.currentUser()!.firstName }}
+          {{ authService.currentUser()!.lastName }} } @else { welcome! }
         </a>
 
         <div class="links" [class.open]="menuOpen()">
@@ -20,6 +23,21 @@ import { RouterLink } from '@angular/router';
             [item]="navItem"
             (click)="menuOpen.set(false)"
           ></lib-nav-item>
+          } @if (authService.currentUser()) {
+          <button
+            class="login-btn"
+            (click)="authService.logout()"
+            type="button"
+          >
+            logout
+          </button>
+          } @else {
+          <a
+            class="login-btn"
+            [routerLink]="['/login']"
+            (click)="menuOpen.set(false)"
+            >login</a
+          >
           }
         </div>
 
@@ -153,11 +171,58 @@ import { RouterLink } from '@angular/router';
         lib-nav-item:last-child {
           border-bottom: none;
         }
+
+        .login-btn {
+          width: 100%;
+          padding: 0.75rem 0;
+          background: none;
+          border: none;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          border-radius: 0;
+          text-align: left;
+        }
+
+        .user-email {
+          padding: 0.5rem 0;
+          display: block;
+          color: #888;
+          font-family: 'Fira Code', monospace;
+          font-size: 0.8rem;
+        }
+      }
+
+      .login-btn {
+        font-family: 'Fira Code', monospace;
+        font-size: 0.85rem;
+        color: #66fcf1;
+        background: rgba(102, 252, 241, 0.08);
+        border: 1px solid rgba(102, 252, 241, 0.4);
+        border-radius: 4px;
+        padding: 0.3rem 0.9rem;
+        cursor: pointer;
+        text-decoration: none;
+        letter-spacing: 0.5px;
+        transition: background 0.2s ease, border-color 0.2s ease;
+        white-space: nowrap;
+      }
+
+      .login-btn:hover {
+        background: rgba(102, 252, 241, 0.18);
+        border-color: #66fcf1;
+      }
+
+      .user-email {
+        font-family: 'Fira Code', monospace;
+        font-size: 0.8rem;
+        color: #888;
+        letter-spacing: 0.3px;
+        white-space: nowrap;
       }
     `,
   ],
 })
 export class NavComponent {
+  public readonly authService = inject(AuthService);
   protected readonly menuOpen = signal(false);
 
   @Input()

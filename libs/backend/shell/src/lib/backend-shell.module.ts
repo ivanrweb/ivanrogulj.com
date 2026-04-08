@@ -4,6 +4,7 @@ import { BackendCoreAuthModule } from '@ivanrogulj.com/backend/core/auth';
 import { BackendDomainAnalogSynthPatchDataAccessModule } from '@ivanrogulj.com/backend/domain/analog-synth-patch/data-access';
 import { BackendDomainArticleApiModule } from '@ivanrogulj.com/backend/domain/article/api';
 import { OpenAiApiModule } from '@ivanrogulj.com/backend/core/open-ai/api';
+import { BackendDomainUserApiModule } from '@ivanrogulj.com/backend/domain/user/api';
 
 @Global()
 @Module({
@@ -13,6 +14,7 @@ import { OpenAiApiModule } from '@ivanrogulj.com/backend/core/open-ai/api';
     BackendDomainAnalogSynthPatchDataAccessModule,
     BackendDomainArticleApiModule,
     OpenAiApiModule,
+    BackendDomainUserApiModule,
   ],
   controllers: [],
   providers: [],

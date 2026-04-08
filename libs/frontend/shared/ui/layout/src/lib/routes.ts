@@ -63,4 +63,19 @@ export const routes: Routes = [
     loadComponent: () =>
       import('@ivanrogulj.com/blog').then((m) => m.ArticleDetailComponent),
   },
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('@ivanrogulj.com/auth').then((m) => m.LoginComponent),
+  },
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('@ivanrogulj.com/auth').then((m) => m.RegisterComponent),
+  },
+  {
+    path: 'email-confirmed',
+    loadComponent: () =>
+      import('@ivanrogulj.com/auth').then((m) => m.EmailConfirmedComponent),
+  },
 ];
