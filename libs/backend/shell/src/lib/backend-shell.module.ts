@@ -1,7 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { BackendCoreConfigModule } from '@ivanrogulj.com/backend/core/config';
 import { BackendCoreAuthModule } from '@ivanrogulj.com/backend/core/auth';
-import { BackendDomainAnalogSynthPatchDataAccessModule } from '@ivanrogulj.com/backend/domain/analog-synth-patch/data-access';
+import { BackendDomainAnalogSynthPatchApiModule } from '@ivanrogulj.com/backend/domain/analog-synth-patch/api';
 import { BackendDomainArticleApiModule } from '@ivanrogulj.com/backend/domain/article/api';
 import { OpenAiApiModule } from '@ivanrogulj.com/backend/core/open-ai/api';
 import { BackendDomainUserApiModule } from '@ivanrogulj.com/backend/domain/user/api';
@@ -11,7 +11,7 @@ import { BackendDomainUserApiModule } from '@ivanrogulj.com/backend/domain/user/
   imports: [
     BackendCoreConfigModule,
     BackendCoreAuthModule,
-    BackendDomainAnalogSynthPatchDataAccessModule,
+    BackendDomainAnalogSynthPatchApiModule,
     BackendDomainArticleApiModule,
     OpenAiApiModule,
     BackendDomainUserApiModule,

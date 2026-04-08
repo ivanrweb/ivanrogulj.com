@@ -52,6 +52,10 @@ export class EffectsViewModel extends ComponentStore<EffectsState> {
     this.syncChorus(this.select((s) => s.chorus));
   }
 
+  public getState(): EffectsState {
+    return this.get();
+  }
+
   public refreshState(): void {
     const state = this.get();
 
