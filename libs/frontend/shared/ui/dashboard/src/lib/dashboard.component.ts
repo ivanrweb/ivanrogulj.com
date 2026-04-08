@@ -298,7 +298,7 @@ import { AvatarComponent } from '@ivanrogulj.com/avatar';
       .grid-layout {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 1px;
+        gap: 1rem;
         max-width: 1100px;
         margin: 3rem auto;
         padding: 0 2rem;
