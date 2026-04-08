@@ -22,12 +22,16 @@
       "@ivanrogulj.com/audio-api-project-list": [
         "libs/frontend/domain/audio-api-project-list/src/index.ts"
       ],
+      "@ivanrogulj.com/auth": ["libs/frontend/shared/ui/auth/src/index.ts"],
       "@ivanrogulj.com/avatar": ["libs/frontend/shared/ui/avatar/src/index.ts"],
       "@ivanrogulj.com/backend/core/auth": [
         "libs/backend/core/auth/src/index.ts"
       ],
       "@ivanrogulj.com/backend/core/config": [
         "libs/backend/core/config/src/index.ts"
+      ],
+      "@ivanrogulj.com/backend/core/mail": [
+        "libs/backend/core/mail/src/index.ts"
       ],
       "@ivanrogulj.com/backend/core/open-ai/api": [
         "libs/backend/core/open-ai/api/src/index.ts"
@@ -43,6 +47,12 @@
       ],
       "@ivanrogulj.com/backend/domain/article/data-access": [
         "libs/backend/domain/article/data-access/src/index.ts"
+      ],
+      "@ivanrogulj.com/backend/domain/user/api": [
+        "libs/backend/domain/user/api/src/index.ts"
+      ],
+      "@ivanrogulj.com/backend/domain/user/data-access": [
+        "libs/backend/domain/user/data-access/src/index.ts"
       ],
       "@ivanrogulj.com/backend/shell": ["libs/backend/shell/src/index.ts"],
       "@ivanrogulj.com/blog": ["libs/frontend/domain/blog/src/index.ts"],
