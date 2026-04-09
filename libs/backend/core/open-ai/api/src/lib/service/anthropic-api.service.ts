@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import OpenAI from 'openai';
+import Anthropic from '@anthropic-ai/sdk';
 import { ConfigService } from '@nestjs/config';
 import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 import { AiProviderService } from './ai-provider.abstract';
 import { GENERATE_PATCH_PROMPT } from '../util/synth-patch-prompt';
 
 @Injectable()
-export class OpenAiApiService extends AiProviderService {
-  private readonly openai: OpenAI;
+export class AnthropicApiService extends AiProviderService {
+  private readonly anthropic: Anthropic;
 
   constructor(private readonly configService: ConfigService) {
     super();
-    this.openai = new OpenAI({
-      apiKey: this.configService.get('OPENAI_API_KEY'),
+    this.anthropic = new Anthropic({
+      apiKey: this.configService.get('ANTHROPIC_API_KEY'),
     });
   }
 
@@ -20,18 +20,20 @@ export class OpenAiApiService extends AiProviderService {
     description: string
   ): Promise<AnalogSynthApi.FullSynthPatchJson> {
     try {
-      const response = await this.openai.chat.completions.create({
-        model: 'gpt-4.1-mini',
+      const response = await this.anthropic.messages.create({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1024,
         messages: [
           { role: 'user', content: `${GENERATE_PATCH_PROMPT}${description}` },
         ],
       });
 
-      const content = response.choices[0]?.message?.content ?? '';
+      const block = response.content[0];
+      const content = block.type === 'text' ? block.text : '';
       return JSON.parse(content) as AnalogSynthApi.FullSynthPatchJson;
     } catch (error) {
-      console.error('OpenAI: error generating synth patch:', error);
-      throw new Error('Error generating synth patch via OpenAI.');
+      console.error('Anthropic: error generating synth patch:', error);
+      throw new Error('Error generating synth patch via Anthropic.');
     }
   }
 }

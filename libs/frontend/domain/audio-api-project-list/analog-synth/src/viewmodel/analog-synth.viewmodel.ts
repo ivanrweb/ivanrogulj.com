@@ -451,21 +451,76 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     this.oscilloscopeService.draw(analyserNode, canvas.nativeElement);
   }
 
-  public generateAIPatch(patchDescription: string): void {
+  public generateAIPatch(patchDescription: string, provider: 'openai' | 'anthropic' = 'openai'): void {
     this.synthPatchApiService
-      .generateAIPatch(patchDescription)
-      .subscribe((synthPatch) => {
-        this.patchState({ volumeEnvelope: this.mapToADSR(synthPatch) });
-      });
-  }
+      .generateAIPatch(patchDescription, provider)
+      .subscribe((patch) => {
+        // Oscillator
+        this.onOscillatorTypeChange(patch.oscillator.type as OscillatorType);
+        this.updateOscillatorCount(patch.oscillator.count);
+        // Detune: JSON 0-1 → state in cents (0-100)
+        this.updateDetuneOscillatorsAmount(patch.oscillator.detune * 100);
+        this.patchState({ isPolyphonic: patch.oscillator.isPolyphonic });
+        this.updateNoiseType(patch.oscillator.noiseType as 'white' | 'pink' | 'brown');
+        this.updateNoiseVolume(patch.oscillator.noiseVolume);
 
-  public mapToADSR(synthPatch: AnalogSynthApi.SynthPatch): AnalogSynthApi.ADSR {
-    return {
-      attack: synthPatch.attack,
-      decay: synthPatch.decay,
-      sustain: synthPatch.sustain,
-      release: synthPatch.release,
-    };
+        // Master
+        this.updateGain(patch.master.gain);
+
+        // Filter: frequency JSON 0-1 → Hz (20-20000); resonance 0-1 → Q (0.1-10)
+        this.updateFilterFrequency(20 + patch.filter.frequency * 19980);
+        this.updateFilterResonance(0.1 + patch.filter.resonance * 9.9);
+        this.updateFilterEnvelopeAmount(patch.filter.envelopeAmount);
+
+        // Envelopes (0-1 direct)
+        this.updateVolumeEnvelope(patch.volumeEnvelope);
+        this.updateFilterEnvelope(patch.filterEnvelope);
+
+        // Effects — reverb.decay JSON 0-1 → seconds (0.1-10); delay.feedback capped at 0.9
+        this.effectsViewmodel.patchState({
+          distortion: {
+            amount: patch.effects.distortion.amount,
+            tone: patch.effects.distortion.tone,
+            mix: patch.effects.distortion.mix,
+            enabled: patch.effects.distortion.enabled,
+          },
+          chorus: {
+            rate: patch.effects.chorus.rate,
+            depth: patch.effects.chorus.depth,
+            mix: patch.effects.chorus.mix,
+            enabled: patch.effects.chorus.enabled,
+          },
+          reverb: {
+            mix: patch.effects.reverb.mix,
+            decay: 0.1 + patch.effects.reverb.decay * 9.9,
+            enabled: patch.effects.reverb.enabled,
+          },
+          delay: {
+            time: patch.effects.delay.time,
+            feedback: patch.effects.delay.feedback * 0.9,
+            mix: patch.effects.delay.mix,
+            enabled: patch.effects.delay.enabled,
+          },
+        });
+
+        // LFOs: rate JSON 0-1 → Hz (0-20)
+        this.lfoViewModel.updateLfo1({
+          rate: patch.lfo1.rate * 20,
+          depth: patch.lfo1.depth,
+          waveform: patch.lfo1.waveform as OscillatorType,
+          destination: patch.lfo1.destination as AnalogSynthApi.LfoDestination,
+          keySync: patch.lfo1.keySync,
+          enabled: patch.lfo1.enabled,
+        });
+        this.lfoViewModel.updateLfo2({
+          rate: patch.lfo2.rate * 20,
+          depth: patch.lfo2.depth,
+          waveform: patch.lfo2.waveform as OscillatorType,
+          destination: patch.lfo2.destination as AnalogSynthApi.LfoDestination,
+          keySync: patch.lfo2.keySync,
+          enabled: patch.lfo2.enabled,
+        });
+      });
   }
 
   public togglePrompt(): void {

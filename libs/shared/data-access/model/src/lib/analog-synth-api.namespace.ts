@@ -204,4 +204,47 @@ export namespace AnalogSynthApi {
     keySync: boolean;
     enabled: boolean;
   }
+
+  export interface FullSynthPatchJson {
+    oscillator: {
+      type: string;
+      count: number;
+      detune: number;
+      isPolyphonic: boolean;
+      noiseType: string;
+      noiseVolume: number;
+    };
+    filter: {
+      frequency: number;
+      resonance: number;
+      envelopeAmount: number;
+    };
+    volumeEnvelope: ADSR;
+    filterEnvelope: ADSR;
+    lfo1: {
+      rate: number;
+      depth: number;
+      waveform: string;
+      destination: string;
+      keySync: boolean;
+      enabled: boolean;
+    };
+    lfo2: {
+      rate: number;
+      depth: number;
+      waveform: string;
+      destination: string;
+      keySync: boolean;
+      enabled: boolean;
+    };
+    effects: {
+      distortion: { amount: number; tone: number; mix: number; enabled: boolean };
+      chorus: { rate: number; depth: number; mix: number; enabled: boolean };
+      reverb: { mix: number; decay: number; enabled: boolean };
+      delay: { time: number; feedback: number; mix: number; enabled: boolean };
+    };
+    master: {
+      gain: number;
+    };
+  }
 }
