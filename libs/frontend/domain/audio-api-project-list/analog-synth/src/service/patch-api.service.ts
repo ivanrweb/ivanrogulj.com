@@ -215,6 +215,62 @@ export class PatchApiService {
       );
   }
 
+  public deletePreset(id: string): Observable<void> {
+    return this.http.delete<void>(`/api/patches/${id}`, { headers: this.getAuthHeaders() });
+  }
+
+  public updatePreset(id: string, name: string, isPublic: boolean): Observable<SavePresetResult> {
+    const synth = this.analogSynthViewModel.getState();
+    const effects = this.effectsViewModel.getState();
+    const lfo = this.lfoViewModel.getState();
+    const seq = this.sequencerViewModel.getState();
+
+    const body = {
+      name,
+      isPublic,
+      oscType: synth.selectedOscType,
+      oscillatorCount: synth.oscillatorCount,
+      detuneAmount: synth.detuneOscillatorsAmount,
+      isPolyphonic: synth.isPolyphonic,
+      noiseType: synth.noiseType,
+      noiseVolume: synth.noiseVolume,
+      masterGain: synth.masterGain,
+      filterFrequency: synth.filterFrequency,
+      filterResonance: synth.filterResonance,
+      filterEnvelopeAmount: synth.filterEnvelopeAmount,
+      volAttack: synth.volumeEnvelope.attack,
+      volDecay: synth.volumeEnvelope.decay,
+      volSustain: synth.volumeEnvelope.sustain,
+      volRelease: synth.volumeEnvelope.release,
+      filterAttack: synth.filterEnvelope.attack,
+      filterDecay: synth.filterEnvelope.decay,
+      filterSustain: synth.filterEnvelope.sustain,
+      filterRelease: synth.filterEnvelope.release,
+      lfo1: { rate: lfo.lfo1.rate, depth: lfo.lfo1.depth, waveform: lfo.lfo1.waveform, destination: lfo.lfo1.destination, keySync: lfo.lfo1.keySync, enabled: lfo.lfo1.enabled },
+      lfo2: { rate: lfo.lfo2.rate, depth: lfo.lfo2.depth, waveform: lfo.lfo2.waveform, destination: lfo.lfo2.destination, keySync: lfo.lfo2.keySync, enabled: lfo.lfo2.enabled },
+      bpm: seq.bpm,
+      rowCount: seq.rowCount,
+      steps: seq.steps.map((s) => ({ active: s.active, note: s.note, velocity: s.velocity })),
+      distortionAmount: effects.distortion.amount,
+      distortionTone: effects.distortion.tone,
+      distortionMix: effects.distortion.mix,
+      distortionEnabled: effects.distortion.enabled,
+      chorusRate: effects.chorus.rate,
+      chorusDepth: effects.chorus.depth,
+      chorusMix: effects.chorus.mix,
+      chorusEnabled: effects.chorus.enabled,
+      reverbMix: effects.reverb.mix,
+      reverbDecay: effects.reverb.decay,
+      reverbEnabled: effects.reverb.enabled,
+      delayTime: effects.delay.time,
+      delayFeedback: effects.delay.feedback,
+      delayMix: effects.delay.mix,
+      delayEnabled: effects.delay.enabled,
+    };
+
+    return this.http.put<SavePresetResult>(`/api/patches/${id}`, body, { headers: this.getAuthHeaders() });
+  }
+
   public generateAIPatch(description: string, provider: 'openai' | 'anthropic' = 'openai'): Observable<void> {
     return this.synthPatchApiService.generateAIPatch(description, provider).pipe(
       tap((patch) => {

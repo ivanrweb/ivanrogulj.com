@@ -2,10 +2,11 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  HostListener,
   inject,
   OnDestroy,
   OnInit,
-  ViewChild,
+  ViewChild
 } from '@angular/core';
 import { CommonModule, KeyValuePipe } from '@angular/common'; // eslint-disable-next-line @nx/enforce-module-boundaries
 import { OscillatorComponent } from '@ivanrogulj.com/oscillator';
@@ -20,8 +21,7 @@ import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model'; // es
 import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack'; // eslint-disable-next-line @nx/enforce-module-boundaries
 import { NoiseGeneratorComponent } from '@ivanrogulj.com/noise'; // eslint-disable-next-line @nx/enforce-module-boundaries
 import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
-import { MidiService } from '../service/midi.service';
-// eslint-disable-next-line @nx/enforce-module-boundaries
+import { MidiService } from '../service/midi.service'; // eslint-disable-next-line @nx/enforce-module-boundaries
 import { AuthService } from '@ivanrogulj.com/auth';
 import { Router } from '@angular/router';
 import { PatchApiService, PatchSummary } from '../service/patch-api.service';
@@ -48,46 +48,120 @@ import { PatchApiService, PatchSummary } from '../service/patch-api.service';
     <div class="synth-dashboard">
       <div class="synth-header">
         <div class="header-left">
-          <h3 class="synth-title">ANALOG SYNTH</h3>
+          <h3 class="synth-title">OHM-1</h3>
 
-          @if (authService.currentUser() && myPresets.length > 0) {
-            <select class="preset-select" (change)="onPresetSelect($event)">
-              <option value="">— presets —</option>
-              @for (p of myPresets; track p.id) {
-                <option [value]="p.id">{{ p.name }}</option>
+          @if (authService.currentUser()) {
+          <div class="preset-dropdown-wrapper" #presetDropdownEl>
+            <button
+              class="preset-dropdown-trigger"
+              [class.has-selection]="selectedPresetId"
+              (click)="showPresetDropdown = !showPresetDropdown"
+            >
+              {{ selectedPresetName || '— presets —' }}
+              <span class="dropdown-arrow">▾</span>
+            </button>
+
+            @if (showPresetDropdown) {
+            <div class="preset-dropdown-panel">
+              @if (myPresets.length === 0) {
+              <div class="preset-dropdown-empty">no presets saved</div>
+              } @for (p of myPresets; track p.id) {
+              <div
+                class="preset-dropdown-item"
+                [class.selected]="p.id === selectedPresetId"
+              >
+                <span
+                  class="preset-dropdown-name"
+                  (click)="onPresetSelect(p.id, p.name, p.isPublic)"
+                  >{{ p.name }}</span
+                >
+                <button
+                  class="preset-delete-btn"
+                  (click)="onConfirmDelete(p.id, p.name, $event)"
+                >
+                  ×
+                </button>
+              </div>
               }
-            </select>
+            </div>
+            }
+          </div>
           }
 
-          <button class="btn-save-preset" (click)="onSaveButtonClick()">SAVE</button>
+          <button class="btn-save-preset" (click)="onSaveButtonClick()">
+            SAVE AS NEW
+          </button>
 
-          @if (showSaveDialog) {
-            <div class="save-dialog-backdrop" (click)="showSaveDialog = false">
-              <div class="save-dialog" (click)="$event.stopPropagation()">
-                <h4>Save Preset</h4>
-                <input type="text" [(ngModel)]="newPresetName" placeholder="preset name" />
-                <label class="checkbox-label">
-                  <input type="checkbox" [(ngModel)]="newPresetIsPublic" />
-                  make public
-                </label>
-                <div class="dialog-actions">
-                  <button (click)="showSaveDialog = false">cancel</button>
-                  <button (click)="onSavePreset()">save</button>
-                </div>
+          @if (selectedPresetId) {
+          <button class="btn-edit-preset" (click)="showEditDialog = true">
+            EDIT
+          </button>
+          } @if (showSaveDialog) {
+          <div class="save-dialog-backdrop" (click)="showSaveDialog = false">
+            <div class="save-dialog" (click)="$event.stopPropagation()">
+              <h4>Save Preset</h4>
+              <input
+                type="text"
+                [(ngModel)]="newPresetName"
+                placeholder="preset name"
+              />
+              <label class="checkbox-label">
+                <input type="checkbox" [(ngModel)]="newPresetIsPublic" />
+                make public
+              </label>
+              <div class="dialog-actions">
+                <button (click)="showSaveDialog = false">cancel</button>
+                <button (click)="onSavePreset()">save</button>
               </div>
             </div>
+          </div>
+          } @if (showEditDialog) {
+          <div class="save-dialog-backdrop" (click)="showEditDialog = false">
+            <div class="save-dialog" (click)="$event.stopPropagation()">
+              <h4>Update Preset</h4>
+              <p class="edit-dialog-msg">
+                Preset <strong>{{ selectedPresetName }}</strong> will be updated
+                with the current state. Proceed?
+              </p>
+              <div class="dialog-actions">
+                <button (click)="showEditDialog = false">No</button>
+                <button (click)="onUpdatePreset()">Yes</button>
+              </div>
+            </div>
+          </div>
+          } @if (showDeleteDialog) {
+          <div class="save-dialog-backdrop" (click)="showDeleteDialog = false">
+            <div class="save-dialog" (click)="$event.stopPropagation()">
+              <h4>Delete Preset</h4>
+              <p class="edit-dialog-msg">
+                Are you sure you want to delete
+                <strong>{{ pendingDeleteName }}</strong
+                >?
+              </p>
+              <div class="dialog-actions">
+                <button (click)="showDeleteDialog = false">No</button>
+                <button class="danger" (click)="onDeletePreset()">Yes</button>
+              </div>
+            </div>
+          </div>
           }
         </div>
 
         <div class="header-right">
           @if (midiService.connectedInputs().length > 0) {
-          <div class="midi-device-list" (click)="showMidiDropdown = !showMidiDropdown">
+          <div
+            class="midi-device-list"
+            (click)="showMidiDropdown = !showMidiDropdown"
+          >
             <span class="midi-device-label">MIDI IN</span>
-            <span class="midi-device-chip">{{ midiService.connectedInputs()[0].name }}</span>
+            <span class="midi-device-chip">{{
+              midiService.connectedInputs()[0].name
+            }}</span>
             @if (midiService.connectedInputs().length > 1) {
-            <span class="midi-device-extra">+{{ midiService.connectedInputs().length - 1 }}</span>
-            }
-            @if (showMidiDropdown) {
+            <span class="midi-device-extra"
+              >+{{ midiService.connectedInputs().length - 1 }}</span
+            >
+            } @if (showMidiDropdown) {
             <div class="midi-device-dropdown">
               @for (input of midiService.connectedInputs(); track input.id) {
               <div class="midi-device-dropdown-item">{{ input.name }}</div>
@@ -699,32 +773,127 @@ import { PatchApiService, PatchSummary } from '../service/patch-api.service';
         }
       }
 
-      .preset-select {
+      .preset-dropdown-wrapper {
+        position: relative;
+      }
+
+      .preset-dropdown-trigger {
         background: #0b0c10;
         border: 1px solid #333;
-        color: #66fcf1;
-        padding: 5px 8px;
+        color: #c5c6c7;
+        padding: 5px 10px;
         border-radius: 4px;
         font-family: 'Fira Code', monospace;
         font-size: 0.75rem;
         font-weight: 700;
         cursor: pointer;
         height: 33px;
+        min-width: 150px;
         box-sizing: border-box;
-        outline: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
         transition: border-color 0.2s;
 
         &:hover {
           border-color: #555;
         }
 
-        &:focus {
-          border-color: #66fcf1;
+        &.has-selection {
+          color: #66fcf1;
+          border-color: rgba(102, 252, 241, 0.4);
         }
 
-        option {
+        .dropdown-arrow {
+          font-size: 0.65rem;
+          opacity: 0.6;
+        }
+      }
+
+      .preset-dropdown-panel {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        min-width: 220px;
+        background: #1f2833;
+        border: 1px solid #333;
+        border-radius: 6px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        z-index: 1002;
+        overflow: hidden;
+        animation: fadeIn 0.15s ease-out;
+      }
+
+      .preset-dropdown-empty {
+        padding: 10px 14px;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.7rem;
+        color: #888;
+      }
+
+      .preset-dropdown-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 6px 0 0;
+        transition: background 0.15s;
+
+        &:nth-child(odd) {
+          background: #1a2230;
+        }
+
+        &:nth-child(even) {
           background: #1f2833;
-          color: #c5c6c7;
+        }
+
+        &:hover {
+          background: rgba(102, 252, 241, 0.05);
+        }
+
+        &.selected {
+          background: rgba(102, 252, 241, 0.06);
+        }
+      }
+
+      .preset-dropdown-name {
+        flex: 1;
+        padding: 8px 14px;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.75rem;
+        color: #c5c6c7;
+        cursor: pointer;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        .selected & {
+          color: #66fcf1;
+        }
+      }
+
+      .preset-delete-btn {
+        background: transparent;
+        border: 1px solid rgba(255, 0, 127, 0.35);
+        color: #ff007f;
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        border-radius: 3px;
+        cursor: pointer;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.8rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        line-height: 1;
+        transition: all 0.15s;
+
+        &:hover {
+          background: rgba(255, 0, 127, 0.1);
+          border-color: #ff007f;
         }
       }
 
@@ -746,6 +915,39 @@ import { PatchApiService, PatchSummary } from '../service/patch-api.service';
         &:hover {
           background: rgba(102, 252, 241, 0.08);
           border-color: #66fcf1;
+        }
+      }
+
+      .btn-edit-preset {
+        background: #0b0c10;
+        border: 1px solid rgba(102, 252, 241, 0.4);
+        color: #66fcf1;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        transition: all 0.2s;
+        height: 33px;
+        box-sizing: border-box;
+
+        &:hover {
+          background: rgba(102, 252, 241, 0.08);
+          border-color: #66fcf1;
+        }
+      }
+
+      .edit-dialog-msg {
+        margin: 0;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.78rem;
+        color: #c5c6c7;
+        line-height: 1.5;
+
+        strong {
+          color: #66fcf1;
         }
       }
 
@@ -853,6 +1055,16 @@ import { PatchApiService, PatchSummary } from '../service/patch-api.service';
               border-color: #66fcf1;
             }
           }
+
+          &.danger {
+            border-color: rgba(255, 0, 127, 0.4);
+            color: #ff007f;
+
+            &:hover {
+              background: rgba(255, 0, 127, 0.08);
+              border-color: #ff007f;
+            }
+          }
         }
       }
     `,
@@ -861,6 +1073,9 @@ import { PatchApiService, PatchSummary } from '../service/patch-api.service';
 export class AnalogSynthComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('oscilloscope', { static: false })
   public oscilloscopeCanvas!: ElementRef<HTMLCanvasElement>;
+
+  @ViewChild('presetDropdownEl', { static: false })
+  public presetDropdownEl!: ElementRef<HTMLElement>;
 
   public analogSynthViewModel = inject(AnalogSynthViewModel);
   public midiService = inject(MidiService);
@@ -873,9 +1088,28 @@ export class AnalogSynthComponent implements OnInit, AfterViewInit, OnDestroy {
   public showMidiMapper = false;
   public showMidiDropdown = false;
   public showSaveDialog = false;
+  public showEditDialog = false;
+  public showDeleteDialog = false;
+  public showPresetDropdown = false;
   public newPresetName = '';
   public newPresetIsPublic = false;
   public myPresets: PatchSummary[] = [];
+  public selectedPresetId = '';
+  public selectedPresetName = '';
+  public selectedPresetIsPublic = false;
+  public pendingDeleteId = '';
+  public pendingDeleteName = '';
+
+  @HostListener('document:click', ['$event'])
+  public onDocumentClick(event: MouseEvent): void {
+    if (
+      this.showPresetDropdown &&
+      this.presetDropdownEl &&
+      !this.presetDropdownEl.nativeElement.contains(event.target as Node)
+    ) {
+      this.showPresetDropdown = false;
+    }
+  }
 
   protected readonly knobLabels: Record<AnalogSynthApi.Knob, string> = {
     [AnalogSynthApi.Knob.ATTACK]: 'Amp Attack',
@@ -940,24 +1174,75 @@ export class AnalogSynthComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public onSavePreset(): void {
     if (!this.newPresetName.trim()) return;
-    this.patchApiService
-      .savePreset(this.newPresetName.trim(), this.newPresetIsPublic)
-      .subscribe((result) => {
-        this.myPresets = [
-          ...this.myPresets,
-          { id: result.id, name: result.name, isPublic: this.newPresetIsPublic, createdAt: new Date().toISOString() },
-        ];
-        this.showSaveDialog = false;
-        this.newPresetName = '';
-        this.newPresetIsPublic = false;
-      });
+    const name = this.newPresetName.trim();
+    const isPublic = this.newPresetIsPublic;
+    this.patchApiService.savePreset(name, isPublic).subscribe((result) => {
+      this.myPresets = [
+        ...this.myPresets,
+        {
+          id: result.id,
+          name: result.name,
+          isPublic,
+          createdAt: new Date().toISOString(),
+        },
+      ];
+      this.selectedPresetId = result.id;
+      this.selectedPresetName = result.name;
+      this.selectedPresetIsPublic = isPublic;
+      this.showSaveDialog = false;
+      this.newPresetName = '';
+      this.newPresetIsPublic = false;
+    });
   }
 
-  public onPresetSelect(event: Event): void {
-    const id = (event.target as HTMLSelectElement).value;
-    if (id) {
-      this.patchApiService.loadPreset(id).subscribe();
-    }
+  public onPresetSelect(id: string, name: string, isPublic: boolean): void {
+    this.selectedPresetId = id;
+    this.selectedPresetName = name;
+    this.selectedPresetIsPublic = isPublic;
+    this.showPresetDropdown = false;
+    this.patchApiService.loadPreset(id).subscribe();
+  }
+
+  public onConfirmDelete(id: string, name: string, event: Event): void {
+    event.stopPropagation();
+    this.pendingDeleteId = id;
+    this.pendingDeleteName = name;
+    this.showPresetDropdown = false;
+    this.showDeleteDialog = true;
+  }
+
+  public onDeletePreset(): void {
+    this.showDeleteDialog = false;
+    this.patchApiService.deletePreset(this.pendingDeleteId).subscribe(() => {
+      this.myPresets = this.myPresets.filter(
+        (p) => p.id !== this.pendingDeleteId
+      );
+      if (this.selectedPresetId === this.pendingDeleteId) {
+        this.selectedPresetId = '';
+        this.selectedPresetName = '';
+        this.selectedPresetIsPublic = false;
+      }
+      this.pendingDeleteId = '';
+      this.pendingDeleteName = '';
+    });
+  }
+
+  public onUpdatePreset(): void {
+    this.showEditDialog = false;
+    this.patchApiService
+      .updatePreset(
+        this.selectedPresetId,
+        this.selectedPresetName,
+        this.selectedPresetIsPublic
+      )
+      .subscribe({
+        next: () =>
+          console.log(
+            '[Preset] Updated successfully:',
+            this.selectedPresetName
+          ),
+        error: (err) => console.error('[Preset] Update failed:', err),
+      });
   }
 
   public getKnobLabel(key: string): string {

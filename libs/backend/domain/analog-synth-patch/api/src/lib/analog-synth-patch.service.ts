@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import {
   AnalogSynthPatchRepository,
   AnalogSynthPatchLfoRepository,
@@ -129,6 +129,88 @@ export class AnalogSynthPatchService {
       sequencer,
       effects,
     };
+  }
+
+  public async delete(id: string, userId: string): Promise<void> {
+    const patch = await this.patchRepo.findOne({ where: { id } });
+    if (!patch) throw new NotFoundException('Patch not found');
+    if (patch.userId !== userId) throw new ForbiddenException('Not your patch');
+    await this.patchRepo.delete(id);
+  }
+
+  public async update(id: string, userId: string, dto: SavePatchDto): Promise<PatchListItem> {
+    const patch = await this.patchRepo.findOne({ where: { id } });
+    if (!patch) throw new NotFoundException('Patch not found');
+    if (patch.userId !== userId) throw new ForbiddenException('Not your patch');
+
+    await this.patchRepo.update(id, {
+      name: dto.name,
+      isPublic: dto.isPublic,
+      oscType: dto.oscType,
+      oscillatorCount: dto.oscillatorCount,
+      detuneAmount: dto.detuneAmount,
+      isPolyphonic: dto.isPolyphonic,
+      noiseType: dto.noiseType,
+      noiseVolume: dto.noiseVolume,
+      masterGain: dto.masterGain,
+      filterFrequency: dto.filterFrequency,
+      filterResonance: dto.filterResonance,
+      filterEnvelopeAmount: dto.filterEnvelopeAmount,
+      volAttack: dto.volAttack,
+      volDecay: dto.volDecay,
+      volSustain: dto.volSustain,
+      volRelease: dto.volRelease,
+      filterAttack: dto.filterAttack,
+      filterDecay: dto.filterDecay,
+      filterSustain: dto.filterSustain,
+      filterRelease: dto.filterRelease,
+    });
+
+    // LFOs: delete all and re-insert (each patch always has exactly 2)
+    await this.lfoRepo.delete({ patchId: id });
+    await this.lfoRepo.save([
+      this.lfoRepo.create({ patchId: id, lfoIndex: 1, ...dto.lfo1 }),
+      this.lfoRepo.create({ patchId: id, lfoIndex: 2, ...dto.lfo2 }),
+    ]);
+
+    // Sequencer: update in-place to avoid constraint issues
+    const existingSeq = await this.sequencerRepo.findByPatchId(id);
+    if (existingSeq) {
+      await this.sequencerRepo.save({ ...existingSeq, bpm: dto.bpm, rowCount: dto.rowCount, steps: dto.steps });
+    } else {
+      await this.sequencerRepo.save(
+        this.sequencerRepo.create({ patchId: id, bpm: dto.bpm, rowCount: dto.rowCount, steps: dto.steps }),
+      );
+    }
+
+    // Effects: update in-place to avoid constraint issues
+    const existingEffects = await this.effectsRepo.findByPatchId(id);
+    const effectsData = {
+      distortionAmount: dto.distortionAmount,
+      distortionTone: dto.distortionTone,
+      distortionMix: dto.distortionMix,
+      distortionEnabled: dto.distortionEnabled,
+      chorusRate: dto.chorusRate,
+      chorusDepth: dto.chorusDepth,
+      chorusMix: dto.chorusMix,
+      chorusEnabled: dto.chorusEnabled,
+      reverbMix: dto.reverbMix,
+      reverbDecay: dto.reverbDecay,
+      reverbEnabled: dto.reverbEnabled,
+      delayTime: dto.delayTime,
+      delayFeedback: dto.delayFeedback,
+      delayMix: dto.delayMix,
+      delayEnabled: dto.delayEnabled,
+    };
+    if (existingEffects) {
+      await this.effectsRepo.save({ ...existingEffects, ...effectsData });
+    } else {
+      await this.effectsRepo.save(this.effectsRepo.create({ patchId: id, ...effectsData }));
+    }
+
+    await this.jsonRepo.upsertByPatchId(id, this.buildPatchJson(dto));
+
+    return { id: patch.id, name: dto.name, isPublic: dto.isPublic, createdAt: patch.createdAt };
   }
 
   private buildPatchJson(dto: SavePatchDto): AnalogSynthApi.FullSynthPatchJson {

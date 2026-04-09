@@ -73,9 +73,9 @@ import { AvatarComponent } from '@ivanrogulj.com/avatar';
           </div>
           <h3 class="card-title">Virtual Analog Synth</h3>
           <p class="card-desc">
-            Polyphonic subtractive synth with oscillators, filter, ADSR, LFO
-            modulation, step sequencer, and effects chain. Runs in-browser,
-            MIDI-ready.
+            Try OHM-1, a polyphonic subtractive synth with oscillators, filter,
+            ADSR, LFO modulation, step sequencer, and effects chain. Runs
+            in-browser, MIDI-ready.
           </p>
         </section>
 
