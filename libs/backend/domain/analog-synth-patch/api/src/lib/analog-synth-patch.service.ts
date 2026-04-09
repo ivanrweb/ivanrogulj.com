@@ -202,6 +202,11 @@ export class AnalogSynthPatchService {
       master: {
         gain: dto.masterGain,
       },
+      sequencer: {
+        bpm: dto.bpm,
+        rowCount: Math.max(1, Math.ceil(dto.steps.length / 8)),
+        steps: dto.steps,
+      },
     };
   }
 }

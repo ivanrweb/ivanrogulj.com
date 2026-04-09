@@ -21,7 +21,7 @@ export class OpenAiApiService extends AiProviderService {
   ): Promise<AnalogSynthApi.FullSynthPatchJson> {
     try {
       const response = await this.openai.chat.completions.create({
-        model: 'gpt-4.1-mini',
+        model: 'gpt-5.4-nano',
         messages: [
           { role: 'user', content: `${GENERATE_PATCH_PROMPT}${description}` },
         ],

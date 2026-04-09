@@ -246,5 +246,10 @@ export namespace AnalogSynthApi {
     master: {
       gain: number;
     };
+    sequencer: {
+      bpm: number;
+      rowCount: number;
+      steps: Array<{ active: boolean; note: number; velocity: number }>;
+    };
   }
 }
