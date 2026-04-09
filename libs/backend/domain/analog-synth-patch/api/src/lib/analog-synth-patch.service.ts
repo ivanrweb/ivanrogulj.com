@@ -4,11 +4,13 @@ import {
   AnalogSynthPatchLfoRepository,
   AnalogSynthPatchSequencerRepository,
   AnalogSynthPatchEffectsRepository,
+  AnalogSynthPatchJsonRepository,
   AnalogSynthPatchEntity,
   AnalogSynthPatchLfoEntity,
   AnalogSynthPatchSequencerEntity,
   AnalogSynthPatchEffectsEntity,
 } from '@ivanrogulj.com/backend/domain/analog-synth-patch/data-access';
+import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 import { SavePatchDto } from './dto/save-patch.dto';
 
 export interface PatchListItem {
@@ -33,6 +35,7 @@ export class AnalogSynthPatchService {
     private readonly lfoRepo: AnalogSynthPatchLfoRepository,
     private readonly sequencerRepo: AnalogSynthPatchSequencerRepository,
     private readonly effectsRepo: AnalogSynthPatchEffectsRepository,
+    private readonly jsonRepo: AnalogSynthPatchJsonRepository,
   ) {}
 
   public async save(userId: string, dto: SavePatchDto): Promise<PatchListItem> {
@@ -96,6 +99,8 @@ export class AnalogSynthPatchService {
       }),
     );
 
+    await this.jsonRepo.upsertByPatchId(saved.id, this.buildPatchJson(dto));
+
     return { id: saved.id, name: saved.name, isPublic: saved.isPublic, createdAt: saved.createdAt };
   }
 
@@ -123,6 +128,85 @@ export class AnalogSynthPatchService {
       lfo2: lfos.find((l) => l.lfoIndex === 2) ?? null,
       sequencer,
       effects,
+    };
+  }
+
+  private buildPatchJson(dto: SavePatchDto): AnalogSynthApi.FullSynthPatchJson {
+    return {
+      oscillator: {
+        type: dto.oscType,
+        count: dto.oscillatorCount,
+        detune: dto.detuneAmount,
+        isPolyphonic: dto.isPolyphonic,
+        noiseType: dto.noiseType,
+        noiseVolume: dto.noiseVolume,
+      },
+      filter: {
+        frequency: dto.filterFrequency,
+        resonance: dto.filterResonance,
+        envelopeAmount: dto.filterEnvelopeAmount,
+      },
+      volumeEnvelope: {
+        attack: dto.volAttack,
+        decay: dto.volDecay,
+        sustain: dto.volSustain,
+        release: dto.volRelease,
+      },
+      filterEnvelope: {
+        attack: dto.filterAttack,
+        decay: dto.filterDecay,
+        sustain: dto.filterSustain,
+        release: dto.filterRelease,
+      },
+      lfo1: {
+        rate: dto.lfo1.rate,
+        depth: dto.lfo1.depth,
+        waveform: dto.lfo1.waveform,
+        destination: dto.lfo1.destination,
+        keySync: dto.lfo1.keySync,
+        enabled: dto.lfo1.enabled,
+      },
+      lfo2: {
+        rate: dto.lfo2.rate,
+        depth: dto.lfo2.depth,
+        waveform: dto.lfo2.waveform,
+        destination: dto.lfo2.destination,
+        keySync: dto.lfo2.keySync,
+        enabled: dto.lfo2.enabled,
+      },
+      effects: {
+        distortion: {
+          amount: dto.distortionAmount,
+          tone: dto.distortionTone,
+          mix: dto.distortionMix,
+          enabled: dto.distortionEnabled,
+        },
+        chorus: {
+          rate: dto.chorusRate,
+          depth: dto.chorusDepth,
+          mix: dto.chorusMix,
+          enabled: dto.chorusEnabled,
+        },
+        reverb: {
+          mix: dto.reverbMix,
+          decay: dto.reverbDecay,
+          enabled: dto.reverbEnabled,
+        },
+        delay: {
+          time: dto.delayTime,
+          feedback: dto.delayFeedback,
+          mix: dto.delayMix,
+          enabled: dto.delayEnabled,
+        },
+      },
+      master: {
+        gain: dto.masterGain,
+      },
+      sequencer: {
+        bpm: dto.bpm,
+        rowCount: Math.max(1, Math.ceil(dto.steps.length / 8)),
+        steps: dto.steps,
+      },
     };
   }
 }

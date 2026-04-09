@@ -3,6 +3,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map, Observable, tap } from 'rxjs';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { AuthService } from '@ivanrogulj.com/auth';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { SynthPatchApiService } from '@ivanrogulj.com/frontend/shared/data-access/api';
 import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 import { AnalogSynthViewModel } from '../viewmodel/analog-synth.viewmodel';
 import { EffectsViewModel } from '../viewmodel/effects.viewmodel';
@@ -25,6 +27,7 @@ export interface SavePresetResult {
 export class PatchApiService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
+  private readonly synthPatchApiService = inject(SynthPatchApiService);
   private readonly analogSynthViewModel = inject(AnalogSynthViewModel);
   private readonly effectsViewModel = inject(EffectsViewModel);
   private readonly lfoViewModel = inject(LfoViewModel);
@@ -210,5 +213,68 @@ export class PatchApiService {
         }),
         map(() => undefined)
       );
+  }
+
+  public generateAIPatch(description: string, provider: 'openai' | 'anthropic' = 'openai'): Observable<void> {
+    return this.synthPatchApiService.generateAIPatch(description, provider).pipe(
+      tap((patch) => {
+        // Oscillator
+        this.analogSynthViewModel.onOscillatorTypeChange(patch.oscillator.type as OscillatorType);
+        this.analogSynthViewModel.updateOscillatorCount(patch.oscillator.count);
+        this.analogSynthViewModel.updateDetuneOscillatorsAmount(patch.oscillator.detune * 100);
+        this.analogSynthViewModel.patchState({ isPolyphonic: patch.oscillator.isPolyphonic });
+        this.analogSynthViewModel.updateNoiseType(patch.oscillator.noiseType as 'white' | 'pink' | 'brown');
+        this.analogSynthViewModel.updateNoiseVolume(patch.oscillator.noiseVolume);
+
+        // Master
+        this.analogSynthViewModel.updateGain(patch.master.gain);
+
+        // Filter: frequency 0-1 → Hz (20-20000); resonance 0-1 → Q (0.1-10)
+        this.analogSynthViewModel.updateFilterFrequency(20 + patch.filter.frequency * 19980);
+        this.analogSynthViewModel.updateFilterResonance(0.1 + patch.filter.resonance * 9.9);
+        this.analogSynthViewModel.updateFilterEnvelopeAmount(patch.filter.envelopeAmount);
+
+        // Envelopes
+        this.analogSynthViewModel.updateVolumeEnvelope(patch.volumeEnvelope);
+        this.analogSynthViewModel.updateFilterEnvelope(patch.filterEnvelope);
+
+        // Effects — reverb.decay 0-1 → seconds (0.1-10); delay.feedback capped at 0.9
+        this.effectsViewModel.patchState({
+          distortion: { amount: patch.effects.distortion.amount, tone: patch.effects.distortion.tone, mix: patch.effects.distortion.mix, enabled: patch.effects.distortion.enabled },
+          chorus:     { rate: patch.effects.chorus.rate, depth: patch.effects.chorus.depth, mix: patch.effects.chorus.mix, enabled: patch.effects.chorus.enabled },
+          reverb:     { mix: patch.effects.reverb.mix, decay: 0.1 + patch.effects.reverb.decay * 9.9, enabled: patch.effects.reverb.enabled },
+          delay:      { time: patch.effects.delay.time, feedback: patch.effects.delay.feedback * 0.9, mix: patch.effects.delay.mix, enabled: patch.effects.delay.enabled },
+        });
+
+        // LFOs: rate 0-1 → Hz (0-20)
+        this.lfoViewModel.updateLfo1({
+          rate: patch.lfo1.rate * 20,
+          depth: patch.lfo1.depth,
+          waveform: patch.lfo1.waveform as OscillatorType,
+          destination: patch.lfo1.destination as AnalogSynthApi.LfoDestination,
+          keySync: patch.lfo1.keySync,
+          enabled: patch.lfo1.enabled,
+        });
+        this.lfoViewModel.updateLfo2({
+          rate: patch.lfo2.rate * 20,
+          depth: patch.lfo2.depth,
+          waveform: patch.lfo2.waveform as OscillatorType,
+          destination: patch.lfo2.destination as AnalogSynthApi.LfoDestination,
+          keySync: patch.lfo2.keySync,
+          enabled: patch.lfo2.enabled,
+        });
+
+        // Sequencer — AI may return 8–64 steps; pad to 64 and derive rowCount
+        const aiSteps = patch.sequencer.steps;
+        const rowCount = Math.max(1, Math.ceil(aiSteps.length / 8));
+        const paddedSteps = [
+          ...aiSteps,
+          ...Array.from({ length: Math.max(0, 64 - aiSteps.length) }, () => ({ active: false, note: 36, velocity: 100 })),
+        ];
+        this.sequencerViewModel.setBpm(patch.sequencer.bpm);
+        this.sequencerViewModel.patchState({ steps: paddedSteps, rowCount });
+      }),
+      map(() => undefined),
+    );
   }
 }

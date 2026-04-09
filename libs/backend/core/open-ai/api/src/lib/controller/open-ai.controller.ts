@@ -1,14 +1,16 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { OpenAiApiService } from '../service/open-ai-api.service';
+import { Body, Controller, Post, Query } from '@nestjs/common';
+import { AiProviderFactory, AiProviderName } from '../service/ai-provider.factory';
 import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 
 @Controller('synth-patch')
 export class OpenAiController {
-  constructor(private openAiApiService: OpenAiApiService) {
-  }
+  public constructor(private readonly aiProviderFactory: AiProviderFactory) {}
 
   @Post('generate-ai-patch')
-  public async generateSynthPatch(@Body() patchDescription: string): Promise<AnalogSynthApi.SynthPatch> {
-    return this.openAiApiService.generateSynthPatch(patchDescription);
+  public async generateSynthPatch(
+    @Body() body: { description: string },
+    @Query('provider') provider: AiProviderName = 'openai',
+  ): Promise<AnalogSynthApi.FullSynthPatchJson> {
+    return this.aiProviderFactory.getProvider(provider).generateSynthPatch(body.description);
   }
 }
