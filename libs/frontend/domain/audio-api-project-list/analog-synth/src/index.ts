@@ -3,6 +3,7 @@ export * from './service/audio-context.service';
 export * from './service/midi.service';
 export * from './service/oscilloscope.service';
 export * from './service/lfo.service';
+export * from './service/patch-api.service';
 export * from './viewmodel/analog-synth.viewmodel';
 export * from './viewmodel/effects.viewmodel';
 export * from './viewmodel/lfo.viewmodel';

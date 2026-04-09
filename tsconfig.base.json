@@ -39,6 +39,9 @@
       "@ivanrogulj.com/backend/domain/admin/data-access": [
         "libs/backend/domain/admin/data-access/src/index.ts"
       ],
+      "@ivanrogulj.com/backend/domain/analog-synth-patch/api": [
+        "libs/backend/domain/analog-synth-patch/api/src/index.ts"
+      ],
       "@ivanrogulj.com/backend/domain/analog-synth-patch/data-access": [
         "libs/backend/domain/analog-synth-patch/data-access/src/index.ts"
       ],

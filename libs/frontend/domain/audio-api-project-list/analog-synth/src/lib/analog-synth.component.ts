@@ -21,6 +21,10 @@ import { EffectsRackComponent } from '@ivanrogulj.com/effects-rack'; // eslint-d
 import { NoiseGeneratorComponent } from '@ivanrogulj.com/noise'; // eslint-disable-next-line @nx/enforce-module-boundaries
 import { LfoRackComponent } from '@ivanrogulj.com/lfo-unit';
 import { MidiService } from '../service/midi.service';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { AuthService } from '@ivanrogulj.com/auth';
+import { Router } from '@angular/router';
+import { PatchApiService, PatchSummary } from '../service/patch-api.service';
 
 @Component({
   selector: 'lib-analog-synth',
@@ -45,6 +49,34 @@ import { MidiService } from '../service/midi.service';
       <div class="synth-header">
         <div class="header-left">
           <h3 class="synth-title">ANALOG SYNTH</h3>
+
+          @if (authService.currentUser() && myPresets.length > 0) {
+            <select class="preset-select" (change)="onPresetSelect($event)">
+              <option value="">— presets —</option>
+              @for (p of myPresets; track p.id) {
+                <option [value]="p.id">{{ p.name }}</option>
+              }
+            </select>
+          }
+
+          <button class="btn-save-preset" (click)="onSaveButtonClick()">SAVE</button>
+
+          @if (showSaveDialog) {
+            <div class="save-dialog-backdrop" (click)="showSaveDialog = false">
+              <div class="save-dialog" (click)="$event.stopPropagation()">
+                <h4>Save Preset</h4>
+                <input type="text" [(ngModel)]="newPresetName" placeholder="preset name" />
+                <label class="checkbox-label">
+                  <input type="checkbox" [(ngModel)]="newPresetIsPublic" />
+                  make public
+                </label>
+                <div class="dialog-actions">
+                  <button (click)="showSaveDialog = false">cancel</button>
+                  <button (click)="onSavePreset()">save</button>
+                </div>
+              </div>
+            </div>
+          }
         </div>
 
         <div class="header-right">
@@ -666,6 +698,163 @@ import { MidiService } from '../service/midi.service';
           transform: translateY(0);
         }
       }
+
+      .preset-select {
+        background: #0b0c10;
+        border: 1px solid #333;
+        color: #66fcf1;
+        padding: 5px 8px;
+        border-radius: 4px;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.75rem;
+        font-weight: 700;
+        cursor: pointer;
+        height: 33px;
+        box-sizing: border-box;
+        outline: none;
+        transition: border-color 0.2s;
+
+        &:hover {
+          border-color: #555;
+        }
+
+        &:focus {
+          border-color: #66fcf1;
+        }
+
+        option {
+          background: #1f2833;
+          color: #c5c6c7;
+        }
+      }
+
+      .btn-save-preset {
+        background: #0b0c10;
+        border: 1px solid rgba(102, 252, 241, 0.4);
+        color: #66fcf1;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        transition: all 0.2s;
+        height: 33px;
+        box-sizing: border-box;
+
+        &:hover {
+          background: rgba(102, 252, 241, 0.08);
+          border-color: #66fcf1;
+        }
+      }
+
+      .save-dialog-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+      }
+
+      .save-dialog {
+        background: #1f2833;
+        border: 1px solid #66fcf1;
+        border-radius: 8px;
+        padding: 24px;
+        min-width: 300px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+        animation: fadeIn 0.2s ease-out;
+
+        h4 {
+          margin: 0;
+          font-family: 'Fira Code', monospace;
+          font-size: 0.9rem;
+          font-weight: 700;
+          color: #66fcf1;
+          letter-spacing: 1.5px;
+          text-transform: uppercase;
+        }
+
+        input[type='text'] {
+          background: #0b0c10;
+          border: 1px solid #333;
+          color: #c5c6c7;
+          padding: 8px 10px;
+          border-radius: 4px;
+          font-family: 'Fira Code', monospace;
+          font-size: 0.8rem;
+          outline: none;
+          transition: border-color 0.2s;
+          width: 100%;
+          box-sizing: border-box;
+
+          &::placeholder {
+            color: #555;
+          }
+
+          &:focus {
+            border-color: #66fcf1;
+          }
+        }
+      }
+
+      .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.75rem;
+        color: #c5c6c7;
+        cursor: pointer;
+
+        input[type='checkbox'] {
+          accent-color: #66fcf1;
+          width: 14px;
+          height: 14px;
+          cursor: pointer;
+        }
+      }
+
+      .dialog-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+
+        button {
+          background: #0b0c10;
+          border: 1px solid #333;
+          color: #c5c6c7;
+          padding: 6px 14px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-family: 'Fira Code', monospace;
+          font-size: 0.75rem;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+          transition: all 0.2s;
+
+          &:hover {
+            border-color: #555;
+            color: #fff;
+          }
+
+          &:last-child {
+            border-color: rgba(102, 252, 241, 0.4);
+            color: #66fcf1;
+
+            &:hover {
+              background: rgba(102, 252, 241, 0.08);
+              border-color: #66fcf1;
+            }
+          }
+        }
+      }
     `,
   ],
 })
@@ -675,11 +864,18 @@ export class AnalogSynthComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public analogSynthViewModel = inject(AnalogSynthViewModel);
   public midiService = inject(MidiService);
+  public authService = inject(AuthService);
+  private readonly patchApiService = inject(PatchApiService);
+  private readonly router = inject(Router);
 
   public readonly oscillatorCount = [1, 2, 3, 4, 5, 6, 7, 8];
 
   public showMidiMapper = false;
   public showMidiDropdown = false;
+  public showSaveDialog = false;
+  public newPresetName = '';
+  public newPresetIsPublic = false;
+  public myPresets: PatchSummary[] = [];
 
   protected readonly knobLabels: Record<AnalogSynthApi.Knob, string> = {
     [AnalogSynthApi.Knob.ATTACK]: 'Amp Attack',
@@ -715,6 +911,11 @@ export class AnalogSynthComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public ngOnInit(): void {
     this.analogSynthViewModel.startAudioContext();
+    if (this.authService.currentUser()) {
+      this.patchApiService.getMyPresets().subscribe((presets) => {
+        this.myPresets = presets;
+      });
+    }
   }
 
   public ngAfterViewInit(): void {
@@ -728,6 +929,36 @@ export class AnalogSynthComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   protected readonly AnalogSynthApi = AnalogSynthApi;
+
+  public onSaveButtonClick(): void {
+    if (!this.authService.currentUser()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    this.showSaveDialog = true;
+  }
+
+  public onSavePreset(): void {
+    if (!this.newPresetName.trim()) return;
+    this.patchApiService
+      .savePreset(this.newPresetName.trim(), this.newPresetIsPublic)
+      .subscribe((result) => {
+        this.myPresets = [
+          ...this.myPresets,
+          { id: result.id, name: result.name, isPublic: this.newPresetIsPublic, createdAt: new Date().toISOString() },
+        ];
+        this.showSaveDialog = false;
+        this.newPresetName = '';
+        this.newPresetIsPublic = false;
+      });
+  }
+
+  public onPresetSelect(event: Event): void {
+    const id = (event.target as HTMLSelectElement).value;
+    if (id) {
+      this.patchApiService.loadPreset(id).subscribe();
+    }
+  }
 
   public getKnobLabel(key: string): string {
     return this.knobLabels[key as AnalogSynthApi.Knob] ?? key;

@@ -554,6 +554,10 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     return spreadFactor * amount;
   }
 
+  public getState(): AnalogSynthState {
+    return this.get();
+  }
+
   public triggerNoteOn(note: number, velocity: number): void {
     if (this.get().voices.some((v) => v.note === note)) return;
     const frequency = this.midiService.getFrequency(note);
