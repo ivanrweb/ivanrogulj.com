@@ -13,11 +13,10 @@ import { RouterLink } from '@angular/router';
       </header>
       <main class="content">
         <div class="panel">
-          <h2>Blog Management</h2>
-          <p>Create, edit, and manage your blog articles.</p>
+          <h2>Articles</h2>
+          <p>Articles are published on Medium and automatically synced to the site.</p>
           <div class="actions">
-            <a routerLink="/articles" class="btn btn-secondary">View All Articles</a>
-            <a routerLink="/articles/new" class="btn btn-primary">Create New Article</a>
+            <a href="https://medium.com" target="_blank" rel="noopener" class="btn btn-primary">Write on Medium ↗</a>
           </div>
         </div>
       </main>

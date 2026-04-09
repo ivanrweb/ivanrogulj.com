@@ -1,11 +1,9 @@
 import { Module } from '@nestjs/common';
-import { BackendDomainArticleDataAccessModule } from '@ivanrogulj.com/backend/domain/article/data-access';
 import { ArticleController } from './article.controller';
-import { ArticleService } from './article.service';
+import { MediumService } from './medium.service';
 
 @Module({
-  imports: [BackendDomainArticleDataAccessModule],
   controllers: [ArticleController],
-  providers: [ArticleService],
+  providers: [MediumService],
 })
 export class BackendDomainArticleApiModule {}

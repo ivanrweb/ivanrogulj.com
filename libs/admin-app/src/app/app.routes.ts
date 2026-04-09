@@ -21,30 +21,6 @@ export const appRoutes: Route[] = [
       ),
   },
   {
-    path: 'articles',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./pages/articles/article-list.component').then(
-        m => m.ArticleListComponent,
-      ),
-  },
-  {
-    path: 'articles/new',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./pages/articles/article-form.component').then(
-        m => m.ArticleFormComponent,
-      ),
-  },
-  {
-    path: 'articles/edit/:id',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./pages/articles/article-form.component').then(
-        m => m.ArticleFormComponent,
-      ),
-  },
-  {
     path: '**',
     redirectTo: 'dashboard',
   },
