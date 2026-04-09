@@ -94,7 +94,7 @@ import { PatchApiService, PatchSummary } from '../service/patch-api.service';
 
           @if (selectedPresetId) {
           <button class="btn-edit-preset" (click)="showEditDialog = true">
-            EDIT
+            UPDATE
           </button>
           } @if (showSaveDialog) {
           <div class="save-dialog-backdrop" (click)="showSaveDialog = false">

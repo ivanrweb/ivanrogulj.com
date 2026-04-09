@@ -1,65 +1,46 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { ComponentStore } from '@ngrx/component-store';
-import { Article, ArticleCategory } from '@ivanrogulj.com/shared/data-access/model';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { SlicePipe } from '@angular/common';
+import { Article } from '@ivanrogulj.com/shared/data-access/model';
 import { ArticleApiService } from '@ivanrogulj.com/frontend/shared/data-access/api';
-
-interface BlogListState {
-  articles: Article[];
-  loading: boolean;
-  selectedCategory: ArticleCategory | null;
-}
+import { RouterLink } from '@angular/router';
+import { MEDIUM_USERNAME } from './blog.tokens';
 
 @Component({
   selector: 'lib-blog-list',
   standalone: true,
-  imports: [RouterLink],
-  providers: [ComponentStore],
+  imports: [RouterLink, SlicePipe],
   template: `
     <div class="blog-page">
       <div class="blog-header">
-        <h1>The Blog</h1>
-        <p>Web Audio, JUCE, Angular, NestJS and more.</p>
-      </div>
-
-      <div class="filter-tabs">
-        <button
-          class="tab"
-          [class.active]="selectedCategory() === null"
-          (click)="setCategory(null)"
-        >All</button>
-        <button
-          class="tab"
-          [class.active]="selectedCategory() === 'DEVELOPMENT'"
-          (click)="setCategory(ArticleCategory.DEVELOPMENT)"
-        >Development</button>
-        <button
-          class="tab"
-          [class.active]="selectedCategory() === 'MUSIC'"
-          (click)="setCategory(ArticleCategory.MUSIC)"
-        >Music</button>
-        <button
-          class="tab"
-          [class.active]="selectedCategory() === 'AUDIO_ENGINEERING'"
-          (click)="setCategory(ArticleCategory.AUDIO_ENGINEERING)"
-        >Audio Engineering</button>
+        <h1>Articles</h1>
+        <p>Web Audio, synthesis, Angular, NestJS and more — written on Medium.</p>
+        <a class="medium-link" [href]="'https://medium.com/' + mediumUsername" target="_blank" rel="noopener">
+          Follow on Medium ↗
+        </a>
       </div>
 
       @if (loading()) {
         <div class="loading">Loading articles...</div>
-      } @else if (filteredArticles().length === 0) {
-        <div class="empty">No articles yet.</div>
+      } @else if (articles().length === 0) {
+        <div class="empty">No articles yet — check back soon.</div>
       } @else {
         <div class="articles-grid">
-          @for (article of filteredArticles(); track article.id) {
+          @for (article of articles(); track article.id) {
             <article class="article-card" [routerLink]="['/articles', article.slug]">
-              <div class="card-meta">
-                <span class="category-badge">{{ categoryLabel(article.category) }}</span>
-                <span class="date">{{ article.createdAt.slice(0, 10) }}</span>
+              @if (article.coverImage) {
+                <img class="card-cover" [src]="article.coverImage" [alt]="article.title" loading="lazy" />
+              }
+              <div class="card-body">
+                <div class="card-meta">
+                  @if (article.tags.length > 0) {
+                    <span class="tag">{{ article.tags[0] }}</span>
+                  }
+                  <span class="date">{{ article.publishedAt | slice:0:10 }}</span>
+                </div>
+                <h2>{{ article.title }}</h2>
+                <p class="excerpt">{{ article.excerpt }}</p>
+                <span class="read-more">Read more →</span>
               </div>
-              <h2>{{ article.title }}</h2>
-              <p class="excerpt">{{ excerpt(article.content) }}</p>
-              <span class="read-more">Read more →</span>
             </article>
           }
         </div>
@@ -83,28 +64,20 @@ interface BlogListState {
         text-transform: uppercase;
         letter-spacing: 2px;
       }
-      p { color: #888; font-family: 'Inter', sans-serif; font-size: 1rem; }
+      p { color: #888; font-family: 'Inter', sans-serif; font-size: 1rem; margin: 0 0 1.25rem; }
     }
 
-    .filter-tabs {
-      display: flex;
-      gap: 0.75rem;
-      padding: 1.5rem 2rem;
-      flex-wrap: wrap;
-    }
-
-    .tab {
-      padding: 0.4rem 1rem;
-      border: 1px solid #333;
-      border-radius: 20px;
-      background: transparent;
-      color: #888;
+    .medium-link {
+      display: inline-block;
       font-family: 'Fira Code', monospace;
       font-size: 0.8rem;
-      cursor: pointer;
+      color: #66fcf1;
+      border: 1px solid rgba(102,252,241,0.4);
+      border-radius: 4px;
+      padding: 0.4rem 1rem;
+      text-decoration: none;
       transition: all 0.2s;
-      &:hover { border-color: #66fcf1; color: #66fcf1; }
-      &.active { background: rgba(102,252,241,0.1); border-color: #66fcf1; color: #66fcf1; }
+      &:hover { background: rgba(102,252,241,0.08); border-color: #66fcf1; }
     }
 
     .loading, .empty {
@@ -118,18 +91,17 @@ interface BlogListState {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 1.5rem;
-      padding: 0 2rem 4rem;
+      padding: 2rem 2rem 4rem;
     }
 
     .article-card {
       background: #1f2833;
       border: 1px solid #333;
       border-radius: 8px;
-      padding: 1.75rem;
+      overflow: hidden;
       cursor: pointer;
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
       transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
       text-decoration: none;
       color: inherit;
@@ -140,13 +112,28 @@ interface BlogListState {
       }
     }
 
+    .card-cover {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      flex: 1;
+    }
+
     .card-meta {
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
-    .category-badge {
+    .tag {
       font-family: 'Fira Code', monospace;
       font-size: 0.7rem;
       color: #ff007f;
@@ -158,7 +145,7 @@ interface BlogListState {
 
     h2 {
       font-family: 'Fira Code', monospace;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       color: #66fcf1;
       margin: 0;
       line-height: 1.4;
@@ -166,7 +153,7 @@ interface BlogListState {
 
     .excerpt {
       font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       color: #888;
       line-height: 1.6;
       flex-grow: 1;
@@ -185,52 +172,18 @@ interface BlogListState {
   `],
 })
 export class BlogListComponent implements OnInit {
-  private readonly store = new ComponentStore<BlogListState>({
-    articles: [],
-    loading: true,
-    selectedCategory: null,
-  });
   private readonly articleApi = inject(ArticleApiService);
-
-  public readonly ArticleCategory = ArticleCategory;
-  public readonly loading = this.store.selectSignal((s) => s.loading);
-  public readonly selectedCategory = this.store.selectSignal((s) => s.selectedCategory);
-  public readonly filteredArticles = this.store.selectSignal((s) => {
-    if (!s.selectedCategory) return s.articles.filter((a) => a.published);
-    return s.articles.filter((a) => a.published && a.category === s.selectedCategory);
-  });
+  protected readonly mediumUsername = inject(MEDIUM_USERNAME);
+  public readonly articles = signal<Omit<Article, 'content'>[]>([]);
+  public readonly loading = signal(true);
 
   public ngOnInit(): void {
     this.articleApi.getAll().subscribe({
-      next: (articles) => this.store.patchState({ articles, loading: false }),
-      error: () => this.store.patchState({ loading: false }),
+      next: (articles) => {
+        this.articles.set(articles);
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false),
     });
-  }
-
-  public setCategory(category: ArticleCategory | null): void {
-    this.store.patchState({ selectedCategory: category });
-  }
-
-  public excerpt(html: string): string {
-    const stripped = html.replace(/<[^>]*>/g, '');
-    const decoded = stripped
-      .replace(/&nbsp;/g, ' ')
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&quot;/g, '"')
-      .replace(/&#39;/g, "'")
-      .replace(/\s+/g, ' ')
-      .trim();
-    return decoded.length > 150 ? decoded.slice(0, 150) + '...' : decoded;
-  }
-
-  public categoryLabel(category: ArticleCategory): string {
-    const labels: Record<ArticleCategory, string> = {
-      [ArticleCategory.DEVELOPMENT]: 'Development',
-      [ArticleCategory.MUSIC]: 'Music',
-      [ArticleCategory.AUDIO_ENGINEERING]: 'Audio Engineering',
-    };
-    return labels[category];
   }
 }
