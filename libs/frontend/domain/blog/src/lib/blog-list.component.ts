@@ -3,6 +3,7 @@ import { SlicePipe } from '@angular/common';
 import { Article } from '@ivanrogulj.com/shared/data-access/model';
 import { ArticleApiService } from '@ivanrogulj.com/frontend/shared/data-access/api';
 import { RouterLink } from '@angular/router';
+import { MEDIUM_USERNAME } from './blog.tokens';
 
 @Component({
   selector: 'lib-blog-list',
@@ -13,7 +14,7 @@ import { RouterLink } from '@angular/router';
       <div class="blog-header">
         <h1>Articles</h1>
         <p>Web Audio, synthesis, Angular, NestJS and more — written on Medium.</p>
-        <a class="medium-link" href="https://medium.com/@placeholder" target="_blank" rel="noopener">
+        <a class="medium-link" [href]="'https://medium.com/' + mediumUsername" target="_blank" rel="noopener">
           Follow on Medium ↗
         </a>
       </div>
@@ -172,6 +173,7 @@ import { RouterLink } from '@angular/router';
 })
 export class BlogListComponent implements OnInit {
   private readonly articleApi = inject(ArticleApiService);
+  protected readonly mediumUsername = inject(MEDIUM_USERNAME);
   public readonly articles = signal<Omit<Article, 'content'>[]>([]);
   public readonly loading = signal(true);
 
