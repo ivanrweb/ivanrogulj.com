@@ -36,7 +36,20 @@ export interface SamplerPresetConfig {
 
 // Flat-notation names used by gleitz/midi-js-soundfonts (FluidR3_GM)
 // e.g. MIDI 61 → "Db4.mp3"  (vs tonejs sharps: "Cs4.ogg")
-const NOTE_NAMES_FLAT = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+const NOTE_NAMES_FLAT = [
+  'C',
+  'Db',
+  'D',
+  'Eb',
+  'E',
+  'F',
+  'Gb',
+  'G',
+  'Ab',
+  'A',
+  'Bb',
+  'B',
+];
 export function midiToNoteNameFlat(midi: number): string {
   return NOTE_NAMES_FLAT[midi % 12] + (Math.floor(midi / 12) - 1);
 }
@@ -80,6 +93,13 @@ export const SAMPLER_PRESETS: Record<string, SamplerPresetConfig> = {
   polysynth: {
     label: 'PolySynth',
     assetPath: 'assets/samples/polysynth',
+    midiRange: [21, 108],
+    fileExtension: 'mp3',
+    fileNameFn: midiToNoteNameFlat,
+  },
+  churchOrgan: {
+    label: 'ChurchOrgan',
+    assetPath: 'assets/samples/church_organ',
     midiRange: [21, 108],
     fileExtension: 'mp3',
     fileNameFn: midiToNoteNameFlat,
