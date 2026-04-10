@@ -12,10 +12,16 @@ export interface NearestBuffer {
 export class SamplerService {
   private readonly cache = new Map<string, Map<number, AudioBuffer>>();
 
-  public loadPreset(presetId: string, audioCtx: AudioContext): Observable<void> {
+  public loadPreset(
+    presetId: string,
+    audioCtx: AudioContext
+  ): Observable<void> {
     if (this.cache.has(presetId)) {
       return of(undefined);
     }
+
+    // Evict last preset — save only currently selected in RAM
+    this.cache.clear();
 
     const config = SAMPLER_PRESETS[presetId];
     if (!config) {
@@ -65,7 +71,10 @@ export class SamplerService {
    * Returns the nearest loaded buffer and the semitone offset needed to
    * transpose it back to the requested note via playbackRate.
    */
-  public getNearestBuffer(presetId: string, note: number): NearestBuffer | null {
+  public getNearestBuffer(
+    presetId: string,
+    note: number
+  ): NearestBuffer | null {
     const noteMap = this.cache.get(presetId);
     if (!noteMap || noteMap.size === 0) return null;
 

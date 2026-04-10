@@ -146,6 +146,8 @@ export class PatchApiService {
   public loadPreset(id: string): Observable<void> {
     interface FullPatchResponse {
       patch: {
+        sourceMode: string;
+        samplerPreset: string | null;
         oscType: OscillatorType;
         oscillatorCount: number;
         detuneAmount: number;
@@ -183,10 +185,10 @@ export class PatchApiService {
           const p = res.patch;
 
           // Source mode
-          const mode: 'oscillator' | 'sampler' = (p as any).sourceMode === 'sampler' ? 'sampler' : 'oscillator';
+          const mode: 'oscillator' | 'sampler' = p.sourceMode === 'sampler' ? 'sampler' : 'oscillator';
           this.analogSynthViewModel.setSourceMode(mode);
-          if (mode === 'sampler' && (p as any).samplerPreset) {
-            this.samplerViewModel.selectPreset((p as any).samplerPreset as string);
+          if (mode === 'sampler' && p.samplerPreset) {
+            this.samplerViewModel.selectPreset(p.samplerPreset);
           }
 
           // These setters update BOTH state AND audio nodes
