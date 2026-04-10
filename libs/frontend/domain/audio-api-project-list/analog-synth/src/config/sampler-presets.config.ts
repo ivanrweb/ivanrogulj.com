@@ -104,4 +104,18 @@ export const SAMPLER_PRESETS: Record<string, SamplerPresetConfig> = {
     fileExtension: 'mp3',
     fileNameFn: midiToNoteNameFlat,
   },
+  synthBrass: {
+    label: 'SynthBrass',
+    assetPath: 'assets/samples/synth_brass',
+    midiRange: [21, 108],
+    fileExtension: 'mp3',
+    fileNameFn: midiToNoteNameFlat,
+  },
+  slapBass: {
+    label: 'SlapBass',
+    assetPath: 'assets/samples/slap_bass',
+    midiRange: [21, 108],
+    fileExtension: 'mp3',
+    fileNameFn: midiToNoteNameFlat,
+  },
 };
