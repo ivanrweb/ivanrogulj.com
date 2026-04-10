@@ -34,20 +34,54 @@ export interface SamplerPresetConfig {
   fileNameFn?: (note: number) => string;
 }
 
+// Flat-notation names used by gleitz/midi-js-soundfonts (FluidR3_GM)
+// e.g. MIDI 61 → "Db4.mp3"  (vs tonejs sharps: "Cs4.ogg")
+const NOTE_NAMES_FLAT = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+export function midiToNoteNameFlat(midi: number): string {
+  return NOTE_NAMES_FLAT[midi % 12] + (Math.floor(midi / 12) - 1);
+}
+
 export const SAMPLER_PRESETS: Record<string, SamplerPresetConfig> = {
   piano: {
     label: 'Grand Piano',
     assetPath: 'assets/samples/piano',
-    midiRange: [33, 108], // A1–C8
+    midiRange: [33, 108],
     fileExtension: 'ogg',
-    fileNameFn: midiToNoteName, // "C4.ogg", "Cs4.ogg", …
+    fileNameFn: midiToNoteName,
   },
-  // Uncomment after placing Rhodes samples in assets/samples/rhodes/
-  // rhodes: {
-  //   label: 'Fender Rhodes',
-  //   assetPath: 'assets/samples/rhodes',
-  //   midiRange: [21, 108],
-  //   fileExtension: 'ogg',
-  //   fileNameFn: (note) => String(note),
-  // },
+  rhodes: {
+    label: 'Fender Rhodes',
+    assetPath: 'assets/samples/rhodes',
+    midiRange: [21, 108],
+    fileExtension: 'mp3',
+    fileNameFn: midiToNoteNameFlat,
+  },
+  wurlitzer: {
+    label: 'Wurlitzer',
+    assetPath: 'assets/samples/wurlitzer',
+    midiRange: [21, 108],
+    fileExtension: 'mp3',
+    fileNameFn: midiToNoteNameFlat,
+  },
+  hammond: {
+    label: 'Hammond Organ',
+    assetPath: 'assets/samples/hammond',
+    midiRange: [21, 108],
+    fileExtension: 'mp3',
+    fileNameFn: midiToNoteNameFlat,
+  },
+  'synth-lead': {
+    label: 'Synth Lead (Saw)',
+    assetPath: 'assets/samples/synth-lead',
+    midiRange: [21, 108],
+    fileExtension: 'mp3',
+    fileNameFn: midiToNoteNameFlat,
+  },
+  polysynth: {
+    label: 'PolySynth',
+    assetPath: 'assets/samples/polysynth',
+    midiRange: [21, 108],
+    fileExtension: 'mp3',
+    fileNameFn: midiToNoteNameFlat,
+  },
 };
