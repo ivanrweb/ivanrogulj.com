@@ -25,6 +25,11 @@
             "glob": "**/*",
             "input": "libs/frontend/shared/ui/assets/src/lib/fontaudio",
             "output": "assets/fontaudio"
+          },
+          {
+            "glob": "**/*",
+            "input": "apps/frontend/src/assets/samples",
+            "output": "assets/samples"
           }
         ],
         "styles": ["apps/frontend/src/styles.scss"],

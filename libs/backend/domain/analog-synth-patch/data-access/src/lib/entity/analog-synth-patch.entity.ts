@@ -74,6 +74,13 @@ export class AnalogSynthPatchEntity {
   @Column({ type: 'float' })
   public filterRelease!: number;
 
+  // Source mode (oscillator | sampler)
+  @Column({ type: 'varchar', default: 'oscillator' })
+  public sourceMode!: string;
+
+  @Column({ type: 'varchar', nullable: true, default: null })
+  public samplerPreset!: string | null;
+
   @CreateDateColumn()
   public createdAt!: Date;
 

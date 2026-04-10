@@ -10,6 +10,7 @@ import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
 import { EffectsViewModel } from './effects.viewmodel';
 import { LfoViewModel } from './lfo.viewmodel';
 import { LfoService } from '../service/lfo.service';
+import { SamplerViewModel } from './sampler.viewmodel';
 
 export interface AnalogSynthState {
   voices: AnalogSynthApi.Voice[];
@@ -29,6 +30,7 @@ export interface AnalogSynthState {
   noiseType: 'white' | 'pink' | 'brown';
   noiseVolume: number;
   isPolyphonic: boolean;
+  sourceMode: 'oscillator' | 'sampler';
 }
 
 @Injectable({ providedIn: 'root' })
@@ -43,6 +45,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
   private readonly effectsViewmodel = inject(EffectsViewModel);
   private readonly lfoViewModel = inject(LfoViewModel);
   private readonly lfoService = inject(LfoService);
+  public readonly samplerViewModel = inject(SamplerViewModel);
   private readonly paramControl$ = this.midiService.paramControl$;
 
   constructor() {
@@ -69,6 +72,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       noiseType: 'brown',
       noiseVolume: 0,
       isPolyphonic: true,
+      sourceMode: 'oscillator',
     });
 
     this.midiService.noteOn$.subscribe(({ note, velocity }) => {
@@ -196,9 +200,22 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
 
   // Incorporates each voice's individual velocity
   private updateAllVoiceLevels(): void {
-    const { voices, oscillatorCount, detuneOscillatorsAmount } = this.get();
+    const { voices, oscillatorCount, detuneOscillatorsAmount, sourceMode } = this.get();
     const totalVoices = voices.length;
     if (totalVoices === 0) return;
+
+    if (sourceMode === 'sampler') {
+      // Sampler: velocity centered at 64 (64/127 ≈ 0.504 normalized → gain 1.0)
+      voices.forEach((voice) => {
+        const samplerGain = Math.min((voice.velocity * 127) / 64, 2.0);
+        voice.levelGainNode.gain.setTargetAtTime(
+          samplerGain,
+          this.audioContextService.currentTime,
+          0.02
+        );
+      });
+      return;
+    }
 
     // Calculate oscillator scaling factor based on phase coherence (detune).
     // Detune 0 implies coherent phases (constructive interference), requiring linear scaling.
@@ -258,6 +275,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     }
 
     const {
+      sourceMode,
       selectedOscType,
       volumeEnvelope,
       filterEnvelope,
@@ -268,35 +286,11 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       detuneOscillatorsAmount,
     } = this.get();
 
-    const voiceId = uuidv7();
     const filterNode = this.audioContextService.createFilter();
     filterNode.Q.value = filterResonance;
 
     const adsrGainNode = this.audioContextService.createGain();
     const levelGainNode = this.audioContextService.createGain();
-
-    const oscNodes: OscillatorNode[] = [];
-
-    // Create number of oscillators dynamically in a voice (based on oscillatorCount)
-    for (let i = 0; i < oscillatorCount; i++) {
-      const osc = this.audioContextService.createOsc(
-        selectedOscType,
-        frequency
-      );
-
-      // Math for Detune:
-      // If we have 3 oscillators, and detuneAmount is 20:
-      // i=0 -> -20, i=1 -> 0, i=2 -> +20
-      osc.detune.value = this.calculateDetuneSpread(
-        i,
-        oscillatorCount,
-        detuneOscillatorsAmount
-      );
-
-      osc.connect(filterNode);
-      osc.start();
-      oscNodes.push(osc);
-    }
 
     this.audioContextService.applyVolumeEnvelope(adsrGainNode, volumeEnvelope);
     this.audioContextService.applyFilterEnvelope(
@@ -305,22 +299,58 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
       filterFrequency,
       filterEnvelopeAmount
     );
-
     this.audioContextService.connectVoiceNodes(
       filterNode,
       adsrGainNode,
       levelGainNode
     );
 
-    const newVoice: AnalogSynthApi.Voice = {
-      id: voiceId,
-      note,
-      velocity,
-      oscNodes,
-      filterNode,
-      adsrGainNode,
-      levelGainNode,
-    };
+    let newVoice: AnalogSynthApi.Voice;
+
+    if (sourceMode === 'sampler') {
+      const samplerVoice = this.samplerViewModel.buildSamplerVoice(
+        note,
+        velocity,
+        filterNode,
+        adsrGainNode,
+        levelGainNode
+      );
+      if (!samplerVoice) return; // buffers not loaded yet
+      newVoice = samplerVoice;
+    } else {
+      const oscNodes: OscillatorNode[] = [];
+
+      // Create number of oscillators dynamically in a voice (based on oscillatorCount)
+      for (let i = 0; i < oscillatorCount; i++) {
+        const osc = this.audioContextService.createOsc(
+          selectedOscType,
+          frequency
+        );
+
+        // Math for Detune:
+        // If we have 3 oscillators, and detuneAmount is 20:
+        // i=0 -> -20, i=1 -> 0, i=2 -> +20
+        osc.detune.value = this.calculateDetuneSpread(
+          i,
+          oscillatorCount,
+          detuneOscillatorsAmount
+        );
+
+        osc.connect(filterNode);
+        osc.start();
+        oscNodes.push(osc);
+      }
+
+      newVoice = {
+        id: uuidv7(),
+        note,
+        velocity,
+        oscNodes,
+        filterNode,
+        adsrGainNode,
+        levelGainNode,
+      };
+    }
 
     this.patchState((state) => ({ voices: [...state.voices, newVoice] }));
     this.lfoService.connectToVoice(newVoice);
@@ -345,6 +375,11 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
 
     const maxReleaseTime = Math.max(safeVolumeRelease, safeFilterRelease);
 
+    // Schedule sampler source node stop at end of release
+    if (voice.sourceNode) {
+      this.samplerViewModel.releaseSamplerVoice(voice, maxReleaseTime);
+    }
+
     this.lfoService.disconnectFromVoice(voice);
 
     setTimeout(() => {
@@ -354,7 +389,8 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
         voice.adsrGainNode,
         voice.levelGainNode
       );
-    }, maxReleaseTime * 1000);
+      voice.sourceNode?.disconnect();
+    }, maxReleaseTime * 1000 + 100);
   }
 
   public stopVoice(voiceId: string): void {
@@ -533,6 +569,10 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     }
     const spreadFactor = (index / (totalOscillators - 1) - 0.5) * 2;
     return spreadFactor * amount;
+  }
+
+  public setSourceMode(mode: 'oscillator' | 'sampler'): void {
+    this.patchState({ sourceMode: mode });
   }
 
   public getState(): AnalogSynthState {

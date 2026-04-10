@@ -10,6 +10,7 @@ import { AnalogSynthViewModel } from '../viewmodel/analog-synth.viewmodel';
 import { EffectsViewModel } from '../viewmodel/effects.viewmodel';
 import { LfoViewModel } from '../viewmodel/lfo.viewmodel';
 import { SequencerViewModel } from '../viewmodel/sequencer.viewmodel';
+import { SamplerViewModel } from '../viewmodel/sampler.viewmodel';
 
 export interface PatchSummary {
   id: string;
@@ -32,6 +33,7 @@ export class PatchApiService {
   private readonly effectsViewModel = inject(EffectsViewModel);
   private readonly lfoViewModel = inject(LfoViewModel);
   private readonly sequencerViewModel = inject(SequencerViewModel);
+  private readonly samplerViewModel = inject(SamplerViewModel);
 
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getToken();
@@ -43,10 +45,15 @@ export class PatchApiService {
     const effects = this.effectsViewModel.getState();
     const lfo = this.lfoViewModel.getState();
     const seq = this.sequencerViewModel.getState();
+    const sampler = this.samplerViewModel.getState();
 
     const body = {
       name,
       isPublic,
+
+      // Source mode
+      sourceMode: synth.sourceMode,
+      samplerPreset: synth.sourceMode === 'sampler' ? (sampler.selectedPreset ?? null) : null,
 
       // Oscillator / main
       oscType: synth.selectedOscType,
@@ -139,6 +146,8 @@ export class PatchApiService {
   public loadPreset(id: string): Observable<void> {
     interface FullPatchResponse {
       patch: {
+        sourceMode: string;
+        samplerPreset: string | null;
         oscType: OscillatorType;
         oscillatorCount: number;
         detuneAmount: number;
@@ -174,6 +183,13 @@ export class PatchApiService {
       .pipe(
         tap((res) => {
           const p = res.patch;
+
+          // Source mode
+          const mode: 'oscillator' | 'sampler' = p.sourceMode === 'sampler' ? 'sampler' : 'oscillator';
+          this.analogSynthViewModel.setSourceMode(mode);
+          if (mode === 'sampler' && p.samplerPreset) {
+            this.samplerViewModel.selectPreset(p.samplerPreset);
+          }
 
           // These setters update BOTH state AND audio nodes
           this.analogSynthViewModel.updateGain(p.masterGain);
@@ -224,10 +240,13 @@ export class PatchApiService {
     const effects = this.effectsViewModel.getState();
     const lfo = this.lfoViewModel.getState();
     const seq = this.sequencerViewModel.getState();
+    const sampler = this.samplerViewModel.getState();
 
     const body = {
       name,
       isPublic,
+      sourceMode: synth.sourceMode,
+      samplerPreset: synth.sourceMode === 'sampler' ? (sampler.selectedPreset ?? null) : null,
       oscType: synth.selectedOscType,
       oscillatorCount: synth.oscillatorCount,
       detuneAmount: synth.detuneOscillatorsAmount,

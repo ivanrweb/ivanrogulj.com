@@ -5,6 +5,7 @@ export namespace AnalogSynthApi {
     note: number;
     velocity: number;
     oscNodes: OscillatorNode[];
+    sourceNode?: AudioBufferSourceNode;
     filterNode: BiquadFilterNode;
     adsrGainNode: GainNode;
     levelGainNode: GainNode;
@@ -250,6 +251,10 @@ export namespace AnalogSynthApi {
       bpm: number;
       rowCount: number;
       steps: Array<{ active: boolean; note: number; velocity: number }>;
+    };
+    sampler?: {
+      mode: 'oscillator' | 'sampler';
+      preset: string | null;
     };
   }
 }

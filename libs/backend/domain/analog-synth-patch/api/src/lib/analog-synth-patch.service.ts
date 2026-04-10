@@ -43,6 +43,8 @@ export class AnalogSynthPatchService {
       userId,
       name: dto.name,
       isPublic: dto.isPublic,
+      sourceMode: dto.sourceMode ?? 'oscillator',
+      samplerPreset: dto.samplerPreset ?? null,
       oscType: dto.oscType,
       oscillatorCount: dto.oscillatorCount,
       detuneAmount: dto.detuneAmount,
@@ -146,6 +148,8 @@ export class AnalogSynthPatchService {
     await this.patchRepo.update(id, {
       name: dto.name,
       isPublic: dto.isPublic,
+      sourceMode: dto.sourceMode ?? 'oscillator',
+      samplerPreset: dto.samplerPreset ?? null,
       oscType: dto.oscType,
       oscillatorCount: dto.oscillatorCount,
       detuneAmount: dto.detuneAmount,
@@ -288,6 +292,10 @@ export class AnalogSynthPatchService {
         bpm: dto.bpm,
         rowCount: Math.max(1, Math.ceil(dto.steps.length / 8)),
         steps: dto.steps,
+      },
+      sampler: {
+        mode: (dto.sourceMode === 'sampler' ? 'sampler' : 'oscillator') as 'oscillator' | 'sampler',
+        preset: dto.samplerPreset ?? null,
       },
     };
   }
