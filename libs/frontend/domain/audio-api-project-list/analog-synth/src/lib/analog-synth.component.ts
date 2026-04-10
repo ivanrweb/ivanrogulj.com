@@ -8,8 +8,8 @@ import {
   OnInit,
   ViewChild
 } from '@angular/core';
-import { CommonModule, KeyValuePipe } from '@angular/common'; // eslint-disable-next-line @nx/enforce-module-boundaries
-import { OscillatorComponent } from '@ivanrogulj.com/oscillator';
+import { CommonModule, KeyValuePipe } from '@angular/common';
+import { SourceModuleComponent } from './source-module.component';
 import { AudioContextService } from '../service/audio-context.service'; // eslint-disable-next-line @nx/enforce-module-boundaries
 import { FilterComponent } from '@ivanrogulj.com/filter'; // eslint-disable-next-line @nx/enforce-module-boundaries
 import { GainComponent } from '@ivanrogulj.com/gain';
@@ -31,7 +31,7 @@ import { PatchApiService, PatchSummary } from '../service/patch-api.service';
   standalone: true,
   imports: [
     CommonModule,
-    OscillatorComponent,
+    SourceModuleComponent,
     FilterComponent,
     GainComponent,
     FormsModule,
@@ -255,9 +255,9 @@ import { PatchApiService, PatchSummary } from '../service/patch-api.service';
 
       <div class="module-grid">
         <div class="synth-module source-module">
-          <h4 class="module-label">OSCILLATOR</h4>
+          <h4 class="module-label">SOURCE</h4>
           <div class="module-content">
-            <lib-oscillator />
+            <lib-source-module />
           </div>
         </div>
 

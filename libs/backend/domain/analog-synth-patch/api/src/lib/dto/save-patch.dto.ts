@@ -17,6 +17,10 @@ export class SavePatchDto {
   public name!: string;
   public isPublic!: boolean;
 
+  // Source mode
+  public sourceMode?: string;
+  public samplerPreset?: string | null;
+
   // Main patch
   public oscType!: string;
   public oscillatorCount!: number;
