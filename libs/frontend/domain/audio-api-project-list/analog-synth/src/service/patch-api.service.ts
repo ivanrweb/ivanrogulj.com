@@ -143,6 +143,10 @@ export class PatchApiService {
     });
   }
 
+  public getPublicPresets(): Observable<PatchSummary[]> {
+    return this.http.get<PatchSummary[]>('/api/patches/public');
+  }
+
   public loadPreset(id: string): Observable<void> {
     interface FullPatchResponse {
       patch: {
