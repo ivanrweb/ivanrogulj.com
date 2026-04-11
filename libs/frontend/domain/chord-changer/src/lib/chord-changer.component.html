@@ -6,6 +6,7 @@
 
       <div class="action-controls">
         @if (authService.currentUser()) {
+          <span class="control-label">MY SONGS</span>
           <div class="songs-dropdown-wrapper" #songsDropdownEl>
             <button
               class="songs-dropdown-trigger"
@@ -43,10 +44,12 @@
           <button class="btn-action" (click)="saveChanges()">SAVE CHANGES</button>
         }
 
-        @if (authService.currentUser()) {
-          <button class="btn-action" (click)="onSaveSongClick()">SAVE SONG</button>
-        } @else {
-          <button class="btn-action" (click)="router.navigate(['/login'])">SAVE SONG</button>
+        @if (mode() === 'transpose') {
+          @if (authService.currentUser()) {
+            <button class="btn-action" (click)="onSaveSongClick()">SAVE SONG</button>
+          } @else {
+            <button class="btn-action" (click)="router.navigate(['/login'])">SAVE SONG</button>
+          }
         }
 
         @if (mode() === 'transpose' || activeSong()) {
