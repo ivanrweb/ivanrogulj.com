@@ -1,0 +1,8 @@
+{
+  "name": "backend-domain-song-chords-data-access",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/backend/domain/song-chords/data-access/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {}
+}

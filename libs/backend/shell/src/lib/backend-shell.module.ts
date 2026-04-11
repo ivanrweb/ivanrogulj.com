@@ -6,6 +6,7 @@ import { BackendDomainAnalogSynthPatchApiModule } from '@ivanrogulj.com/backend/
 import { BackendDomainArticleApiModule } from '@ivanrogulj.com/backend/domain/article/api';
 import { OpenAiApiModule } from '@ivanrogulj.com/backend/core/open-ai/api';
 import { BackendDomainUserApiModule } from '@ivanrogulj.com/backend/domain/user/api';
+import { BackendDomainSongChordsApiModule } from '@ivanrogulj.com/backend/domain/song-chords/api';
 
 @Global()
 @Module({
@@ -17,6 +18,7 @@ import { BackendDomainUserApiModule } from '@ivanrogulj.com/backend/domain/user/
     BackendDomainArticleApiModule,
     OpenAiApiModule,
     BackendDomainUserApiModule,
+    BackendDomainSongChordsApiModule,
   ],
   controllers: [],
   providers: [],

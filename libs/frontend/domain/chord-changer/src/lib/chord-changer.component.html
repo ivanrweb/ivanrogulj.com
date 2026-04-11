@@ -1,0 +1,261 @@
+<div class="changer-dashboard">
+  <div class="changer-header">
+    <div class="header-row header-row--top">
+      <h3 class="changer-title">CHORD CHANGER</h3>
+
+      <div class="mode-section">
+        <span class="control-label">MODE</span>
+        <div class="mode-toggle">
+          <button
+            class="mode-btn"
+            [class.active]="mode() === 'transpose'"
+            (click)="setMode('transpose')"
+          >
+            TRANSPOSE
+          </button>
+          <button
+            class="mode-btn"
+            [class.active]="mode() === 'read'"
+            (click)="setMode('read')"
+            [disabled]="activeSong() === null"
+          >
+            READ
+          </button>
+        </div>
+      </div>
+
+      @if (mode() === 'transpose') {
+        <div class="transpose-controls">
+          <span class="control-label">TRANSPOSE</span>
+          <div class="btn-group">
+            @for (step of negativeSteps; track step) {
+              <button
+                class="btn-step"
+                [class.active]="currentOffset() === step"
+                (click)="setOffset(step)"
+              >
+                {{ step }}
+              </button>
+            }
+            <button
+              class="btn-step btn-zero"
+              [class.active]="currentOffset() === 0"
+              (click)="setOffset(0)"
+            >
+              0
+            </button>
+            @for (step of positiveSteps; track step) {
+              <button
+                class="btn-step"
+                [class.active]="currentOffset() === step"
+                (click)="setOffset(step)"
+              >
+                +{{ step }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="header-row header-row--controls">
+      @if (authService.currentUser()) {
+        <div class="songs-dropdown-wrapper" #songsDropdownEl>
+          <button
+            class="songs-dropdown-trigger"
+            [class.has-selection]="activeSong() !== null"
+            (click)="showSongsDropdown = !showSongsDropdown"
+          >
+            {{ activeSong() ? activeSong()!.title : '— my songs —' }}
+            <span class="dropdown-arrow">▾</span>
+          </button>
+          @if (showSongsDropdown) {
+            <div class="songs-dropdown-panel">
+              @if (songs().length === 0) {
+                <div class="songs-dropdown-empty">no songs saved</div>
+              } @else {
+                @for (song of songs(); track song.id) {
+                  <div
+                    class="songs-dropdown-item"
+                    [class.selected]="activeSong()?.id === song.id"
+                  >
+                <span
+                  class="songs-dropdown-name"
+                  (click)="onSongSelect(song)"
+                >{{ song.title }}</span
+                >
+                    <button
+                      class="song-delete-btn"
+                      (click)="onDeleteSong(song.id, $event)"
+                    >
+                      ×
+                    </button>
+                  </div>
+                }
+              }
+            </div>
+          }
+        </div>
+      }
+      @if (authService.currentUser()) {
+        <button class="btn-action" (click)="onSaveSongClick()">
+          SAVE SONG
+        </button>
+      } @else {
+        <button class="btn-action" (click)="router.navigate(['/login'])">
+          SAVE SONG
+        </button>
+      }
+      @if (mode() === 'read' && activeSong()) {
+        <button class="btn-action" (click)="exportPdf()">
+          EXPORT AS PDF
+        </button>
+        <button class="btn-action" (click)="saveChanges()">
+          SAVE CHANGES
+        </button>
+      } @else if (mode() === 'transpose') {
+        <button class="btn-export" (click)="exportPdf()">
+          EXPORT AS PDF
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (mode() === 'transpose') {
+    <div class="main-content">
+      <div class="editor-section">
+        <label class="section-label">SONG LYRICS &amp; CHORDS</label>
+        <textarea
+          class="chord-textarea"
+          [ngModel]="inputText()"
+          (ngModelChange)="inputText.set($event)"
+          placeholder="Paste your song here..."
+        ></textarea>
+      </div>
+      <div class="output-section">
+        <label class="section-label">
+          TRANSPOSED OUTPUT ({{
+            currentOffset() > 0 ? '+' + currentOffset() : currentOffset()
+          }})
+        </label>
+        <textarea
+          class="chord-textarea"
+          [ngModel]="outputText()"
+          (ngModelChange)="outputText.set($event)"
+        ></textarea>
+      </div>
+    </div>
+  }
+  @if (mode() === 'read' && activeSong()) {
+    <div class="read-content">
+      <input
+        class="read-title-input"
+        type="text"
+        [value]="readTitle()"
+        (input)="readTitle.set($any($event.target).value)"
+      />
+      <textarea
+        class="chord-textarea read-textarea"
+        [ngModel]="readContent()"
+        (ngModelChange)="readContent.set($event)"
+      ></textarea>
+    </div>
+  }
+  @if (mode() === 'transpose') {
+    <div class="analysis-footer">
+      <div class="footer-left">
+        <div class="analysis-card key-card">
+          <span class="card-title">PROBABLE KEYS</span>
+          <div class="prob-list">
+            @for (key of analysis().probableKeys; track key.name) {
+              <div class="prob-row">
+                <span class="prob-name">{{ key.name }}</span>
+                <span class="prob-val">{{ key.probability }}%</span>
+              </div>
+            }
+            @if (analysis().probableKeys.length === 0) {
+              <span class="empty-text">N/A</span>
+            }
+          </div>
+        </div>
+
+        <div class="analysis-card flex-grow">
+          <span class="card-title">CURRENT CHORDS</span>
+          <div class="pill-container">
+            @for (chord of analysis().uniqueChords; track chord) {
+              <span class="chord-pill">{{ chord }}</span>
+            }
+            @if (analysis().uniqueChords.length === 0) {
+              <span class="empty-text">No chords detected</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="analysis-card">
+        <span class="card-title">PROGRESSION (BASED ON TOP KEY)</span>
+        <div class="pill-container">
+          @for (numeral of analysis().progression; track numeral) {
+            <span class="progression-pill">{{ numeral }}</span>
+          }
+          @if (analysis().progression.length === 0) {
+            <span class="empty-text">-</span>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+@if (showSaveInput()) {
+  <div
+    class="modal-backdrop"
+    (click)="
+        !savedSuccess() && showSaveInput.set(false); saveTitleInput.set('')
+      "
+  >
+    <div class="save-modal" (click)="$event.stopPropagation()">
+      @if (savedSuccess()) {
+        <div class="save-modal-success">Song saved</div>
+      } @else {
+        <h4 class="save-modal-title">SAVE SONG</h4>
+        <input
+          class="save-modal-input"
+          type="text"
+          [value]="saveTitleInput()"
+          (input)="saveTitleInput.set($any($event.target).value)"
+          placeholder="Song title..."
+          (keyup.enter)="confirmSaveSong()"
+          autofocus
+        />
+        <div class="save-modal-actions">
+          <button class="btn-action" (click)="confirmSaveSong()">SAVE</button>
+          <button
+            class="btn-muted"
+            (click)="showSaveInput.set(false); saveTitleInput.set('')"
+          >
+            CANCEL
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+}
+@if (showDeleteDialog) {
+  <div class="modal-backdrop" (click)="cancelDelete()">
+    <div class="save-modal" (click)="$event.stopPropagation()">
+      <h4 class="save-modal-title">DELETE SONG</h4>
+      <p class="delete-modal-msg">
+        Are you sure you want to delete
+        <strong>{{ pendingDeleteTitle }}</strong
+        >?
+      </p>
+      <div class="save-modal-actions">
+        <button class="btn-muted" (click)="cancelDelete()">NO</button>
+        <button class="btn-danger" (click)="confirmDelete()">
+          YES, DELETE
+        </button>
+      </div>
+    </div>
+  </div>
+}
