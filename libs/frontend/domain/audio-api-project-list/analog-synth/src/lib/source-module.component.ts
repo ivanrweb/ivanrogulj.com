@@ -59,6 +59,11 @@ import { SAMPLER_PRESETS } from '../config/sampler-presets.config';
   `,
   styles: [
     `
+      :host {
+        display: block;
+        width: 100%;
+      }
+
       .source-container {
         display: flex;
         flex-direction: column;
