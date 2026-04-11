@@ -1,28 +1,8 @@
 <div class="changer-dashboard">
   <div class="changer-header">
+
     <div class="header-row header-row--top">
       <h3 class="changer-title">CHORD CHANGER</h3>
-
-      <div class="mode-section">
-        <span class="control-label">MODE</span>
-        <div class="mode-toggle">
-          <button
-            class="mode-btn"
-            [class.active]="mode() === 'transpose'"
-            (click)="setMode('transpose')"
-          >
-            TRANSPOSE
-          </button>
-          <button
-            class="mode-btn"
-            [class.active]="mode() === 'read'"
-            (click)="setMode('read')"
-            [disabled]="activeSong() === null"
-          >
-            READ
-          </button>
-        </div>
-      </div>
 
       @if (mode() === 'transpose') {
         <div class="transpose-controls">
@@ -59,6 +39,27 @@
     </div>
 
     <div class="header-row header-row--controls">
+      <div class="mode-section">
+        <span class="control-label">MODE</span>
+        <div class="mode-toggle">
+          <button
+            class="mode-btn"
+            [class.active]="mode() === 'transpose'"
+            (click)="setMode('transpose')"
+          >
+            TRANSPOSE
+          </button>
+          <button
+            class="mode-btn"
+            [class.active]="mode() === 'read'"
+            (click)="setMode('read')"
+            [disabled]="activeSong() === null"
+          >
+            READ
+          </button>
+        </div>
+      </div>
+
       @if (authService.currentUser()) {
         <div class="songs-dropdown-wrapper" #songsDropdownEl>
           <button
@@ -79,15 +80,10 @@
                     class="songs-dropdown-item"
                     [class.selected]="activeSong()?.id === song.id"
                   >
-                <span
-                  class="songs-dropdown-name"
-                  (click)="onSongSelect(song)"
-                >{{ song.title }}</span
-                >
-                    <button
-                      class="song-delete-btn"
-                      (click)="onDeleteSong(song.id, $event)"
-                    >
+                        <span class="songs-dropdown-name" (click)="onSongSelect(song)">{{
+                            song.title
+                          }}</span>
+                    <button class="song-delete-btn" (click)="onDeleteSong(song.id, $event)">
                       ×
                     </button>
                   </div>
@@ -97,28 +93,21 @@
           }
         </div>
       }
+
       @if (authService.currentUser()) {
-        <button class="btn-action" (click)="onSaveSongClick()">
-          SAVE SONG
-        </button>
+        <button class="btn-action" (click)="onSaveSongClick()">SAVE SONG</button>
       } @else {
-        <button class="btn-action" (click)="router.navigate(['/login'])">
-          SAVE SONG
-        </button>
+        <button class="btn-action" (click)="router.navigate(['/login'])">SAVE SONG</button>
       }
+
       @if (mode() === 'read' && activeSong()) {
-        <button class="btn-action" (click)="exportPdf()">
-          EXPORT AS PDF
-        </button>
-        <button class="btn-action" (click)="saveChanges()">
-          SAVE CHANGES
-        </button>
+        <button class="btn-action" (click)="exportPdf()">EXPORT AS PDF</button>
+        <button class="btn-action" (click)="saveChanges()">SAVE CHANGES</button>
       } @else if (mode() === 'transpose') {
-        <button class="btn-export" (click)="exportPdf()">
-          EXPORT AS PDF
-        </button>
+        <button class="btn-export" (click)="exportPdf()">EXPORT AS PDF</button>
       }
     </div>
+
   </div>
 
   @if (mode() === 'transpose') {

@@ -1,10 +1,23 @@
-import { Component, computed, effect, ElementRef, HostListener, inject, signal, ViewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  HostListener,
+  inject,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ChordChangerService } from '../service/chord-changer.service';
 import { PdfExportService } from '../service/pdf-export.service';
-import { SongChordsApiService, SongChordsDetail, SongChordsListItem } from '../service/song-chords-api.service'; // eslint-disable-next-line @nx/enforce-module-boundaries
+import {
+  SongChordsApiService,
+  SongChordsDetail,
+  SongChordsListItem,
+} from '../service/song-chords-api.service'; // eslint-disable-next-line @nx/enforce-module-boundaries
 import { AuthService } from '@ivanrogulj.com/auth';
 
 @Component({
