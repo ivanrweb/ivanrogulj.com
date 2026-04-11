@@ -4,6 +4,79 @@
     <div class="header-row header-row--top">
       <h3 class="changer-title">CHORD CHANGER</h3>
 
+      <div class="action-controls">
+        @if (authService.currentUser()) {
+          <div class="songs-dropdown-wrapper" #songsDropdownEl>
+            <button
+              class="songs-dropdown-trigger"
+              [class.has-selection]="activeSong() !== null"
+              (click)="showSongsDropdown = !showSongsDropdown"
+            >
+              {{ activeSong() ? activeSong()!.title : '— my songs —' }}
+              <span class="dropdown-arrow">▾</span>
+            </button>
+            @if (showSongsDropdown) {
+              <div class="songs-dropdown-panel">
+                @if (songs().length === 0) {
+                  <div class="songs-dropdown-empty">no songs saved</div>
+                } @else {
+                  @for (song of songs(); track song.id) {
+                    <div
+                      class="songs-dropdown-item"
+                      [class.selected]="activeSong()?.id === song.id"
+                    >
+                          <span class="songs-dropdown-name" (click)="onSongSelect(song)">{{
+                              song.title
+                            }}</span>
+                      <button class="song-delete-btn" (click)="onDeleteSong(song.id, $event)">
+                        ×
+                      </button>
+                    </div>
+                  }
+                }
+              </div>
+            }
+          </div>
+        }
+
+        @if (mode() === 'read' && activeSong()) {
+          <button class="btn-action" (click)="saveChanges()">SAVE CHANGES</button>
+        }
+
+        @if (authService.currentUser()) {
+          <button class="btn-action" (click)="onSaveSongClick()">SAVE SONG</button>
+        } @else {
+          <button class="btn-action" (click)="router.navigate(['/login'])">SAVE SONG</button>
+        }
+
+        @if (mode() === 'transpose' || activeSong()) {
+          <button class="btn-action" (click)="exportPdf()">EXPORT AS PDF</button>
+        }
+      </div>
+    </div>
+
+    <div class="header-row header-row--controls">
+      <div class="mode-section">
+        <span class="control-label">MODE</span>
+        <div class="mode-toggle">
+          <button
+            class="mode-btn"
+            [class.active]="mode() === 'transpose'"
+            (click)="setMode('transpose')"
+          >
+            TRANSPOSE
+          </button>
+          <button
+            class="mode-btn"
+            [class.active]="mode() === 'read'"
+            (click)="setMode('read')"
+            [disabled]="activeSong() === null"
+          >
+            MY SONGS
+          </button>
+        </div>
+      </div>
+
       @if (mode() === 'transpose') {
         <div class="transpose-controls">
           <span class="control-label">TRANSPOSE</span>
@@ -35,77 +108,6 @@
             }
           </div>
         </div>
-      }
-    </div>
-
-    <div class="header-row header-row--controls">
-      <div class="mode-section">
-        <span class="control-label">MODE</span>
-        <div class="mode-toggle">
-          <button
-            class="mode-btn"
-            [class.active]="mode() === 'transpose'"
-            (click)="setMode('transpose')"
-          >
-            TRANSPOSE
-          </button>
-          <button
-            class="mode-btn"
-            [class.active]="mode() === 'read'"
-            (click)="setMode('read')"
-            [disabled]="activeSong() === null"
-          >
-            READ
-          </button>
-        </div>
-      </div>
-
-      @if (authService.currentUser()) {
-        <div class="songs-dropdown-wrapper" #songsDropdownEl>
-          <button
-            class="songs-dropdown-trigger"
-            [class.has-selection]="activeSong() !== null"
-            (click)="showSongsDropdown = !showSongsDropdown"
-          >
-            {{ activeSong() ? activeSong()!.title : '— my songs —' }}
-            <span class="dropdown-arrow">▾</span>
-          </button>
-          @if (showSongsDropdown) {
-            <div class="songs-dropdown-panel">
-              @if (songs().length === 0) {
-                <div class="songs-dropdown-empty">no songs saved</div>
-              } @else {
-                @for (song of songs(); track song.id) {
-                  <div
-                    class="songs-dropdown-item"
-                    [class.selected]="activeSong()?.id === song.id"
-                  >
-                        <span class="songs-dropdown-name" (click)="onSongSelect(song)">{{
-                            song.title
-                          }}</span>
-                    <button class="song-delete-btn" (click)="onDeleteSong(song.id, $event)">
-                      ×
-                    </button>
-                  </div>
-                }
-              }
-            </div>
-          }
-        </div>
-      }
-
-      @if (mode() === 'read' && activeSong()) {
-        <button class="btn-action" (click)="saveChanges()">SAVE CHANGES</button>
-      }
-
-      @if (authService.currentUser()) {
-        <button class="btn-action" (click)="onSaveSongClick()">SAVE SONG</button>
-      } @else {
-        <button class="btn-action" (click)="router.navigate(['/login'])">SAVE SONG</button>
-      }
-
-      @if (mode() === 'transpose' || activeSong()) {
-        <button class="btn-action" (click)="exportPdf()">EXPORT AS PDF</button>
       }
     </div>
 

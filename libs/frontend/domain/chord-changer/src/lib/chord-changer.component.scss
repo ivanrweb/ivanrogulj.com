@@ -33,6 +33,14 @@
   width: 100%;
 }
 
+.action-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
 .transpose-controls {
   display: flex;
   align-items: center;
