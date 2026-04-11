@@ -94,17 +94,18 @@
         </div>
       }
 
+      @if (mode() === 'read' && activeSong()) {
+        <button class="btn-action" (click)="saveChanges()">SAVE CHANGES</button>
+      }
+
       @if (authService.currentUser()) {
         <button class="btn-action" (click)="onSaveSongClick()">SAVE SONG</button>
       } @else {
         <button class="btn-action" (click)="router.navigate(['/login'])">SAVE SONG</button>
       }
 
-      @if (mode() === 'read' && activeSong()) {
+      @if (mode() === 'transpose' || activeSong()) {
         <button class="btn-action" (click)="exportPdf()">EXPORT AS PDF</button>
-        <button class="btn-action" (click)="saveChanges()">SAVE CHANGES</button>
-      } @else if (mode() === 'transpose') {
-        <button class="btn-export" (click)="exportPdf()">EXPORT AS PDF</button>
       }
     </div>
 
