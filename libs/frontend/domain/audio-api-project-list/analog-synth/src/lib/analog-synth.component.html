@@ -5,114 +5,65 @@
       <h3 class="synth-title">OHM-1</h3>
 
       @if (authService.currentUser()) {
-      <div class="preset-dropdown-wrapper" #presetDropdownEl>
-        <button
-          class="preset-dropdown-trigger"
-          [class.has-selection]="selectedPresetId"
-          (click)="showPresetDropdown = !showPresetDropdown"
-        >
-          {{ selectedPresetName || '— presets —' }}
-          <span class="dropdown-arrow">▾</span>
-        </button>
-
-        @if (showPresetDropdown) {
-        <div class="preset-dropdown-panel">
-          @if (myPresets.length > 0) {
-          <div class="preset-dropdown-section-label">my presets</div>
-          @for (p of myPresets; track p.id) {
-          <div
-            class="preset-dropdown-item"
-            [class.selected]="p.id === selectedPresetId"
-          >
-            <span
-              class="preset-dropdown-name"
-              (click)="onPresetSelect(p.id, p.name, p.isPublic)"
-              >{{ p.name }}</span
-            >
-            <button
-              class="preset-delete-btn"
-              (click)="onConfirmDelete(p.id, p.name, $event)"
-            >
-              ×
-            </button>
-          </div>
-          } } @if (publicPresets.length > 0) {
-          <div class="preset-dropdown-section-label">community</div>
-          @for (p of publicPresets; track p.id) {
-          <div
-            class="preset-dropdown-item"
-            [class.selected]="p.id === selectedPresetId"
-          >
-            <span
-              class="preset-dropdown-name"
-              (click)="onPresetSelect(p.id, p.name, p.isPublic)"
-              >{{ p.name }}</span
-            >
-          </div>
-          } } @if (myPresets.length === 0 && publicPresets.length === 0) {
-          <div class="preset-dropdown-empty">no presets saved</div>
-          }
-        </div>
-        }
-      </div>
+      <lib-action-dropdown
+        [sections]="presetSections()"
+        [selectedId]="selectedPresetId || null"
+        placeholder="— presets —"
+        emptyText="no presets saved"
+        (selected)="onPresetSelected($event)"
+        (deleted)="onPresetDeleted($event)"
+      />
       }
 
-      <button class="btn-save-preset" (click)="onSaveButtonClick()">
-        SAVE AS NEW
-      </button>
+      <button libBtn (click)="onSaveButtonClick()">SAVE AS NEW</button>
 
       @if (selectedPresetId) {
-      <button class="btn-edit-preset" (click)="showEditDialog = true">
-        UPDATE
-      </button>
-      } @if (showSaveDialog) {
-      <div class="save-dialog-backdrop" (click)="showSaveDialog = false">
-        <div class="save-dialog" (click)="$event.stopPropagation()">
-          <h4>Save Preset</h4>
-          <input
-            type="text"
-            [(ngModel)]="newPresetName"
-            placeholder="preset name"
-          />
-          <label class="checkbox-label">
-            <input type="checkbox" [(ngModel)]="newPresetIsPublic" />
-            make public
-          </label>
-          <div class="dialog-actions">
-            <button (click)="showSaveDialog = false">cancel</button>
-            <button (click)="onSavePreset()">save</button>
-          </div>
+      <button libBtn (click)="showEditDialog = true">UPDATE</button>
+      }
+
+      @if (showSaveDialog) {
+      <lib-dialog title="Save Preset" (closed)="showSaveDialog = false">
+        <input
+          class="dialog-text-input"
+          type="text"
+          [(ngModel)]="newPresetName"
+          placeholder="preset name"
+        />
+        <label class="checkbox-label">
+          <input type="checkbox" [(ngModel)]="newPresetIsPublic" />
+          make public
+        </label>
+        <div dialogActions>
+          <button libBtn variant="muted" (click)="showSaveDialog = false">cancel</button>
+          <button libBtn (click)="onSavePreset()">save</button>
         </div>
-      </div>
-      } @if (showEditDialog) {
-      <div class="save-dialog-backdrop" (click)="showEditDialog = false">
-        <div class="save-dialog" (click)="$event.stopPropagation()">
-          <h4>Update Preset</h4>
-          <p class="edit-dialog-msg">
-            Preset <strong>{{ selectedPresetName }}</strong> will be updated
-            with the current state. Proceed?
-          </p>
-          <div class="dialog-actions">
-            <button (click)="showEditDialog = false">No</button>
-            <button (click)="onUpdatePreset()">Yes</button>
-          </div>
+      </lib-dialog>
+      }
+
+      @if (showEditDialog) {
+      <lib-dialog title="Update Preset" (closed)="showEditDialog = false">
+        <p class="dialog-body-text">
+          Preset <strong>{{ selectedPresetName }}</strong> will be updated
+          with the current state. Proceed?
+        </p>
+        <div dialogActions>
+          <button libBtn variant="muted" (click)="showEditDialog = false">No</button>
+          <button libBtn (click)="onUpdatePreset()">Yes</button>
         </div>
-      </div>
-      } @if (showDeleteDialog) {
-      <div class="save-dialog-backdrop" (click)="showDeleteDialog = false">
-        <div class="save-dialog" (click)="$event.stopPropagation()">
-          <h4>Delete Preset</h4>
-          <p class="edit-dialog-msg">
-            Are you sure you want to delete
-            <strong>{{ pendingDeleteName }}</strong
-            >?
-          </p>
-          <div class="dialog-actions">
-            <button (click)="showDeleteDialog = false">No</button>
-            <button class="danger" (click)="onDeletePreset()">Yes</button>
-          </div>
+      </lib-dialog>
+      }
+
+      @if (showDeleteDialog) {
+      <lib-dialog title="Delete Preset" (closed)="showDeleteDialog = false">
+        <p class="dialog-body-text">
+          Are you sure you want to delete
+          <strong>{{ pendingDeleteName }}</strong>?
+        </p>
+        <div dialogActions>
+          <button libBtn variant="muted" (click)="showDeleteDialog = false">No</button>
+          <button libBtn variant="danger" (click)="onDeletePreset()">Yes</button>
         </div>
-      </div>
+      </lib-dialog>
       }
     </div>
 
