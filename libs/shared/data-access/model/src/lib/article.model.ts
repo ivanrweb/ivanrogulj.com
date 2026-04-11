@@ -1,3 +1,9 @@
+export enum ArticleCategory {
+  TECH = 'tech',
+  MUSIC = 'music',
+  OTHER = 'other',
+}
+
 export interface Article {
   id: string;
   title: string;
