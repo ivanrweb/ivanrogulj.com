@@ -59,6 +59,8 @@ export class UserAuthService {
       provider: AuthProvider.LOCAL,
       emailConfirmed: false,
       emailConfirmToken: confirmToken,
+      subscribedToNewsletter: true,
+      newsletterUnsubscribeToken: uuidv4(),
     });
     const saved = await this.userRepository.save(user);
 
@@ -121,6 +123,8 @@ export class UserAuthService {
           emailConfirmed: true,
           passwordHash: null,
           emailConfirmToken: null,
+          subscribedToNewsletter: true,
+          newsletterUnsubscribeToken: uuidv4(),
         });
         await this.userRepository.save(user);
       }

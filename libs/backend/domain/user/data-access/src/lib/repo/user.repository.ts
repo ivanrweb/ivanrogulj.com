@@ -26,4 +26,16 @@ export class UserRepository extends Repository<UserEntity> {
       .where('user.emailConfirmToken = :token', { token })
       .getOne();
   }
+
+  public async findNewsletterSubscribers(): Promise<UserEntity[]> {
+    return this.find({ where: { subscribedToNewsletter: true, emailConfirmed: true } });
+  }
+
+  public async unsubscribeByToken(token: string): Promise<boolean> {
+    const result = await this.update(
+      { newsletterUnsubscribeToken: token },
+      { subscribedToNewsletter: false },
+    );
+    return (result.affected ?? 0) > 0;
+  }
 }

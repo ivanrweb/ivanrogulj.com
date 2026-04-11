@@ -34,6 +34,12 @@ export class UserEntity {
   @Column({ nullable: true })
   public emailConfirmToken!: string | null;
 
+  @Column({ default: true })
+  public subscribedToNewsletter!: boolean;
+
+  @Column({ nullable: true, unique: true })
+  public newsletterUnsubscribeToken!: string | null;
+
   @CreateDateColumn()
   public createdAt!: Date;
 

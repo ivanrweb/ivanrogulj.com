@@ -1,4 +1,5 @@
 import { Global, Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { BackendCoreConfigModule } from '@ivanrogulj.com/backend/core/config';
 import { BackendCoreAuthModule } from '@ivanrogulj.com/backend/core/auth';
 import { BackendDomainAnalogSynthPatchApiModule } from '@ivanrogulj.com/backend/domain/analog-synth-patch/api';
@@ -9,6 +10,7 @@ import { BackendDomainUserApiModule } from '@ivanrogulj.com/backend/domain/user/
 @Global()
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     BackendCoreConfigModule,
     BackendCoreAuthModule,
     BackendDomainAnalogSynthPatchApiModule,
