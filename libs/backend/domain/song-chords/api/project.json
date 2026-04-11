@@ -1,0 +1,8 @@
+{
+  "name": "backend-domain-song-chords-api",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/backend/domain/song-chords/api/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {}
+}

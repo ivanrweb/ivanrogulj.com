@@ -45,6 +45,12 @@
       "@ivanrogulj.com/backend/domain/analog-synth-patch/data-access": [
         "libs/backend/domain/analog-synth-patch/data-access/src/index.ts"
       ],
+      "@ivanrogulj.com/backend/domain/song-chords/api": [
+        "libs/backend/domain/song-chords/api/src/index.ts"
+      ],
+      "@ivanrogulj.com/backend/domain/song-chords/data-access": [
+        "libs/backend/domain/song-chords/data-access/src/index.ts"
+      ],
       "@ivanrogulj.com/backend/domain/article/api": [
         "libs/backend/domain/article/api/src/index.ts"
       ],
