@@ -7,53 +7,29 @@
       <div class="action-controls">
         @if (authService.currentUser()) {
           <span class="control-label">MY SONGS</span>
-          <div class="songs-dropdown-wrapper" #songsDropdownEl>
-            <button
-              class="songs-dropdown-trigger"
-              [class.has-selection]="activeSong() !== null"
-              (click)="showSongsDropdown = !showSongsDropdown"
-            >
-              {{ activeSong() ? activeSong()!.title : '— my songs —' }}
-              <span class="dropdown-arrow">▾</span>
-            </button>
-            @if (showSongsDropdown) {
-              <div class="songs-dropdown-panel">
-                @if (songs().length === 0) {
-                  <div class="songs-dropdown-empty">no songs saved</div>
-                } @else {
-                  @for (song of songs(); track song.id) {
-                    <div
-                      class="songs-dropdown-item"
-                      [class.selected]="activeSong()?.id === song.id"
-                    >
-                          <span class="songs-dropdown-name" (click)="onSongSelect(song)">{{
-                              song.title
-                            }}</span>
-                      <button class="song-delete-btn" (click)="onDeleteSong(song.id, $event)">
-                        ×
-                      </button>
-                    </div>
-                  }
-                }
-              </div>
-            }
-          </div>
+          <lib-action-dropdown
+            [sections]="songSections()"
+            [selectedId]="activeSong()?.id ?? null"
+            placeholder="— my songs —"
+            (selected)="onSongSelected($event)"
+            (deleted)="onSongDeleted($event)"
+          />
         }
 
         @if (mode() === 'read' && activeSong()) {
-          <button class="btn-action" (click)="saveChanges()">SAVE CHANGES</button>
+          <button libBtn (click)="saveChanges()">SAVE CHANGES</button>
         }
 
         @if (mode() === 'transpose') {
           @if (authService.currentUser()) {
-            <button class="btn-action" (click)="onSaveSongClick()">SAVE SONG</button>
+            <button libBtn (click)="onSaveSongClick()">SAVE SONG</button>
           } @else {
-            <button class="btn-action" (click)="router.navigate(['/login'])">SAVE SONG</button>
+            <button libBtn (click)="router.navigate(['/login'])">SAVE SONG</button>
           }
         }
 
         @if (mode() === 'transpose' || activeSong()) {
-          <button class="btn-action" (click)="exportPdf()">EXPORT AS PDF</button>
+          <button libBtn (click)="exportPdf()">EXPORT AS PDF</button>
         }
       </div>
     </div>
@@ -61,55 +37,61 @@
     <div class="header-row header-row--controls">
       <div class="mode-section">
         <span class="control-label">MODE</span>
-        <div class="mode-toggle">
+        <lib-btn-group>
           <button
-            class="mode-btn"
-            [class.active]="mode() === 'transpose'"
+            libBtn
+            variant="toggle"
+            [active]="mode() === 'transpose'"
             (click)="setMode('transpose')"
           >
             TRANSPOSE
           </button>
           <button
-            class="mode-btn"
-            [class.active]="mode() === 'read'"
+            libBtn
+            variant="toggle"
+            [active]="mode() === 'read'"
             (click)="setMode('read')"
             [disabled]="activeSong() === null"
           >
             MY SONGS
           </button>
-        </div>
+        </lib-btn-group>
       </div>
 
       @if (mode() === 'transpose') {
         <div class="transpose-controls">
           <span class="control-label">TRANSPOSE</span>
-          <div class="btn-group">
+          <lib-btn-group>
             @for (step of negativeSteps; track step) {
               <button
-                class="btn-step"
-                [class.active]="currentOffset() === step"
+                libBtn
+                variant="toggle"
+                [active]="currentOffset() === step"
                 (click)="setOffset(step)"
               >
                 {{ step }}
               </button>
             }
             <button
-              class="btn-step btn-zero"
-              [class.active]="currentOffset() === 0"
+              libBtn
+              variant="toggle"
+              [active]="currentOffset() === 0"
+              [class.btn-zero]="true"
               (click)="setOffset(0)"
             >
               0
             </button>
             @for (step of positiveSteps; track step) {
               <button
-                class="btn-step"
-                [class.active]="currentOffset() === step"
+                libBtn
+                variant="toggle"
+                [active]="currentOffset() === step"
                 (click)="setOffset(step)"
               >
                 +{{ step }}
               </button>
             }
-          </div>
+          </lib-btn-group>
         </div>
       }
     </div>
@@ -203,54 +185,42 @@
 </div>
 
 @if (showSaveInput()) {
-  <div
-    class="modal-backdrop"
-    (click)="
-        !savedSuccess() && showSaveInput.set(false); saveTitleInput.set('')
-      "
+  <lib-dialog
+    title="SAVE SONG"
+    [lockClose]="savedSuccess()"
+    (closed)="showSaveInput.set(false); saveTitleInput.set('')"
   >
-    <div class="save-modal" (click)="$event.stopPropagation()">
-      @if (savedSuccess()) {
-        <div class="save-modal-success">Song saved</div>
-      } @else {
-        <h4 class="save-modal-title">SAVE SONG</h4>
-        <input
-          class="save-modal-input"
-          type="text"
-          [value]="saveTitleInput()"
-          (input)="saveTitleInput.set($any($event.target).value)"
-          placeholder="Song title..."
-          (keyup.enter)="confirmSaveSong()"
-          autofocus
-        />
-        <div class="save-modal-actions">
-          <button class="btn-action" (click)="confirmSaveSong()">SAVE</button>
-          <button
-            class="btn-muted"
-            (click)="showSaveInput.set(false); saveTitleInput.set('')"
-          >
-            CANCEL
-          </button>
-        </div>
-      }
-    </div>
-  </div>
-}
-@if (showDeleteDialog) {
-  <div class="modal-backdrop" (click)="cancelDelete()">
-    <div class="save-modal" (click)="$event.stopPropagation()">
-      <h4 class="save-modal-title">DELETE SONG</h4>
-      <p class="delete-modal-msg">
-        Are you sure you want to delete
-        <strong>{{ pendingDeleteTitle }}</strong
-        >?
-      </p>
-      <div class="save-modal-actions">
-        <button class="btn-muted" (click)="cancelDelete()">NO</button>
-        <button class="btn-danger" (click)="confirmDelete()">
-          YES, DELETE
-        </button>
+    @if (savedSuccess()) {
+      <div class="save-success">Song saved</div>
+    } @else {
+      <input
+        class="dialog-text-input"
+        type="text"
+        [value]="saveTitleInput()"
+        (input)="saveTitleInput.set($any($event.target).value)"
+        placeholder="Song title..."
+        (keyup.enter)="confirmSaveSong()"
+        autofocus
+      />
+      <div dialogActions>
+        <button libBtn (click)="confirmSaveSong()">SAVE</button>
+        <button libBtn variant="muted" (click)="showSaveInput.set(false); saveTitleInput.set('')">CANCEL</button>
       </div>
+    }
+  </lib-dialog>
+}
+@if (showDeleteDialog()) {
+  <lib-dialog
+    title="DELETE SONG"
+    (closed)="cancelDelete()"
+  >
+    <p class="dialog-body-text">
+      Are you sure you want to delete
+      <strong>{{ pendingDeleteTitle }}</strong>?
+    </p>
+    <div dialogActions>
+      <button libBtn variant="muted" (click)="cancelDelete()">NO</button>
+      <button libBtn variant="danger" (click)="confirmDelete()">YES, DELETE</button>
     </div>
-  </div>
+  </lib-dialog>
 }

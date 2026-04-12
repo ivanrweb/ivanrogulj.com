@@ -2,11 +2,8 @@ import {
   Component,
   computed,
   effect,
-  ElementRef,
-  HostListener,
   inject,
   signal,
-  ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -19,11 +16,28 @@ import {
   SongChordsListItem,
 } from '../service/song-chords-api.service'; // eslint-disable-next-line @nx/enforce-module-boundaries
 import { AuthService } from '@ivanrogulj.com/auth';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { DialogComponent } from '@ivanrogulj.com/dialog';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import {
+  ActionDropdownComponent,
+  ActionDropdownItem,
+  ActionDropdownSection,
+} from '@ivanrogulj.com/action-dropdown';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { ButtonDirective, BtnGroupComponent } from '@ivanrogulj.com/button';
 
 @Component({
   selector: 'lib-chord-changer',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    DialogComponent,
+    ActionDropdownComponent,
+    ButtonDirective,
+    BtnGroupComponent,
+  ],
   templateUrl: './chord-changer.component.html',
   styleUrl: './chord-changer.component.scss',
 })
@@ -46,19 +60,19 @@ export class ChordChangerComponent {
   public saveTitleInput = signal<string>('');
   public showSaveInput = signal<boolean>(false);
   public savedSuccess = signal<boolean>(false);
-  public showDeleteDialog = false;
+  public showDeleteDialog = signal<boolean>(false);
   public pendingDeleteId = '';
   public pendingDeleteTitle = '';
   public readTitle = signal<string>('');
   public readContent = signal<string>('');
-  public showSongsDropdown = false;
-
-  @ViewChild('songsDropdownEl', { static: false })
-  public songsDropdownEl!: ElementRef<HTMLElement>;
 
   public analysis = computed(() =>
     this.changerService.processText(this.inputText(), this.currentOffset())
   );
+
+  public songSections = computed<ActionDropdownSection[]>(() => [
+    { items: this.songs().map((s) => ({ id: s.id, name: s.title })), deletable: true },
+  ]);
 
   constructor() {
     effect(() => {
@@ -66,17 +80,6 @@ export class ChordChangerComponent {
     });
     if (this.authService.currentUser()) {
       this.loadMySongs();
-    }
-  }
-
-  @HostListener('document:click', ['$event'])
-  public onDocumentClick(event: MouseEvent): void {
-    if (
-      this.showSongsDropdown &&
-      this.songsDropdownEl &&
-      !this.songsDropdownEl.nativeElement.contains(event.target as Node)
-    ) {
-      this.showSongsDropdown = false;
     }
   }
 
@@ -100,22 +103,20 @@ export class ChordChangerComponent {
     });
   }
 
-  public onSongSelect(song: SongChordsListItem): void {
-    this.songChordsApiService.getSong(song.id).subscribe((detail) => {
+  public onSongSelected(item: ActionDropdownItem): void {
+    this.songChordsApiService.getSong(item.id).subscribe((detail) => {
       this.activeSong.set(detail);
       this.readTitle.set(detail.title);
       this.readContent.set(detail.content);
       this.mode.set('read');
-      this.showSongsDropdown = false;
     });
   }
 
-  public onDeleteSong(id: string, event: Event): void {
-    event.stopPropagation();
+  public onSongDeleted(id: string): void {
     const song = this.songs().find((s) => s.id === id);
     this.pendingDeleteId = id;
     this.pendingDeleteTitle = song?.title ?? '';
-    this.showDeleteDialog = true;
+    this.showDeleteDialog.set(true);
   }
 
   public confirmDelete(): void {
@@ -126,14 +127,14 @@ export class ChordChangerComponent {
         this.activeSong.set(null);
         this.mode.set('transpose');
       }
-      this.showDeleteDialog = false;
+      this.showDeleteDialog.set(false);
       this.pendingDeleteId = '';
       this.pendingDeleteTitle = '';
     });
   }
 
   public cancelDelete(): void {
-    this.showDeleteDialog = false;
+    this.showDeleteDialog.set(false);
     this.pendingDeleteId = '';
     this.pendingDeleteTitle = '';
   }

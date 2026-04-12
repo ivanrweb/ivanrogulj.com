@@ -1,11 +1,12 @@
 import {
   AfterViewInit,
   Component,
+  computed,
   ElementRef,
-  HostListener,
   inject,
   OnDestroy,
   OnInit,
+  signal,
   ViewChild
 } from '@angular/core';
 import { CommonModule, KeyValuePipe } from '@angular/common';
@@ -34,6 +35,16 @@ import { AuthService } from '@ivanrogulj.com/auth';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { PatchApiService, PatchSummary } from '../service/patch-api.service';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { DialogComponent } from '@ivanrogulj.com/dialog';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import {
+  ActionDropdownComponent,
+  ActionDropdownItem,
+  ActionDropdownSection,
+} from '@ivanrogulj.com/action-dropdown';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { ButtonDirective } from '@ivanrogulj.com/button';
 
 @Component({
   selector: 'lib-analog-synth',
@@ -50,6 +61,9 @@ import { PatchApiService, PatchSummary } from '../service/patch-api.service';
     NoiseGeneratorComponent,
     LfoRackComponent,
     KeyValuePipe,
+    DialogComponent,
+    ActionDropdownComponent,
+    ButtonDirective,
   ],
   providers: [AudioContextService],
   templateUrl: './analog-synth.component.html',
@@ -58,9 +72,6 @@ import { PatchApiService, PatchSummary } from '../service/patch-api.service';
 export class AnalogSynthComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('oscilloscope', { static: false })
   public oscilloscopeCanvas!: ElementRef<HTMLCanvasElement>;
-
-  @ViewChild('presetDropdownEl', { static: false })
-  public presetDropdownEl!: ElementRef<HTMLElement>;
 
   public analogSynthViewModel = inject(AnalogSynthViewModel);
   public midiService = inject(MidiService);
@@ -75,27 +86,28 @@ export class AnalogSynthComponent implements OnInit, AfterViewInit, OnDestroy {
   public showSaveDialog = false;
   public showEditDialog = false;
   public showDeleteDialog = false;
-  public showPresetDropdown = false;
   public newPresetName = '';
   public newPresetIsPublic = false;
-  public myPresets: PatchSummary[] = [];
-  public publicPresets: PatchSummary[] = [];
+  public myPresets = signal<PatchSummary[]>([]);
+  public publicPresets = signal<PatchSummary[]>([]);
   public selectedPresetId = '';
   public selectedPresetName = '';
   public selectedPresetIsPublic = false;
   public pendingDeleteId = '';
   public pendingDeleteName = '';
 
-  @HostListener('document:click', ['$event'])
-  public onDocumentClick(event: MouseEvent): void {
-    if (
-      this.showPresetDropdown &&
-      this.presetDropdownEl &&
-      !this.presetDropdownEl.nativeElement.contains(event.target as Node)
-    ) {
-      this.showPresetDropdown = false;
-    }
-  }
+  public presetSections = computed<ActionDropdownSection[]>(() => [
+    {
+      label: 'my presets',
+      items: this.myPresets().map((p) => ({ id: p.id, name: p.name })),
+      deletable: true,
+    },
+    {
+      label: 'community',
+      items: this.publicPresets().map((p) => ({ id: p.id, name: p.name })),
+      deletable: false,
+    },
+  ]);
 
   protected readonly knobLabels: Record<AnalogSynthApi.Knob, string> = {
     [AnalogSynthApi.Knob.ATTACK]: 'Amp Attack',
@@ -136,13 +148,13 @@ export class AnalogSynthComponent implements OnInit, AfterViewInit, OnDestroy {
         mine: this.patchApiService.getMyPresets(),
         pub: this.patchApiService.getPublicPresets(),
       }).subscribe(({ mine, pub }) => {
-        this.myPresets = mine;
+        this.myPresets.set(mine);
         const myIds = new Set(mine.map((p) => p.id));
-        this.publicPresets = pub.filter((p) => !myIds.has(p.id));
+        this.publicPresets.set(pub.filter((p) => !myIds.has(p.id)));
       });
     } else {
       this.patchApiService.getPublicPresets().subscribe((presets) => {
-        this.publicPresets = presets;
+        this.publicPresets.set(presets);
       });
     }
   }
@@ -172,15 +184,15 @@ export class AnalogSynthComponent implements OnInit, AfterViewInit, OnDestroy {
     const name = this.newPresetName.trim();
     const isPublic = this.newPresetIsPublic;
     this.patchApiService.savePreset(name, isPublic).subscribe((result) => {
-      this.myPresets = [
-        ...this.myPresets,
+      this.myPresets.update((list) => [
+        ...list,
         {
           id: result.id,
           name: result.name,
           isPublic,
           createdAt: new Date().toISOString(),
         },
-      ];
+      ]);
       this.selectedPresetId = result.id;
       this.selectedPresetName = result.name;
       this.selectedPresetIsPublic = isPublic;
@@ -190,27 +202,26 @@ export class AnalogSynthComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  public onPresetSelect(id: string, name: string, isPublic: boolean): void {
-    this.selectedPresetId = id;
-    this.selectedPresetName = name;
-    this.selectedPresetIsPublic = isPublic;
-    this.showPresetDropdown = false;
-    this.patchApiService.loadPreset(id).subscribe();
+  public onPresetSelected(item: ActionDropdownItem): void {
+    const preset = this.myPresets().find((p) => p.id === item.id) ?? this.publicPresets().find((p) => p.id === item.id);
+    this.selectedPresetId = item.id;
+    this.selectedPresetName = item.name;
+    this.selectedPresetIsPublic = preset?.isPublic ?? false;
+    this.patchApiService.loadPreset(item.id).subscribe();
   }
 
-  public onConfirmDelete(id: string, name: string, event: Event): void {
-    event.stopPropagation();
+  public onPresetDeleted(id: string): void {
+    const preset = this.myPresets().find((p) => p.id === id);
     this.pendingDeleteId = id;
-    this.pendingDeleteName = name;
-    this.showPresetDropdown = false;
+    this.pendingDeleteName = preset?.name ?? '';
     this.showDeleteDialog = true;
   }
 
   public onDeletePreset(): void {
     this.showDeleteDialog = false;
     this.patchApiService.deletePreset(this.pendingDeleteId).subscribe(() => {
-      this.myPresets = this.myPresets.filter(
-        (p) => p.id !== this.pendingDeleteId
+      this.myPresets.update((list) =>
+        list.filter((p) => p.id !== this.pendingDeleteId)
       );
       if (this.selectedPresetId === this.pendingDeleteId) {
         this.selectedPresetId = '';
