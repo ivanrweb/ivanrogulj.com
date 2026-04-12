@@ -37,7 +37,7 @@ import { SAMPLER_PRESETS } from '../config/sampler-presets.config';
       <lib-oscillator />
       } @else {
       <div class="sampler-panel">
-        <label class="sampler-label">PRESET</label>
+        <label class="sampler-label">SOUND</label>
         <lib-select
           [options]="presetOptions"
           [value]="(samplerPreset$ | async) ?? ''"
@@ -142,8 +142,12 @@ import { SAMPLER_PRESETS } from '../config/sampler-presets.config';
       }
 
       @keyframes loading-sweep {
-        0%   { transform: translateX(-100%); }
-        100% { transform: translateX(250%); }
+        0% {
+          transform: translateX(-100%);
+        }
+        100% {
+          transform: translateX(250%);
+        }
       }
 
       .loading-text {
@@ -174,9 +178,9 @@ export class SourceModuleComponent {
   public readonly samplerLoading$ = this.samplerViewModel.loading$;
   public readonly samplerLoaded$ = this.samplerViewModel.loaded$;
 
-  public readonly presetOptions: SelectOption[] = Object.entries(SAMPLER_PRESETS).map(
-    ([value, config]) => ({ value, label: config.label })
-  );
+  public readonly presetOptions: SelectOption[] = Object.entries(
+    SAMPLER_PRESETS
+  ).map(([value, config]) => ({ value, label: config.label }));
 
   public setMode(mode: 'oscillator' | 'sampler'): void {
     this.analogSynthViewModel.setSourceMode(mode);
