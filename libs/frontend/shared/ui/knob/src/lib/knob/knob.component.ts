@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   template: `
     <div class="knob-wrapper">
-      <div class="knob-container" [class.learning-mode]="isLearningMode && !isPendingMapping" [class.pending-mapping]="isPendingMapping">
+      <div class="knob-container" [class.learning-mode]="isLearningMode && !isPendingMapping && !isMapped" [class.pending-mapping]="isPendingMapping">
         <div class="knob-render">
           <i
             class="icon-fad-slider-round-3 knob-icon"
