@@ -22,6 +22,7 @@ import { AdsrEnvelopeComponent } from '@ivanrogulj.com/envelope';
           [label]="'Master Vol'"
           [isLearningMode]="vm.learnMode"
           [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.MASTER_GAIN]"
+          [isPendingMapping]="vm.learnTarget === AnalogSynthApi.Knob.MASTER_GAIN"
           (valueChange)="onGainChange($event)"
           (learn)="
             analogSynthViewModel.startLearning(AnalogSynthApi.Knob.MASTER_GAIN)
@@ -40,6 +41,7 @@ import { AdsrEnvelopeComponent } from '@ivanrogulj.com/envelope';
           [label]="'Attack'"
           [isLearningMode]="vm.learnMode"
           [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.ATTACK]"
+          [isPendingMapping]="vm.learnTarget === AnalogSynthApi.Knob.ATTACK"
           (valueChange)="
             vm.volumeEnvelope.attack = $event;
             onVolumeEnvelopeChange(AnalogSynthApi.Knob.ATTACK, $event)
@@ -56,6 +58,7 @@ import { AdsrEnvelopeComponent } from '@ivanrogulj.com/envelope';
           [label]="'Decay'"
           [isLearningMode]="vm.learnMode"
           [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.DECAY]"
+          [isPendingMapping]="vm.learnTarget === AnalogSynthApi.Knob.DECAY"
           (valueChange)="
             vm.volumeEnvelope.decay = $event;
             onVolumeEnvelopeChange(AnalogSynthApi.Knob.DECAY, $event)
@@ -72,6 +75,7 @@ import { AdsrEnvelopeComponent } from '@ivanrogulj.com/envelope';
           [label]="'Sustain'"
           [isLearningMode]="vm.learnMode"
           [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.SUSTAIN]"
+          [isPendingMapping]="vm.learnTarget === AnalogSynthApi.Knob.SUSTAIN"
           (valueChange)="
             vm.volumeEnvelope.sustain = $event;
             onVolumeEnvelopeChange(AnalogSynthApi.Knob.SUSTAIN, $event)
@@ -88,6 +92,7 @@ import { AdsrEnvelopeComponent } from '@ivanrogulj.com/envelope';
           [label]="'Release'"
           [isLearningMode]="vm.learnMode"
           [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.RELEASE]"
+          [isPendingMapping]="vm.learnTarget === AnalogSynthApi.Knob.RELEASE"
           (valueChange)="
             vm.volumeEnvelope.release = $event;
             onVolumeEnvelopeChange(AnalogSynthApi.Knob.RELEASE, $event)

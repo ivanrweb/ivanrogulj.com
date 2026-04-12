@@ -37,6 +37,7 @@ import {
           [value]="fxState.delay.time"
           [isLearningMode]="synthState.learnMode"
           [isMapped]="synthState.mappedParams[AnalogSynthApi.Knob.DELAY_TIME]"
+          [isPendingMapping]="synthState.learnTarget === AnalogSynthApi.Knob.DELAY_TIME"
           (valueChange)="effectsVm.updateDelayTime($event)"
           (learn)="synthVm.startLearning(AnalogSynthApi.Knob.DELAY_TIME)"
         ></lib-knob>
@@ -51,6 +52,7 @@ import {
           [isMapped]="
             synthState.mappedParams[AnalogSynthApi.Knob.DELAY_FEEDBACK]
           "
+          [isPendingMapping]="synthState.learnTarget === AnalogSynthApi.Knob.DELAY_FEEDBACK"
           (valueChange)="effectsVm.updateDelayFeedback($event / 100)"
           (learn)="synthVm.startLearning(AnalogSynthApi.Knob.DELAY_FEEDBACK)"
         ></lib-knob>
@@ -63,6 +65,7 @@ import {
           [value]="fxState.delay.mix * 100"
           [isLearningMode]="synthState.learnMode"
           [isMapped]="synthState.mappedParams[AnalogSynthApi.Knob.DELAY_MIX]"
+          [isPendingMapping]="synthState.learnTarget === AnalogSynthApi.Knob.DELAY_MIX"
           (valueChange)="effectsVm.updateDelayMix($event / 100)"
           (learn)="synthVm.startLearning(AnalogSynthApi.Knob.DELAY_MIX)"
         ></lib-knob>

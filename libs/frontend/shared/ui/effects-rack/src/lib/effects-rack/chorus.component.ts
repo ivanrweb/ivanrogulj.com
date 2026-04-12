@@ -37,6 +37,7 @@ import {
           [value]="fxState.chorus.rate * 100"
           [isLearningMode]="synthState.learnMode"
           [isMapped]="synthState.mappedParams[AnalogSynthApi.Knob.CHORUS_RATE]"
+          [isPendingMapping]="synthState.learnTarget === AnalogSynthApi.Knob.CHORUS_RATE"
           (valueChange)="effectsVm.updateChorusRate($event / 100)"
           (learn)="synthVm.startLearning(AnalogSynthApi.Knob.CHORUS_RATE)"
         ></lib-knob>
@@ -49,6 +50,7 @@ import {
           [value]="fxState.chorus.depth * 100"
           [isLearningMode]="synthState.learnMode"
           [isMapped]="synthState.mappedParams[AnalogSynthApi.Knob.CHORUS_DEPTH]"
+          [isPendingMapping]="synthState.learnTarget === AnalogSynthApi.Knob.CHORUS_DEPTH"
           (valueChange)="effectsVm.updateChorusDepth($event / 100)"
           (learn)="synthVm.startLearning(AnalogSynthApi.Knob.CHORUS_DEPTH)"
         ></lib-knob>
@@ -61,6 +63,7 @@ import {
           [value]="fxState.chorus.mix * 100"
           [isLearningMode]="synthState.learnMode"
           [isMapped]="synthState.mappedParams[AnalogSynthApi.Knob.CHORUS_MIX]"
+          [isPendingMapping]="synthState.learnTarget === AnalogSynthApi.Knob.CHORUS_MIX"
           (valueChange)="effectsVm.updateChorusMix($event / 100)"
           (learn)="synthVm.startLearning(AnalogSynthApi.Knob.CHORUS_MIX)"
         ></lib-knob>

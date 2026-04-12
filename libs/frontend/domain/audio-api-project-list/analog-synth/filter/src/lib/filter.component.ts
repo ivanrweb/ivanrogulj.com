@@ -23,6 +23,7 @@ import { AdsrEnvelopeComponent } from '@ivanrogulj.com/envelope';
           [measureUnit]="'Hz'"
           [isLearningMode]="vm.learnMode"
           [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.FILTER_FREQUENCY]"
+          [isPendingMapping]="vm.learnTarget === AnalogSynthApi.Knob.FILTER_FREQUENCY"
           (valueChange)="analogSynthViewModel.updateFilterFrequency($event)"
           (learn)="
             analogSynthViewModel.startLearning(
@@ -39,6 +40,7 @@ import { AdsrEnvelopeComponent } from '@ivanrogulj.com/envelope';
           [measureUnit]="''"
           [isLearningMode]="vm.learnMode"
           [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.FILTER_RESONANCE]"
+          [isPendingMapping]="vm.learnTarget === AnalogSynthApi.Knob.FILTER_RESONANCE"
           (valueChange)="analogSynthViewModel.updateFilterResonance($event)"
           (learn)="
             analogSynthViewModel.startLearning(
@@ -57,6 +59,7 @@ import { AdsrEnvelopeComponent } from '@ivanrogulj.com/envelope';
           [isMapped]="
             vm.mappedParams[AnalogSynthApi.Knob.FILTER_ENVELOPE_AMOUNT]
           "
+          [isPendingMapping]="vm.learnTarget === AnalogSynthApi.Knob.FILTER_ENVELOPE_AMOUNT"
           (learn)="
             analogSynthViewModel.startLearning(
               AnalogSynthApi.Knob.FILTER_ENVELOPE_AMOUNT
@@ -78,6 +81,7 @@ import { AdsrEnvelopeComponent } from '@ivanrogulj.com/envelope';
           [label]="'Attack'"
           [isLearningMode]="vm.learnMode"
           [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.FILTER_ATTACK]"
+          [isPendingMapping]="vm.learnTarget === AnalogSynthApi.Knob.FILTER_ATTACK"
           (valueChange)="onFilterEnvelopeChange('attack', $event)"
           (learn)="
             analogSynthViewModel.startLearning(
@@ -93,6 +97,7 @@ import { AdsrEnvelopeComponent } from '@ivanrogulj.com/envelope';
           [label]="'Decay'"
           [isLearningMode]="vm.learnMode"
           [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.FILTER_DECAY]"
+          [isPendingMapping]="vm.learnTarget === AnalogSynthApi.Knob.FILTER_DECAY"
           (valueChange)="onFilterEnvelopeChange('decay', $event)"
           (learn)="
             analogSynthViewModel.startLearning(AnalogSynthApi.Knob.FILTER_DECAY)
@@ -106,6 +111,7 @@ import { AdsrEnvelopeComponent } from '@ivanrogulj.com/envelope';
           [label]="'Sustain'"
           [isLearningMode]="vm.learnMode"
           [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.FILTER_SUSTAIN]"
+          [isPendingMapping]="vm.learnTarget === AnalogSynthApi.Knob.FILTER_SUSTAIN"
           (valueChange)="onFilterEnvelopeChange('sustain', $event)"
           (learn)="
             analogSynthViewModel.startLearning(
@@ -121,6 +127,7 @@ import { AdsrEnvelopeComponent } from '@ivanrogulj.com/envelope';
           [label]="'Release'"
           [isLearningMode]="vm.learnMode"
           [isMapped]="vm.mappedParams[AnalogSynthApi.Knob.FILTER_RELEASE]"
+          [isPendingMapping]="vm.learnTarget === AnalogSynthApi.Knob.FILTER_RELEASE"
           (valueChange)="onFilterEnvelopeChange('release', $event)"
           (learn)="
             analogSynthViewModel.startLearning(

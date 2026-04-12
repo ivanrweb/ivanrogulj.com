@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   template: `
     <div class="knob-wrapper">
-      <div class="knob-container" [class.learning-mode]="isLearningMode">
+      <div class="knob-container" [class.learning-mode]="isLearningMode && !isPendingMapping" [class.pending-mapping]="isPendingMapping">
         <div class="knob-render">
           <i
             class="icon-fad-slider-round-3 knob-icon"
@@ -60,6 +60,12 @@ import { CommonModule } from '@angular/common';
         &.learning-mode {
           border: 2px solid #ff007f;
           box-shadow: 0 0 10px #ff007f;
+        }
+
+        &.pending-mapping {
+          border: 2px solid #66fcf1;
+          box-shadow: 0 0 12px #66fcf1, 0 0 4px #66fcf1 inset;
+          animation: knob-pending-pulse 1.2s ease-in-out infinite;
         }
       }
 
@@ -136,6 +142,11 @@ import { CommonModule } from '@angular/common';
         color: #c5c6c7;
       }
 
+      @keyframes knob-pending-pulse {
+        0%, 100% { box-shadow: 0 0 8px #66fcf1; }
+        50% { box-shadow: 0 0 18px #66fcf1, 0 0 6px #66fcf1 inset; }
+      }
+
       .is-mapped::after {
         content: '';
         display: inline-block;
@@ -157,6 +168,7 @@ export class KnobComponent {
   @Input() public measureUnit?: string;
   @Input() public isLearningMode = false;
   @Input() public isMapped = false;
+  @Input() public isPendingMapping = false;
 
   private _value = 0;
   @Input() public set value(val: number) {
