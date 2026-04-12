@@ -37,6 +37,7 @@ import {
           [value]="fxState.reverb.mix * 100"
           [isLearningMode]="synthState.learnMode"
           [isMapped]="synthState.mappedParams[AnalogSynthApi.Knob.REVERB_MIX]"
+          [isPendingMapping]="synthState.learnTarget === AnalogSynthApi.Knob.REVERB_MIX"
           (valueChange)="effectsVm.updateReverbMix($event / 100)"
           (learn)="synthVm.startLearning(AnalogSynthApi.Knob.REVERB_MIX)"
         ></lib-knob>
@@ -49,6 +50,7 @@ import {
           [value]="fxState.reverb.decay"
           [isLearningMode]="synthState.learnMode"
           [isMapped]="synthState.mappedParams[AnalogSynthApi.Knob.REVERB_DECAY]"
+          [isPendingMapping]="synthState.learnTarget === AnalogSynthApi.Knob.REVERB_DECAY"
           (valueChange)="effectsVm.updateReverbDecay($event)"
           (learn)="synthVm.startLearning(AnalogSynthApi.Knob.REVERB_DECAY)"
         ></lib-knob>

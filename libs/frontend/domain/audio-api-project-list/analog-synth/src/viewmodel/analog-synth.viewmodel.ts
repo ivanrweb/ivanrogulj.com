@@ -98,6 +98,7 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
         tap((param) => {
           this.patchState((state) => ({
             mappedParams: { ...state.mappedParams, [param]: true },
+            learnTarget: null,
           }));
         })
       )

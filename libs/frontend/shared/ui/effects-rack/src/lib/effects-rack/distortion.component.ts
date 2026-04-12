@@ -39,6 +39,7 @@ import {
           [isMapped]="
             synthState.mappedParams[AnalogSynthApi.Knob.DISTORTION_AMOUNT]
           "
+          [isPendingMapping]="synthState.learnTarget === AnalogSynthApi.Knob.DISTORTION_AMOUNT"
           (valueChange)="effectsVm.updateDistortionAmount($event / 100)"
           (learn)="synthVm.startLearning(AnalogSynthApi.Knob.DISTORTION_AMOUNT)"
         ></lib-knob>
@@ -53,6 +54,7 @@ import {
           [isMapped]="
             synthState.mappedParams[AnalogSynthApi.Knob.DISTORTION_TONE]
           "
+          [isPendingMapping]="synthState.learnTarget === AnalogSynthApi.Knob.DISTORTION_TONE"
           (valueChange)="effectsVm.updateDistortionTone($event / 100)"
           (learn)="synthVm.startLearning(AnalogSynthApi.Knob.DISTORTION_TONE)"
         ></lib-knob>
@@ -67,6 +69,7 @@ import {
           [isMapped]="
             synthState.mappedParams[AnalogSynthApi.Knob.DISTORTION_MIX]
           "
+          [isPendingMapping]="synthState.learnTarget === AnalogSynthApi.Knob.DISTORTION_MIX"
           (valueChange)="effectsVm.updateDistortionMix($event / 100)"
           (learn)="synthVm.startLearning(AnalogSynthApi.Knob.DISTORTION_MIX)"
         ></lib-knob>

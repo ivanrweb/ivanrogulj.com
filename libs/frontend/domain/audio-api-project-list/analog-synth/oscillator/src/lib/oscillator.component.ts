@@ -55,6 +55,7 @@ import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
           [isMapped]="
             vm.mappedParams[AnalogSynthApi.Knob.DETUNE_OSCILLATORS_AMOUNT]
           "
+          [isPendingMapping]="vm.learnTarget === AnalogSynthApi.Knob.DETUNE_OSCILLATORS_AMOUNT"
           (learn)="
             analogSynthViewModel.startLearning(
               AnalogSynthApi.Knob.DETUNE_OSCILLATORS_AMOUNT

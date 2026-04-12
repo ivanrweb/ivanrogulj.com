@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   ElementRef,
+  HostListener,
   inject,
   OnDestroy,
   OnInit,
@@ -108,6 +109,18 @@ export class AnalogSynthComponent implements OnInit, AfterViewInit, OnDestroy {
       deletable: false,
     },
   ]);
+
+  @HostListener('document:keydown', ['$event'])
+  public onKeydown(event: KeyboardEvent): void {
+    if (event.key !== 'm' && event.key !== 'M') return;
+    const target = event.target as HTMLElement;
+    if (
+      target.tagName === 'INPUT' ||
+      target.tagName === 'TEXTAREA' ||
+      target.isContentEditable
+    ) return;
+    this.analogSynthViewModel.toggleMidiLearn();
+  }
 
   protected readonly knobLabels: Record<AnalogSynthApi.Knob, string> = {
     [AnalogSynthApi.Knob.ATTACK]: 'Amp Attack',
