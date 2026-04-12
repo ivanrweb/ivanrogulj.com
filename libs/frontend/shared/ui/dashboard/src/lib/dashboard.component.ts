@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
+
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { AvatarComponent } from '@ivanrogulj.com/avatar';
 
 @Component({
   selector: 'lib-dashboard',
   standalone: true,
-  imports: [AvatarComponent],
+  imports: [],
   template: `
     <div class="portfolio-container">
       <header class="hero-section">
@@ -45,7 +45,8 @@ import { AvatarComponent } from '@ivanrogulj.com/avatar';
                 />Everything is free.
               </p>
             </div>
-            <lib-avatar [size]="200" initials="IR" src="avatar.jpg" />
+            <!--            TODO: Uncomment when you have avatar picture -->
+            <!--            <lib-avatar [size]="200" initials="IR" src="avatar.jpg" />-->
           </div>
           <div class="hero-stack">
             <span class="stack-tag">Web Audio API</span>

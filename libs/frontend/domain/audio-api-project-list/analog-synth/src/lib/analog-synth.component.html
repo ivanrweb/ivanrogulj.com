@@ -1,237 +1,240 @@
 @if (analogSynthViewModel.vm$ | async; as vm) {
-<div class="synth-dashboard">
-  <div class="synth-header">
-    <div class="header-left">
-      <h3 class="synth-title">OHM-1</h3>
+  <div class="synth-dashboard">
+    <div class="synth-header">
+      <div class="header-left">
+        <h3 class="synth-title">OHM-1</h3>
 
-      @if (authService.currentUser()) {
-      <lib-action-dropdown
-        [sections]="presetSections()"
-        [selectedId]="selectedPresetId || null"
-        placeholder="— presets —"
-        emptyText="no presets saved"
-        (selected)="onPresetSelected($event)"
-        (deleted)="onPresetDeleted($event)"
-      />
-      }
+        @if (authService.currentUser()) {
+          <lib-action-dropdown
+            [sections]="presetSections()"
+            [selectedId]="selectedPresetId || null"
+            placeholder="— presets —"
+            emptyText="no presets saved"
+            (selected)="onPresetSelected($event)"
+            (deleted)="onPresetDeleted($event)"
+          />
+        }
 
-      <button libBtn (click)="onSaveButtonClick()">SAVE AS NEW</button>
+        <button libBtn (click)="onSaveButtonClick()">SAVE AS NEW</button>
 
-      @if (selectedPresetId) {
-      <button libBtn (click)="showEditDialog = true">UPDATE</button>
-      }
+        @if (selectedPresetId) {
+          <button libBtn (click)="showEditDialog = true">UPDATE</button>
+        }
 
-      @if (showSaveDialog) {
-      <lib-dialog title="Save Preset" (closed)="showSaveDialog = false">
-        <input
-          class="dialog-text-input"
-          type="text"
-          [(ngModel)]="newPresetName"
-          placeholder="preset name"
-        />
-        <label class="checkbox-label">
-          <input type="checkbox" [(ngModel)]="newPresetIsPublic" />
-          make public
-        </label>
-        <div dialogActions>
-          <button libBtn variant="muted" (click)="showSaveDialog = false">cancel</button>
-          <button libBtn (click)="onSavePreset()">save</button>
-        </div>
-      </lib-dialog>
-      }
+        @if (showSaveDialog) {
+          <lib-dialog title="Save Preset" (closed)="showSaveDialog = false">
+            <input
+              class="dialog-text-input"
+              type="text"
+              [(ngModel)]="newPresetName"
+              placeholder="preset name"
+            />
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="newPresetIsPublic" />
+              make public
+            </label>
+            <div dialogActions>
+              <button libBtn variant="muted" (click)="showSaveDialog = false">cancel</button>
+              <button libBtn (click)="onSavePreset()">save</button>
+            </div>
+          </lib-dialog>
+        }
 
-      @if (showEditDialog) {
-      <lib-dialog title="Update Preset" (closed)="showEditDialog = false">
-        <p class="dialog-body-text">
-          Preset <strong>{{ selectedPresetName }}</strong> will be updated
-          with the current state. Proceed?
-        </p>
-        <div dialogActions>
-          <button libBtn variant="muted" (click)="showEditDialog = false">No</button>
-          <button libBtn (click)="onUpdatePreset()">Yes</button>
-        </div>
-      </lib-dialog>
-      }
+        @if (showEditDialog) {
+          <lib-dialog title="Update Preset" (closed)="showEditDialog = false">
+            <p class="dialog-body-text">
+              Preset <strong>{{ selectedPresetName }}</strong> will be updated
+              with the current state. Proceed?
+            </p>
+            <div dialogActions>
+              <button libBtn variant="muted" (click)="showEditDialog = false">No</button>
+              <button libBtn (click)="onUpdatePreset()">Yes</button>
+            </div>
+          </lib-dialog>
+        }
 
-      @if (showDeleteDialog) {
-      <lib-dialog title="Delete Preset" (closed)="showDeleteDialog = false">
-        <p class="dialog-body-text">
-          Are you sure you want to delete
-          <strong>{{ pendingDeleteName }}</strong>?
-        </p>
-        <div dialogActions>
-          <button libBtn variant="muted" (click)="showDeleteDialog = false">No</button>
-          <button libBtn variant="danger" (click)="onDeletePreset()">Yes</button>
-        </div>
-      </lib-dialog>
-      }
-    </div>
+        @if (showDeleteDialog) {
+          <lib-dialog title="Delete Preset" (closed)="showDeleteDialog = false">
+            <p class="dialog-body-text">
+              Are you sure you want to delete
+              <strong>{{ pendingDeleteName }}</strong>?
+            </p>
+            <div dialogActions>
+              <button libBtn variant="muted" (click)="showDeleteDialog = false">No</button>
+              <button libBtn variant="danger" (click)="onDeletePreset()">Yes</button>
+            </div>
+          </lib-dialog>
+        }
+      </div>
 
-    <div class="header-right">
-      @if (midiService.connectedInputs().length > 0) {
-      <div
-        class="midi-device-list"
-        (click)="showMidiDropdown = !showMidiDropdown"
-      >
-        <span class="midi-device-label">MIDI IN</span>
-        <span class="midi-device-chip">{{
-          midiService.connectedInputs()[0].name
-        }}</span>
-        @if (midiService.connectedInputs().length > 1) {
-        <span class="midi-device-extra"
-          >+{{ midiService.connectedInputs().length - 1 }}</span
-        >
-        } @if (showMidiDropdown) {
-        <div class="midi-device-dropdown">
-          @for (input of midiService.connectedInputs(); track input.id) {
-          <div class="midi-device-dropdown-item">{{ input.name }}</div>
+      <div class="header-right">
+        @if (midiService.connectedInputs().length > 0) {
+          <div
+            class="midi-device-list"
+            (click)="showMidiDropdown = !showMidiDropdown"
+          >
+            <span class="midi-device-label">MIDI IN</span>
+            <span class="midi-device-chip">{{
+                midiService.connectedInputs()[0].name
+              }}</span>
+            @if (midiService.connectedInputs().length > 1) {
+              <span class="midi-device-extra"
+              >+{{ midiService.connectedInputs().length - 1 }}</span
+              >
+            }
+            @if (showMidiDropdown) {
+              <div class="midi-device-dropdown">
+                @for (input of midiService.connectedInputs(); track input.id) {
+                  <div class="midi-device-dropdown-item">{{ input.name }}</div>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        <div class="midi-btn-wrapper">
+          <button
+            class="btn-midi"
+            (click)="analogSynthViewModel.toggleMidiLearn()"
+            [class.active]="vm.learnMode"
+          >
+            <span class="led" [class.on]="vm.learnMode"></span>
+            {{ 'MIDI MAP' }}
+          </button>
+
+          @if (vm.learnMode) {
+            <div class="midi-tooltip">
+              Double click on UI knob/button with mouse first, then assign the
+              physical knob on your MIDI interface to it by rotating/pressing it.
+            </div>
           }
         </div>
-        }
-      </div>
-      }
 
-      <div class="midi-btn-wrapper">
-        <button
-          class="btn-midi"
-          (click)="analogSynthViewModel.toggleMidiLearn()"
-          [class.active]="vm.learnMode"
-        >
-          <span class="led" [class.on]="vm.learnMode"></span>
-          {{ 'MIDI LEARN' }}
-        </button>
-
-        @if (vm.learnMode) {
-        <div class="midi-tooltip">
-          Double click on UI knob/button with mouse first, then assign the
-          physical knob on your MIDI interface to it by rotating/pressing it.
-        </div>
-        }
-      </div>
-
-      <div class="midi-btn-wrapper">
-        <button
-          class="btn-midi"
-          (click)="showMidiMapper = !showMidiMapper"
-          [class.active]="showMidiMapper"
-        >
+        <div class="midi-btn-wrapper">
+          <button
+            class="btn-midi"
+            (click)="showMidiMapper = !showMidiMapper"
+            [class.active]="showMidiMapper"
+          >
           <span
             class="led"
             [class.on-yellow]="(vm.mappedParams | keyvalue).length > 0"
           ></span>
-          MIDI MAP
-        </button>
+            MIDI MAPPINGS
+          </button>
 
-        @if (showMidiMapper) {
-        <div class="midi-mapper-panel">
-          <div class="midi-mapper-header">
-            <span>MIDI MAPPINGS</span>
-            <button class="close-btn" (click)="showMidiMapper = false">
-              ✕
-            </button>
-          </div>
-          @if ((vm.mappedParams | keyvalue).length === 0) {
-          <div class="no-mappings">No active mappings</div>
-          } @else {
-          <table class="mapper-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Control</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (entry of vm.mappedParams | keyvalue; track entry.key; let i
-              = $index) { @if (entry.value) {
-              <tr [class.even]="i % 2 === 0">
-                <td class="row-num">{{ i + 1 }}</td>
-                <td class="param-name">{{ getKnobLabel(entry.key) }}</td>
-                <td class="unmap-cell">
-                  <button
-                    class="unmap-btn"
-                    (click)="analogSynthViewModel.unmapParam($any(entry.key))"
-                  >
-                    UNMAP
-                  </button>
-                </td>
-              </tr>
-              } }
-            </tbody>
-          </table>
+          @if (showMidiMapper) {
+            <div class="midi-mapper-panel">
+              <div class="midi-mapper-header">
+                <span>MIDI MAPPINGS</span>
+                <button class="close-btn" (click)="showMidiMapper = false">
+                  ✕
+                </button>
+              </div>
+              @if ((vm.mappedParams | keyvalue).length === 0) {
+                <div class="no-mappings">No active mappings</div>
+              } @else {
+                <table class="mapper-table">
+                  <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Control</th>
+                    <th></th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    @for (entry of vm.mappedParams | keyvalue; track entry.key; let i
+                      = $index) {
+                      @if (entry.value) {
+                        <tr [class.even]="i % 2 === 0">
+                          <td class="row-num">{{ i + 1 }}</td>
+                          <td class="param-name">{{ getKnobLabel(entry.key) }}</td>
+                          <td class="unmap-cell">
+                            <button
+                              class="unmap-btn"
+                              (click)="analogSynthViewModel.unmapParam($any(entry.key))"
+                            >
+                              UNMAP
+                            </button>
+                          </td>
+                        </tr>
+                      }
+                    }
+                  </tbody>
+                </table>
+              }
+            </div>
           }
         </div>
-        }
-      </div>
 
-      <lib-textarea />
-    </div>
-  </div>
-
-  <div class="module-grid">
-    <div class="synth-module source-module">
-      <h4 class="module-label">SOURCE</h4>
-      <div class="module-content">
-        <lib-source-module />
+        <lib-textarea />
       </div>
     </div>
 
-    <div class="synth-module utility-module">
-      <h4 class="module-label">UTILITY</h4>
+    <div class="module-grid">
+      <div class="synth-module source-module">
+        <h4 class="module-label">SOURCE</h4>
+        <div class="module-content">
+          <lib-source-module />
+        </div>
+      </div>
 
-      <div class="module-content utility-content">
-        <div class="utility-controls">
-          <div class="control-group">
-            <label class="control-label">VOICING</label>
-            <div class="voicing-toggle-wrapper">
-              <i
-                class="icon-lg"
-                [class.icon-fad-squareswitch-on]="vm.isPolyphonic"
-                [class.icon-fad-squareswitch-off]="!vm.isPolyphonic"
-                (click)="analogSynthViewModel.togglePolyphony()"
-              ></i>
-              <span class="voicing-text">{{
-                vm.isPolyphonic ? 'POLY' : 'MONO'
-              }}</span>
+      <div class="synth-module utility-module">
+        <h4 class="module-label">UTILITY</h4>
+
+        <div class="module-content utility-content">
+          <div class="utility-controls">
+            <div class="control-group">
+              <label class="control-label">VOICING</label>
+              <div class="voicing-toggle-wrapper">
+                <i
+                  class="icon-lg"
+                  [class.icon-fad-squareswitch-on]="vm.isPolyphonic"
+                  [class.icon-fad-squareswitch-off]="!vm.isPolyphonic"
+                  (click)="analogSynthViewModel.togglePolyphony()"
+                ></i>
+                <span class="voicing-text">{{
+                    vm.isPolyphonic ? 'POLY' : 'MONO'
+                  }}</span>
+              </div>
             </div>
+
+            <lib-noise-generator />
           </div>
 
-          <lib-noise-generator />
-        </div>
-
-        <div class="utility-scope">
-          <lib-oscilloscope />
+          <div class="utility-scope">
+            <lib-oscilloscope />
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="synth-module filter-module">
-      <h4 class="module-label">FILTER</h4>
-      <div class="module-content">
-        <lib-filter />
+      <div class="synth-module filter-module">
+        <h4 class="module-label">FILTER</h4>
+        <div class="module-content">
+          <lib-filter />
+        </div>
       </div>
-    </div>
 
-    <div class="synth-module amp-module">
-      <h4 class="module-label">AMPLIFIER</h4>
-      <div class="module-content">
-        <lib-gain />
+      <div class="synth-module amp-module">
+        <h4 class="module-label">AMPLIFIER</h4>
+        <div class="module-content">
+          <lib-gain />
+        </div>
       </div>
-    </div>
 
-    <div class="synth-module lfo-module">
-      <h4 class="module-label">LFO & SEQUENCER</h4>
-      <div class="module-content">
-        <lib-lfo-rack />
+      <div class="synth-module lfo-module">
+        <h4 class="module-label">LFO & SEQUENCER</h4>
+        <div class="module-content">
+          <lib-lfo-rack />
+        </div>
       </div>
-    </div>
 
-    <div class="synth-module fx-module">
-      <h4 class="module-label">EFFECTS RACK</h4>
-      <div class="module-content">
-        <lib-effects-rack />
+      <div class="synth-module fx-module">
+        <h4 class="module-label">EFFECTS RACK</h4>
+        <div class="module-content">
+          <lib-effects-rack />
+        </div>
       </div>
     </div>
   </div>
-</div>
 }
