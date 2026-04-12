@@ -182,7 +182,6 @@ import { Router } from '@angular/router';
         background-color: #0b0c10;
         color: #c5c6c7;
         font-family: 'Inter', sans-serif;
-        min-height: 100vh;
         line-height: 1.6;
       }
 

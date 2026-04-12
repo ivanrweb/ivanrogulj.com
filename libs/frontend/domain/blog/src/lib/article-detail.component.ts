@@ -61,7 +61,7 @@ import { ArticleApiService } from '@ivanrogulj.com/frontend/shared/data-access/a
   styles: [`
     @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@300;400;600&display=swap');
 
-    :host { display: block; background: #0b0c10; min-height: 100vh; }
+    :host { display: block; background: #0b0c10; }
 
     .article-nav { padding: 1.5rem 2rem; }
 
