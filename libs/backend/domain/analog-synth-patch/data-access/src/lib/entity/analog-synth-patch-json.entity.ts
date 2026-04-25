@@ -9,7 +9,7 @@ export class AnalogSynthPatchJsonEntity {
   @Column({ unique: true })
   public patchId!: string;
 
-  @Column({ type: 'jsonb' })
+  @Column({ type: 'json' })
   public patchJson!: AnalogSynthApi.FullSynthPatchJson;
 
   @UpdateDateColumn()

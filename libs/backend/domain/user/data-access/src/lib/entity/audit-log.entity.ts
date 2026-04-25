@@ -24,7 +24,7 @@ export class AuditLogEntity {
   @Column({ nullable: true })
   public email!: string | null;
 
-  @Column({ type: 'jsonb', nullable: true })
+  @Column({ type: 'json', nullable: true })
   public meta!: Record<string, unknown> | null;
 
   @CreateDateColumn()
