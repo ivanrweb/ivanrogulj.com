@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { tap, catchError } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 interface LoginState {
   loading: boolean;
@@ -159,7 +160,7 @@ export class LoginComponent {
     this.store.patchState({ loading: true, error: null });
     this.http
       .post<{ access_token: string }>(
-        'http://localhost:3000/api/auth/login',
+        `${environment.apiUrl}/auth/login`,
         {
           username: this.username,
           password: this.password,
