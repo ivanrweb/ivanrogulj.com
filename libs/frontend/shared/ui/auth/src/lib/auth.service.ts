@@ -1,9 +1,11 @@
-import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
+import { Injectable, InjectionToken, PLATFORM_ID, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+
+export const API_URL = new InjectionToken<string>('API_URL', { factory: () => '' });
 
 const TOKEN_KEY = 'user_token';
 const BASE_URL = '/api/auth/user';
@@ -29,6 +31,7 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly apiUrl = inject(API_URL);
 
   public readonly currentUser = signal<{ email: string; firstName: string | null; lastName: string | null } | null>(this.loadUserFromStorage());
 
@@ -76,6 +79,6 @@ export class AuthService {
   }
 
   public googleLogin(): void {
-    window.location.href = '/api/auth/user/google';
+    window.location.href = `${this.apiUrl}/api/auth/user/google`;
   }
 }

@@ -1,4 +1,4 @@
 export const environment = {
   mediumUsername: '@ivan.rogulj92',
-  apiUrl: '',
+  apiUrl: 'https://api.ivanrogulj.com',
 };
