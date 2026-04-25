@@ -14,6 +14,6 @@ export class AnalogSynthPatchSequencerEntity {
   @Column()
   public rowCount!: number;
 
-  @Column({ type: 'jsonb' })
+  @Column({ type: 'json' })
   public steps!: Array<{ active: boolean; note: number; velocity: number }>;
 }
