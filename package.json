@@ -5,6 +5,7 @@
   "scripts": {
     "start": "nx serve",
     "build": "nx build",
+    "build:all": "nx build frontend --configuration=production && nx run frontend:server --configuration=production && nx build backend --configuration=production && nx build admin-app --configuration=production",
     "test": "nx test"
   },
   "private": true,

@@ -1,0 +1,68 @@
+name: Deploy to cPanel
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build frontend (browser)
+        run: npx nx build frontend --configuration=production
+
+      - name: Build frontend (SSR server)
+        run: npx nx run frontend:server --configuration=production
+
+      - name: Build backend
+        run: npx nx build backend --configuration=production
+
+      - name: Build admin app
+        run: npx nx build admin-app --configuration=production
+
+      - name: Copy admin server.js to dist
+        run: cp libs/admin-app/server.js dist/admin-app/server.js
+
+      - name: Deploy frontend to cPanel
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: dist/apps/frontend/
+          server-dir: apps/frontend/
+          dangerous-clean-slate: false
+
+      - name: Deploy backend to cPanel
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: dist/apps/backend/
+          server-dir: apps/backend/
+          dangerous-clean-slate: false
+
+      - name: Deploy admin to cPanel
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: dist/admin-app/
+          server-dir: apps/admin/
+          dangerous-clean-slate: false
