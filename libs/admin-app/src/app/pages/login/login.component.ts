@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { tap, catchError } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { environment } from '../../../environments/environment';
 
 interface LoginState {
   loading: boolean;
