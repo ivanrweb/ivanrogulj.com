@@ -66,3 +66,10 @@ jobs:
           local-dir: dist/admin-app/
           server-dir: apps/admin/
           dangerous-clean-slate: false
+
+      - name: Restart apps via Passenger
+        run: |
+          echo "$(date)" > restart.txt
+          curl -T restart.txt "ftp://${{ secrets.FTP_SERVER }}/apps/frontend/tmp/restart.txt" --user "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" --ftp-create-dirs
+          curl -T restart.txt "ftp://${{ secrets.FTP_SERVER }}/apps/backend/tmp/restart.txt" --user "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" --ftp-create-dirs
+          curl -T restart.txt "ftp://${{ secrets.FTP_SERVER }}/apps/admin/tmp/restart.txt" --user "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" --ftp-create-dirs
