@@ -13,7 +13,7 @@ export const routes: Routes = [
       import('@ivanrogulj.com/dashboard').then((m) => m.DashboardComponent),
   },
   {
-    path: 'web-audio-projects',
+    path: 'audio',
     children: [
       {
         path: '',
@@ -62,6 +62,11 @@ export const routes: Routes = [
     path: 'articles/:slug',
     loadComponent: () =>
       import('@ivanrogulj.com/blog').then((m) => m.ArticleDetailComponent),
+  },
+  {
+    path: 'patreon',
+    loadComponent: () =>
+      import('./patreon.component').then((m) => m.PatreonComponent),
   },
   {
     path: 'login',

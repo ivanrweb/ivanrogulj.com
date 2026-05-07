@@ -11,13 +11,6 @@ import { Router } from '@angular/router';
     <div class="portfolio-container">
       <header class="hero-section">
         <div class="hero-content">
-          <div class="hero-meta">
-            <span class="hero-tag">// ivan rogulj</span>
-            <span class="hero-divider">·</span>
-            <span class="hero-tag">software engineer</span>
-            <span class="hero-divider">·</span>
-            <span class="hero-tag">musician</span>
-          </div>
           <h1 class="hero-title">Explore Software &amp; Music intersection</h1>
           <div class="hero-body">
             <div class="hero-lines">
@@ -31,18 +24,36 @@ import { Router } from '@angular/router';
               </p>
               <p class="hero-desc">
                 <img class="term-prompt" src="svg/terminal.svg" alt="" />VST
-                plugins (C++/JUCE) and PureData patches.
+                plugins (C++/JUCE)
               </p>
               <p class="hero-desc">
                 <img class="term-prompt" src="svg/terminal.svg" alt="" />Learn
-                about audio and tech in blog articles.
+                about audio and tech in blog articles. I make audio-related
+                content once a week on Medium. You can subscribe to my
+                newsletter to always get the latest post.
+              </p>
+              <p class="hero-desc">
+                <img class="term-prompt" src="svg/terminal.svg" alt="" /><span
+                  >Web Audio API projects (in-browser projects) are completely
+                  free for you to use, and you can support me on
+                  <a
+                    href="https://patreon.com/IvanRogulj"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="hero-link"
+                    >my Patreon</a
+                  >
+                  if you enjoy them :)</span
+                >
               </p>
               <p class="hero-desc">
                 <img
                   class="term-prompt"
                   src="svg/terminal.svg"
                   alt=""
-                />Everything is free.
+                />Downloadable VST Plugins for DAW-s can be purchased (discount
+                for Patreon members). I upload one new plugin on a first day of
+                every month.
               </p>
             </div>
             <!--            TODO: Uncomment when you have avatar picture -->
@@ -61,10 +72,7 @@ import { Router } from '@angular/router';
       </header>
 
       <main class="grid-layout">
-        <section
-          class="card"
-          (click)="navigate('web-audio-projects/analog-synth')"
-        >
+        <section class="card" (click)="navigate('audio/analog-synth')">
           <div class="card-top">
             <div class="card-icon"><img src="svg/synth.svg" alt="Synth" /></div>
             <div class="card-tags">
@@ -80,10 +88,7 @@ import { Router } from '@angular/router';
           </p>
         </section>
 
-        <section
-          class="card"
-          (click)="navigate('web-audio-projects/guitar-pedals')"
-        >
+        <section class="card" (click)="navigate('audio/guitar-pedals')">
           <div class="card-top">
             <div class="card-icon">
               <img src="svg/pedal.svg" alt="Pedals" />
@@ -99,10 +104,7 @@ import { Router } from '@angular/router';
           </p>
         </section>
 
-        <section
-          class="card"
-          (click)="navigate('web-audio-projects/chord-changer')"
-        >
+        <section class="card" (click)="navigate('audio/chord-changer')">
           <div class="card-top">
             <div class="card-icon">
               <img src="svg/chord-changer.svg" alt="Chord Changer" />
@@ -133,22 +135,22 @@ import { Router } from '@angular/router';
           </p>
         </section>
 
-        <section class="card" (click)="navigate('juce')">
-          <div class="card-top">
-            <div class="card-icon">
-              <img src="svg/puredata.svg" alt="PureData" />
-            </div>
-            <div class="card-tags">
-              <span class="tag">PureData</span>
-              <span class="tag">.pd</span>
-            </div>
-          </div>
-          <h3 class="card-title">PureData Patches</h3>
-          <p class="card-desc">
-            Downloadable PureData projects — signal processing experiments and
-            generative audio patches.
-          </p>
-        </section>
+        <!--        <section class="card" (click)="navigate('juce')">-->
+        <!--          <div class="card-top">-->
+        <!--            <div class="card-icon">-->
+        <!--              <img src="svg/puredata.svg" alt="PureData" />-->
+        <!--            </div>-->
+        <!--            <div class="card-tags">-->
+        <!--              <span class="tag">PureData</span>-->
+        <!--              <span class="tag">.pd</span>-->
+        <!--            </div>-->
+        <!--          </div>-->
+        <!--          <h3 class="card-title">PureData Patches</h3>-->
+        <!--          <p class="card-desc">-->
+        <!--            Downloadable PureData projects — signal processing experiments and-->
+        <!--            generative audio patches.-->
+        <!--          </p>-->
+        <!--        </section>-->
 
         <section class="card" (click)="navigate('articles')">
           <div class="card-top">
@@ -207,30 +209,10 @@ import { Router } from '@angular/router';
       }
 
       .hero-content {
-        max-width: 860px;
+        max-width: 1030px;
         margin: 0 auto;
         position: relative;
         z-index: 1;
-      }
-
-      .hero-meta {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 1.5rem;
-      }
-
-      .hero-tag {
-        font-family: 'Fira Code', monospace;
-        font-size: 0.9rem;
-        color: #888;
-        letter-spacing: 1px;
-      }
-
-      .hero-divider {
-        color: #555;
-        font-size: 1.4rem;
-        line-height: 1;
       }
 
       .hero-title {
@@ -261,7 +243,6 @@ import { Router } from '@angular/router';
         font-size: 1.15rem;
         font-weight: 300;
         color: #888;
-        max-width: 600px;
         margin: 0 0 0.6rem 0;
         line-height: 1.7;
         display: flex;
@@ -294,10 +275,21 @@ import { Router } from '@angular/router';
         letter-spacing: 0.5px;
       }
 
+      .hero-link {
+        color: #66fcf1;
+        text-decoration: none;
+        border-bottom: 1px solid rgba(102, 252, 241, 0.4);
+        transition: border-color 0.2s;
+      }
+
+      .hero-link:hover {
+        border-color: #66fcf1;
+      }
+
       /* ── Grid ── */
       .grid-layout {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        grid-template-columns: repeat(6, 1fr);
         gap: 1rem;
         max-width: 1100px;
         margin: 3rem auto;
@@ -305,7 +297,13 @@ import { Router } from '@angular/router';
       }
 
       /* ── Card ── */
+      .card:nth-child(4),
+      .card:nth-child(5) {
+        grid-column: span 3;
+      }
+
       .card {
+        grid-column: span 2;
         background: #0f1318;
         border: 1px solid #1a2030;
         border-radius: 6px;

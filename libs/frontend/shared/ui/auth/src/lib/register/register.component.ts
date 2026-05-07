@@ -20,7 +20,7 @@ interface RegisterState {
   template: `
     <div class="auth-wrapper">
       <div class="auth-card">
-        <h1 class="title">// register</h1>
+        <h1 class="title">Register</h1>
 
         @if (success()) {
           <div class="success-box">
