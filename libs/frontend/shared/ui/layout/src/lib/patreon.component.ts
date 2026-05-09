@@ -17,7 +17,7 @@ import { Component } from '@angular/core';
         </p>
         <a
           class="patreon-card"
-          href="https://patreon.com/IvanRogulj"
+          href="https://patreon.com/Soundionic"
           target="_blank"
           rel="noopener noreferrer"
         >

@@ -37,11 +37,11 @@ import { Router } from '@angular/router';
                   >Web Audio API projects (in-browser projects) are completely
                   free for you to use, and you can support me on
                   <a
-                    href="https://patreon.com/IvanRogulj"
+                    href="https://patreon.com/Soundionic"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="hero-link"
-                    >my Patreon</a
+                    >Patreon</a
                   >
                   if you enjoy them :)</span
                 >
