@@ -35,8 +35,8 @@ import { Component } from '@angular/core';
                 </svg>
               </div>
               <div class="card-text">
-                <span class="card-title">Ivan Rogulj</span>
-                <span class="card-sub">patreon.com/IvanRogulj</span>
+                <span class="card-title">Soundionic</span>
+                <span class="card-sub">patreon.com/Soundionic</span>
               </div>
             </div>
             <div class="cta">Become a Patron &rarr;</div>
