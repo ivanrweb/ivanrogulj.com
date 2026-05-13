@@ -12,8 +12,8 @@ import { Component } from '@angular/core';
           Creating web audio software, lessons and articles take time.<br />You
           can support this channel by becoming a Patron if you enjoy our
           content.<br />
-          Every new subscriber helps us making more quality content and keeping
-          this company going.<br /><br />Thank you!
+          Every new subscriber helps us make more quality products and
+          content.<br /><br />Thank you!
         </p>
         <a
           class="patreon-card"

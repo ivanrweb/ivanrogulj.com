@@ -35,6 +35,11 @@
             "glob": "**/*",
             "input": "apps/frontend/src/assets/images",
             "output": "images"
+          },
+          {
+            "glob": "**/*",
+            "input": "apps/frontend/src/assets/manuals",
+            "output": "assets/manuals"
           }
         ],
         "styles": ["apps/frontend/src/styles.scss"],

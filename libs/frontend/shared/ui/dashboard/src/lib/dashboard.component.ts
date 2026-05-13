@@ -28,8 +28,8 @@ import { Router } from '@angular/router';
               </p>
               <p class="hero-desc">
                 <img class="term-prompt" src="svg/terminal.svg" alt="" />Learn
-                about audio and tech in blog articles. I make audio-related
-                content once a week on Medium. You can subscribe to my
+                about audio and tech in blog articles. We make audio-related
+                content once a week on Medium. You can subscribe to our
                 newsletter to always get the latest post.
               </p>
               <p class="hero-desc">
@@ -52,7 +52,7 @@ import { Router } from '@angular/router';
                   src="svg/terminal.svg"
                   alt=""
                 />Downloadable VST Plugins for DAW-s can be purchased (discount
-                for Patreon members). I upload one new plugin on a first day of
+                for Patreon members). We upload one new plugin on a first day of
                 every month.
               </p>
             </div>
