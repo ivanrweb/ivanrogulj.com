@@ -23,48 +23,52 @@ import { Router } from '@angular/router';
                 effects, and utilities.
               </p>
               <p class="hero-desc">
-                <img class="term-prompt" src="svg/terminal.svg" alt="" />VST
-                plugins (C++/JUCE)
-              </p>
-              <p class="hero-desc">
-                <img class="term-prompt" src="svg/terminal.svg" alt="" />Learn
-                about audio and tech in blog articles. We make audio-related
-                content once a week on Medium. You can subscribe to our
-                newsletter to always get the latest post.
-              </p>
-              <p class="hero-desc">
-                <img class="term-prompt" src="svg/terminal.svg" alt="" /><span
-                  >Web Audio API projects (in-browser projects) are completely
-                  free for you to use, and you can support me on
-                  <a
-                    href="https://patreon.com/Soundionic"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="hero-link"
-                    >Patreon</a
-                  >
-                  if you enjoy them :)</span
-                >
-              </p>
-              <p class="hero-desc">
                 <img
                   class="term-prompt"
                   src="svg/terminal.svg"
                   alt=""
-                />Downloadable VST Plugins for DAW-s can be purchased (discount
-                for Patreon members). We upload one new plugin on a first day of
-                every month.
+                />Downloadable VST plugins to use in your DAW (C++/JUCE)
               </p>
+              @if(false){
+              <!--              <p class="hero-desc">-->
+              <!--                <img class="term-prompt" src="svg/terminal.svg" alt="" />Learn-->
+              <!--                about audio and tech in blog articles. I make audio-related-->
+              <!--                content once a week on Medium. You can subscribe to my-->
+              <!--                newsletter to always get the latest post.-->
+              <!--              </p>-->
+              <!--              <p class="hero-desc">-->
+              <!--                <img class="term-prompt" src="svg/terminal.svg" alt="" /><span-->
+              <!--                  >Web Audio API projects (in-browser projects) are completely-->
+              <!--                  free for you to use, and you can support me on-->
+              <!--                  <a-->
+              <!--                    href="https://patreon.com/Soundionic"-->
+              <!--                    target="_blank"-->
+              <!--                    rel="noopener noreferrer"-->
+              <!--                    class="hero-link"-->
+              <!--                    >Patreon</a-->
+              <!--                  >-->
+              <!--                  if you enjoy them :)</span-->
+              <!--                >-->
+              <!--              </p>-->
+              <!--              <p class="hero-desc">-->
+              <!--                <img-->
+              <!--                  class="term-prompt"-->
+              <!--                  src="svg/terminal.svg"-->
+              <!--                  alt=""-->
+              <!--                />Downloadable VST Plugins for DAW-s can be purchased (discount-->
+              <!--                for Patreon members). I upload one new plugin on a first day of-->
+              <!--                every month.-->
+              <!--              </p>-->
+              <!--            TODO: Uncomment when you have avatar picture -->
+              <!--            <lib-avatar [size]="200" initials="IR" src="avatar.jpg" />-->
+              }
             </div>
-            <!--            TODO: Uncomment when you have avatar picture -->
-            <!--            <lib-avatar [size]="200" initials="IR" src="avatar.jpg" />-->
           </div>
           <div class="hero-stack">
             <span class="stack-tag">Web Audio API</span>
             <span class="stack-tag">MIDI</span>
             <span class="stack-tag">DSP</span>
             <span class="stack-tag">JUCE Framework (C++)</span>
-            <span class="stack-tag">PureData</span>
             <span class="stack-tag">Angular</span>
             <span class="stack-tag">NestJS</span>
           </div>
@@ -152,21 +156,20 @@ import { Router } from '@angular/router';
         <!--          </p>-->
         <!--        </section>-->
 
-        <section class="card" (click)="navigate('articles')">
-          <div class="card-top">
-            <div class="card-icon"><img src="svg/blog.svg" alt="Blog" /></div>
-            <div class="card-tags">
-              <span class="tag">Tech</span>
-              <span class="tag">Audio</span>
-            </div>
-          </div>
-          <h3 class="card-title">Blog — Music &amp; Code</h3>
-          <p class="card-desc">
-            Technical writing on Web Audio API, JUCE, PureData, and web
-            development. Angular, NestJS, RxJS, Nx — real-world guides and best
-            practices.
-          </p>
-        </section>
+        <!--        <section class="card" (click)="navigate('articles')">-->
+        <!--          <div class="card-top">-->
+        <!--            <div class="card-icon"><img src="svg/blog.svg" alt="Blog" /></div>-->
+        <!--            <div class="card-tags">-->
+        <!--              <span class="tag">Tech</span>-->
+        <!--              <span class="tag">Audio</span>-->
+        <!--            </div>-->
+        <!--          </div>-->
+        <!--          <h3 class="card-title">Blog — Music &amp; Code</h3>-->
+        <!--          <p class="card-desc">-->
+        <!--            Technical writing on Web Audio API, JUCE, and web development.-->
+        <!--            Angular, NestJS, RxJS, Nx — real-world guides and best practices.-->
+        <!--          </p>-->
+        <!--        </section>-->
       </main>
     </div>
   `,
@@ -289,7 +292,7 @@ import { Router } from '@angular/router';
       /* ── Grid ── */
       .grid-layout {
         display: grid;
-        grid-template-columns: repeat(6, 1fr);
+        grid-template-columns: repeat(2, 1fr);
         gap: 1rem;
         max-width: 1100px;
         margin: 3rem auto;
@@ -297,13 +300,7 @@ import { Router } from '@angular/router';
       }
 
       /* ── Card ── */
-      .card:nth-child(4),
-      .card:nth-child(5) {
-        grid-column: span 3;
-      }
-
       .card {
-        grid-column: span 2;
         background: #0f1318;
         border: 1px solid #1a2030;
         border-radius: 6px;

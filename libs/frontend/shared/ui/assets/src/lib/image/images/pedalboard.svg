@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <rect width="200" height="200" fill="#0b0c10"/>
+
+  <!-- stomp box body -->
+  <rect x="44" y="30" width="112" height="130" fill="#111820" rx="6" stroke="#2a3545" stroke-width="1.5"/>
+
+  <!-- signal in label + jack -->
+  <circle cx="56" cy="46" r="5" fill="#0b0c10" stroke="#45a29e" stroke-width="1.5"/>
+  <text x="56" y="63" text-anchor="middle" font-family="monospace" font-size="7" fill="#888">IN</text>
+
+  <!-- signal out label + jack -->
+  <circle cx="144" cy="46" r="5" fill="#0b0c10" stroke="#45a29e" stroke-width="1.5"/>
+  <text x="144" y="63" text-anchor="middle" font-family="monospace" font-size="7" fill="#888">OUT</text>
+
+  <!-- signal flow: clean in, distorted out -->
+  <!-- clean wave -->
+  <path d="M26,100 Q33,100 36,100 L44,100" stroke="#45a29e" stroke-width="1.5" fill="none"/>
+  <!-- distorted wave (inside box area, visual only) -->
+  <path d="M68,100 L80,100 L82,80 L86,120 L90,80 L94,120 L96,100 L108,100 L110,80 L114,120 L118,80 L122,120 L124,100 L132,100"
+        stroke="#66fcf1" stroke-width="1.5" fill="none" stroke-linecap="square"/>
+  <!-- clean out -->
+  <path d="M156,100 L164,100 Q167,100 174,100" stroke="#45a29e" stroke-width="1.5" fill="none"/>
+
+  <!-- arrow out -->
+  <polyline points="170,97 174,100 170,103" fill="none" stroke="#45a29e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- footswitch -->
+  <circle cx="100" cy="136" r="22" fill="#0d1117" stroke="#333" stroke-width="1.5"/>
+  <circle cx="100" cy="136" r="14" fill="#1a2535" stroke="#2a3545" stroke-width="1"/>
+  <circle cx="100" cy="136" r="5" fill="#ff007f" opacity="0.85"/>
+
+  <!-- led indicator -->
+  <circle cx="100" cy="72" r="4" fill="#ff007f" opacity="0.9"/>
+  <circle cx="100" cy="72" r="2" fill="#ffaacc"/>
+
+  <!-- title on pedal -->
+  <text x="100" y="47" text-anchor="middle" font-family="monospace" font-size="8" fill="#66fcf1" letter-spacing="1">PEDALBOARD</text>
+
+  <!-- bottom label -->
+  <text x="100" y="185" text-anchor="middle" font-family="monospace" font-size="8" fill="#45a29e" letter-spacing="2">GUITAR FX</text>
+</svg>
