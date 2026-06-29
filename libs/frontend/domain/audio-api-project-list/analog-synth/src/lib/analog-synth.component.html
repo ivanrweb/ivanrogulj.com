@@ -4,6 +4,8 @@
       <div class="header-left">
         <h3 class="synth-title">OHM-1</h3>
 
+        <button libBtn (click)="startTour()">APP TOUR</button>
+
         <a
           class="manual-btn"
           href="assets/manuals/OHM-1_Manual.pdf"
@@ -22,7 +24,7 @@
           />
         }
 
-        <button libBtn (click)="onSaveButtonClick()">SAVE AS NEW</button>
+        <button libBtn (click)="onSaveButtonClick()">SAVE CURRENT PATCH</button>
 
         @if (selectedPresetId) {
           <button libBtn (click)="showEditDialog = true">UPDATE</button>
@@ -245,3 +247,5 @@
     </div>
   </div>
 }
+
+<lib-tour [steps]="tourSteps" storageKey="analog-synth-tour" />

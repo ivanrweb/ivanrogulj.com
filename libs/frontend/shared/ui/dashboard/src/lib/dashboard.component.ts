@@ -332,7 +332,7 @@ import { Router } from '@angular/router';
       .project-inner {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 5rem 3rem;
+        padding: 3rem 3rem;
         display: grid;
         grid-template-columns: 1fr 1.6fr;
         gap: 5rem;

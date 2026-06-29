@@ -38,36 +38,46 @@ const CHORD_CHANGER_TOUR_STEPS: TourStep[] = [
   {
     targetSelector: '.editor-section',
     title: 'Paste Your Song',
-    content:
-      'Paste your song lyrics here with chords written inline — e.g. Am, F, C G — or on their own lines. Any recognised chord symbol will be transposed automatically.',
+    content: [
+      'Paste your song lyrics here with chords written inline — e.g. Am, F, C G — or on their own lines.',
+      'Any recognised chord symbol will be transposed automatically.',
+    ],
     tooltipPosition: 'bottom',
   },
   {
     targetSelector: '.transpose-controls',
     title: 'Transpose',
-    content:
-      'Pick how many semitones to shift. Negative numbers lower the key, positive numbers raise it. Press 0 at any time to reset back to the original.',
+    content: [
+      'Pick how many semitones to shift. Negative numbers lower the key, positive numbers raise it.',
+      'Press 0 at any time to reset back to the original.',
+    ],
     tooltipPosition: 'bottom',
   },
   {
     targetSelector: '.output-section',
     title: 'Transposed Output',
-    content:
-      'Your song appears here instantly with all chords transposed. You can freely copy, edit, or keep adjusting the semitone offset.',
+    content: [
+      'Your song appears here instantly with all chords transposed.',
+      'You can freely copy, edit, or keep adjusting the semitone offset.',
+    ],
     tooltipPosition: 'bottom',
   },
   {
     targetSelector: '.analysis-footer',
     title: 'Key & Chord Analysis',
-    content:
-      'The tool analyses your chord progression and suggests the most probable musical keys, lists all unique chords found, and shows the Roman numeral progression.',
+    content: [
+      'The tool analyses your chord progression and suggests the most probable musical keys.',
+      'It also lists all unique chords found and shows the Roman numeral progression based on the top key.',
+    ],
     tooltipPosition: 'top',
   },
   {
     targetSelector: '.changer-header',
     title: 'Save & Export',
-    content:
-      'Log in to save songs to your account and access them any time. Use Export as PDF to get a print-ready version of the transposed song.',
+    content: [
+      'Log in to save songs to your account and access them any time via the MY SONGS dropdown.',
+      'Use Export as PDF to get a print-ready version of the transposed song.',
+    ],
     tooltipPosition: 'bottom',
   },
 ];
