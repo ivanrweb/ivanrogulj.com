@@ -1,4 +1,5 @@
 import {
+  afterNextRender,
   AfterViewInit,
   Component,
   computed,
@@ -8,7 +9,8 @@ import {
   OnDestroy,
   OnInit,
   signal,
-  ViewChild
+  ViewChild,
+  viewChild,
 } from '@angular/core';
 import { CommonModule, KeyValuePipe } from '@angular/common';
 import { SourceModuleComponent } from './source-module.component';
@@ -46,6 +48,87 @@ import {
 } from '@ivanrogulj.com/action-dropdown';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { ButtonDirective } from '@ivanrogulj.com/button';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { TourComponent, TourStep } from '@ivanrogulj.com/tour';
+
+const TOUR_STORAGE_KEY = 'analog-synth-tour';
+
+const ANALOG_SYNTH_TOUR_STEPS: TourStep[] = [
+  {
+    targetSelector: '.synth-header',
+    title: 'Welcome to OHM-1',
+    content: [
+      'Connect your MIDI controller to your computer, this app will automatically read it.',
+      'Click MIDI MAP (or press M) to enter learn mode — double-click any knob, then move a hardware control to map it.',
+      'Save your sound as a preset, load community patches, or use the AI Patch button to generate a sound from text. Full PDF manual is available above.',
+    ],
+    tooltipPosition: 'bottom',
+  },
+  {
+    targetSelector: '.source-module',
+    title: 'SOURCE — OSC & Sampler',
+    content: [
+      'Toggle between OSC and SAMPLER at the top. In OSC mode, choose waveform shape (sine, sawtooth, square, triangle), stack up to 8 oscillators per note, and dial Spread to detune them for a fat sound.',
+      'In SAMPLER mode the synth plays back an audio sample instead of generating a tone — useful for realistic instruments or textured pads.',
+    ],
+    tooltipPosition: 'top',
+  },
+  {
+    targetSelector: '.utility-module',
+    title: 'UTILITY — Voicing & Scope',
+    content: [
+      'Toggle between POLY (multiple simultaneous notes) and MONO (single note, legato-friendly).',
+      'Add Noise to blend in breath or wind texture. The oscilloscope shows the live output waveform.',
+    ],
+    tooltipPosition: 'top',
+  },
+  {
+    targetSelector: '.filter-module',
+    title: 'FILTER — Shape the Tone',
+    content: [
+      'The lowpass filter cuts everything above the Cutoff frequency — lower it for a darker, warmer sound.',
+      'Resonance adds a sharp peak at the cutoff for a more aggressive character.',
+      'The filter ADSR sweeps the cutoff on each note, just like the amp envelope.',
+    ],
+    tooltipPosition: 'top',
+  },
+  {
+    targetSelector: '.amp-module',
+    title: 'AMPLIFIER — Volume Envelope',
+    content: [
+      'Attack fades in, Decay drops to the Sustain level while held, Release rings out after key-up.',
+      'Short attack + long release = plucky pad. Long attack = slow swell.',
+    ],
+    tooltipPosition: 'top',
+  },
+  {
+    targetSelector: '.lfo-section',
+    title: 'LFO — Modulation',
+    content: [
+      'Two Low Frequency Oscillators modulate pitch, filter cutoff, or volume at a set rate and depth.',
+      'LFO → Pitch = vibrato.  LFO → Filter = wah wobble.  LFO → Volume = tremolo.',
+    ],
+    tooltipPosition: 'top',
+  },
+  {
+    targetSelector: '.sequencer-section',
+    title: 'SEQUENCER',
+    content: [
+      'The step sequencer sits to the right of the LFOs. Enable steps, set BPM, and hit Play.',
+      'Each active step triggers a note automatically — combine with the filter envelope for arpeggiated patterns.',
+    ],
+    tooltipPosition: 'top',
+  },
+  {
+    targetSelector: '.fx-module',
+    title: 'EFFECTS RACK',
+    content: [
+      'Four serial effects in fixed chain order: Distortion → Chorus → Delay → Reverb.',
+      'Mix each one in independently. Distortion adds grit, Chorus widens, Delay echoes, Reverb places the sound in a space.',
+    ],
+    tooltipPosition: 'top',
+  },
+];
 
 @Component({
   selector: 'lib-analog-synth',
@@ -65,6 +148,7 @@ import { ButtonDirective } from '@ivanrogulj.com/button';
     DialogComponent,
     ActionDropdownComponent,
     ButtonDirective,
+    TourComponent,
   ],
   providers: [AudioContextService],
   templateUrl: './analog-synth.component.html',
@@ -79,6 +163,21 @@ export class AnalogSynthComponent implements OnInit, AfterViewInit, OnDestroy {
   public authService = inject(AuthService);
   private readonly patchApiService = inject(PatchApiService);
   private readonly router = inject(Router);
+
+  private readonly tourRef = viewChild(TourComponent);
+  public readonly tourSteps = ANALOG_SYNTH_TOUR_STEPS;
+
+  constructor() {
+    afterNextRender(() => {
+      if (!localStorage.getItem(TOUR_STORAGE_KEY)) {
+        setTimeout(() => this.tourRef()?.start(), 500);
+      }
+    });
+  }
+
+  public startTour(): void {
+    this.tourRef()?.start();
+  }
 
   public readonly oscillatorCount = [1, 2, 3, 4, 5, 6, 7, 8];
 
@@ -118,7 +217,8 @@ export class AnalogSynthComponent implements OnInit, AfterViewInit, OnDestroy {
       target.tagName === 'INPUT' ||
       target.tagName === 'TEXTAREA' ||
       target.isContentEditable
-    ) return;
+    )
+      return;
     this.analogSynthViewModel.toggleMidiLearn();
   }
 
@@ -216,7 +316,9 @@ export class AnalogSynthComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public onPresetSelected(item: ActionDropdownItem): void {
-    const preset = this.myPresets().find((p) => p.id === item.id) ?? this.publicPresets().find((p) => p.id === item.id);
+    const preset =
+      this.myPresets().find((p) => p.id === item.id) ??
+      this.publicPresets().find((p) => p.id === item.id);
     this.selectedPresetId = item.id;
     this.selectedPresetName = item.name;
     this.selectedPresetIsPublic = preset?.isPublic ?? false;

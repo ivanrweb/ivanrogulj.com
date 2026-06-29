@@ -16,29 +16,37 @@ const GUITAR_PEDALS_TOUR_STEPS: TourStep[] = [
   {
     targetSelector: '.controls-bar',
     title: 'Connect Your Guitar',
-    content:
-      'Select your audio input device (e.g. your Focusrite interface or built-in mic), then click ▶ Start. Your browser will ask for microphone permission — this is required to capture the guitar signal.',
+    content: [
+      'Select your audio input device (e.g. your Focusrite interface or built-in mic), then click ▶ Start.',
+      'Your browser will ask for microphone permission — this is required to capture the guitar signal.',
+    ],
     tooltipPosition: 'bottom',
   },
   {
     targetSelector: '.board',
     title: 'The Pedalboard',
-    content:
-      'Four real-time effects run live through the Web Audio API. Drag any pedal left or right to reorder it — the signal chain updates instantly without any audio glitch.',
+    content: [
+      'Four real-time effects run live through the Web Audio API.',
+      'Drag any pedal left or right to reorder it — the signal chain updates instantly without any audio glitch.',
+    ],
     tooltipPosition: 'top',
   },
   {
     targetSelector: '.pedal-slot',
     title: 'Each Pedal',
-    content:
-      'Click the LED dot at the top of any pedal to bypass or re-enable that effect. Use the knobs to dial in Drive, Tone, Mix and other parameters in real time.',
+    content: [
+      'Click the LED dot at the top of any pedal to bypass or re-enable that effect.',
+      'Use the knobs to dial in Drive, Tone, Mix and other parameters in real time.',
+    ],
     tooltipPosition: 'top',
   },
   {
     targetSelector: '.gain-controls',
     title: 'Input & Master',
-    content:
-      'Input controls how loud the guitar signal enters the chain — useful if your interface has no hardware gain knob. Master sets the final output volume going to your speakers.',
+    content: [
+      'Input controls how loud the guitar signal enters the chain — useful if your interface has no hardware gain knob.',
+      'Master sets the final output volume going to your speakers.',
+    ],
     tooltipPosition: 'bottom',
   },
 ];
@@ -123,7 +131,7 @@ const GUITAR_PEDALS_TOUR_STEPS: TourStep[] = [
     </div>
     } }
 
-    <lib-tour [steps]="tourSteps" storageKey="guitar-pedals-tour-v1" />
+    <lib-tour [steps]="tourSteps" storageKey="guitar-pedals-tour" />
   `,
   styles: [
     `
