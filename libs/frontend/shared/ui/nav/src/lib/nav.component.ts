@@ -228,7 +228,7 @@ export class NavComponent {
   @Input()
   public navItems: NavItem[] = [
     { title: 'Dashboard', url: 'dashboard' },
-    { title: 'Audio Projects', url: 'audio' },
+    { title: 'Web Audio API Projects', url: 'audio' },
     { title: 'VST Plugins', url: 'juce' },
     // { title: 'Articles', url: 'articles' },
     // { title: 'Patreon', url: 'patreon' },

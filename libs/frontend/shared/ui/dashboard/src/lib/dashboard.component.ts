@@ -9,18 +9,22 @@ import { Router } from '@angular/router';
   imports: [],
   template: `
     <div class="portfolio-container">
-
       <!-- HERO -->
       <section class="hero-section">
         <div class="hero-glow"></div>
         <div class="hero-glow hero-glow--secondary"></div>
         <div class="hero-content">
-          <div class="hero-eyebrow">Ivan Rogulj &nbsp;·&nbsp; Software &amp; Music</div>
-          <h1 class="hero-title">Explore Software &amp;<br />Music intersection</h1>
+          <div class="hero-eyebrow">
+            Ivan Rogulj &nbsp;·&nbsp; Software &amp; Music
+          </div>
+          <h1 class="hero-title">
+            Explore Software &amp;<br />Music intersection
+          </h1>
           <div class="hero-lines">
             <p class="hero-desc">
               <img class="term-prompt" src="svg/terminal.svg" alt="" />
-              Browser-based audio tools built on the Web Audio API — synths, effects, and utilities.
+              Browser-based audio tools built on the Web Audio API — synths,
+              effects, and utilities.
             </p>
             <p class="hero-desc">
               <img class="term-prompt" src="svg/terminal.svg" alt="" />
@@ -43,46 +47,57 @@ import { Router } from '@angular/router';
         <div class="project-inner">
           <div class="project-visual">
             <div class="visual-box">
-              <img src="svg/synth.svg" alt="Synth" />
+              <img src="images/synth.svg" alt="Synth" />
             </div>
           </div>
           <div class="project-text">
             <div class="project-tags">
-              <span class="tag">Web Audio API</span>
-              <span class="tag">MIDI</span>
+              <span class="tag">Audio API</span>
+              <span class="tag">MIDI API</span>
             </div>
             <h2 class="project-title">Virtual Analog Synth</h2>
             <p class="project-desc">
-              Try OHM-1, a fully-featured polyphonic subtractive synthesizer that runs entirely in your browser.
-              Three oscillators with selectable waveforms, a resonant low-pass filter with ADSR envelope,
-              LFO modulation, a step sequencer, and a built-in effects chain — distortion, chorus, delay, reverb.
-              Connect your MIDI controller for a hands-on hardware experience. No downloads, no installs.
+              Try OHM-1, a fully-featured polyphonic subtractive synthesizer
+              that runs entirely in your browser. Three oscillators with
+              selectable waveforms, a resonant low-pass filter with ADSR
+              envelope, LFO modulation, a step sequencer, and a built-in effects
+              chain — distortion, chorus, delay, reverb. Connect your MIDI
+              controller for a hands-on hardware experience. No downloads, no
+              installs.
             </p>
-            <div class="project-cta">Launch synth <span class="cta-arrow">→</span></div>
+            <div class="project-cta">
+              Launch synth <span class="cta-arrow">→</span>
+            </div>
           </div>
         </div>
       </section>
 
       <!-- GUITAR PEDALBOARD -->
-      <section class="project-row project-row--alt" (click)="navigate('audio/guitar-pedals')">
+      <section
+        class="project-row project-row--alt"
+        (click)="navigate('audio/guitar-pedals')"
+      >
         <div class="project-inner project-inner--reversed">
           <div class="project-text">
             <div class="project-tags">
               <span class="tag">Web Audio API</span>
-              <span class="tag">getUserMedia</span>
             </div>
             <h2 class="project-title">Guitar Pedalboard</h2>
             <p class="project-desc">
-              Plug your guitar into any audio interface and start building your rig directly in the browser.
-              Stack and reorder distortion, chorus, delay, and reverb pedals in any combination via drag-and-drop.
-              Processes your guitar signal in real-time with minimal latency. No app installations required —
-              works entirely in Chrome. Use a dedicated audio interface for best results.
+              Plug your guitar into any audio interface and start building your
+              rig directly in the browser. Stack and reorder distortion, chorus,
+              delay, and reverb pedals in any combination via drag-and-drop.
+              Processes your guitar signal in real-time with minimal latency. No
+              app installations required — works entirely in Chrome. Use a
+              dedicated audio interface for best results.
             </p>
-            <div class="project-cta">Open pedalboard <span class="cta-arrow">→</span></div>
+            <div class="project-cta">
+              Open pedalboard <span class="cta-arrow">→</span>
+            </div>
           </div>
           <div class="project-visual">
             <div class="visual-box">
-              <img src="svg/pedal.svg" alt="Pedals" />
+              <img src="images/pedalboard.svg" alt="Pedals" />
             </div>
           </div>
         </div>
@@ -93,7 +108,7 @@ import { Router } from '@angular/router';
         <div class="project-inner">
           <div class="project-visual">
             <div class="visual-box">
-              <img src="svg/chord-changer.svg" alt="Chord Changer" />
+              <img src="images/chord-changer.svg" alt="Chord Changer" />
             </div>
           </div>
           <div class="project-text">
@@ -103,12 +118,16 @@ import { Router } from '@angular/router';
             </div>
             <h2 class="project-title">Chord Changer</h2>
             <p class="project-desc">
-              Paste your song lyrics together with chord notation and instantly transpose the entire piece to any key.
-              The tool automatically detects the current key, extracts all chords, and lets you shift up or down
-              by any number of semitones. Supports all standard chord notations — sus, maj7, add9, slash chords.
-              Export the result as a formatted PDF, ready to print or share.
+              Paste your song lyrics together with chord notation and instantly
+              transpose the entire piece to any key. The tool automatically
+              detects the current key, extracts all chords, and lets you shift
+              up or down by any number of semitones. Supports all standard chord
+              notations — sus, maj7, add9, slash chords. Export the result as a
+              formatted PDF, ready to print or share.
             </p>
-            <div class="project-cta">Try tool <span class="cta-arrow">→</span></div>
+            <div class="project-cta">
+              Try tool <span class="cta-arrow">→</span>
+            </div>
           </div>
         </div>
       </section>
@@ -123,21 +142,23 @@ import { Router } from '@angular/router';
             </div>
             <h2 class="project-title">VST Plugins</h2>
             <p class="project-desc">
-              Native audio plugins built with the JUCE framework for professional DAW integration.
-              Available as VST3 on Windows and AU/VST3 on macOS. Compatible with Ableton Live, FL Studio,
-              Logic Pro, and other major DAWs. Download for free and use them in your productions.
-              Each plugin ships with a PDF manual.
+              Native audio plugins built with the JUCE framework for
+              professional DAW integration. Available as VST3 on Windows and
+              AU/VST3 on macOS. Compatible with Ableton Live, FL Studio, Logic
+              Pro, and other major DAWs. Download for free and use them in your
+              productions. Each plugin ships with a PDF manual.
             </p>
-            <div class="project-cta">View plugins <span class="cta-arrow">→</span></div>
+            <div class="project-cta">
+              View plugins <span class="cta-arrow">→</span>
+            </div>
           </div>
           <div class="project-visual">
             <div class="visual-box">
-              <img src="svg/vst.svg" alt="VST" />
+              <img src="images/vst.svg" alt="VST" />
             </div>
           </div>
         </div>
       </section>
-
     </div>
   `,
   styles: [
@@ -147,11 +168,11 @@ import { Router } from '@angular/router';
       :host {
         display: block;
         width: 100%;
-        background-color: #0b0c10;
+        background-color: #080f1c;
       }
 
       .portfolio-container {
-        background-color: #0b0c10;
+        background-color: #080f1c;
         color: #c5c6c7;
         font-family: 'Inter', sans-serif;
         line-height: 1.6;
@@ -164,16 +185,19 @@ import { Router } from '@angular/router';
         justify-content: center;
         position: relative;
         overflow: hidden;
-        border-bottom: 1px solid #1a2030;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        background: linear-gradient(180deg, #0a1628 0%, #080f1c 100%);
       }
 
       .hero-section::before {
         content: '';
         position: absolute;
         inset: 0;
-        background-image:
-          linear-gradient(rgba(102, 252, 241, 0.04) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(102, 252, 241, 0.04) 1px, transparent 1px);
+        background-image: linear-gradient(
+            rgba(102, 252, 241, 0.05) 1px,
+            transparent 1px
+          ),
+          linear-gradient(90deg, rgba(102, 252, 241, 0.05) 1px, transparent 1px);
         background-size: 48px 48px;
         pointer-events: none;
       }
@@ -183,18 +207,26 @@ import { Router } from '@angular/router';
         top: -20%;
         left: 50%;
         transform: translateX(-50%);
-        width: 700px;
-        height: 500px;
-        background: radial-gradient(ellipse at center, rgba(102, 252, 241, 0.07) 0%, transparent 65%);
+        width: 800px;
+        height: 600px;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(102, 252, 241, 0.12) 0%,
+          transparent 60%
+        );
         pointer-events: none;
       }
 
       .hero-glow--secondary {
         top: 10%;
         left: 70%;
-        width: 400px;
-        height: 300px;
-        background: radial-gradient(ellipse at center, rgba(255, 0, 127, 0.04) 0%, transparent 70%);
+        width: 500px;
+        height: 400px;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(255, 0, 127, 0.07) 0%,
+          transparent 65%
+        );
       }
 
       .hero-content {
@@ -212,10 +244,11 @@ import { Router } from '@angular/router';
       .hero-eyebrow {
         font-family: 'Fira Code', monospace;
         font-size: 0.75rem;
-        color: #45a29e;
+        color: #66fcf1;
         letter-spacing: 2px;
         text-transform: uppercase;
-        border: 1px solid rgba(69, 162, 158, 0.25);
+        border: 1px solid rgba(102, 252, 241, 0.3);
+        background: rgba(102, 252, 241, 0.05);
         padding: 4px 14px;
         border-radius: 20px;
       }
@@ -241,7 +274,7 @@ import { Router } from '@angular/router';
       .hero-desc {
         font-size: 1rem;
         font-weight: 300;
-        color: #888;
+        color: #b0bcce;
         margin: 0;
         line-height: 1.7;
         display: flex;
@@ -268,8 +301,9 @@ import { Router } from '@angular/router';
       .stack-tag {
         font-family: 'Fira Code', monospace;
         font-size: 0.75rem;
-        color: #45a29e;
-        border: 1px solid rgba(69, 162, 158, 0.25);
+        color: #c5c6c7;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.04);
         padding: 3px 10px;
         border-radius: 3px;
         letter-spacing: 0.5px;
@@ -278,21 +312,21 @@ import { Router } from '@angular/router';
       /* ── Project rows ── */
       .project-row {
         width: 100%;
-        border-bottom: 1px solid #1a2030;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         cursor: pointer;
-        transition: background 0.2s;
+        transition: background 0.25s;
       }
 
       .project-row:hover {
-        background: #0d1117;
+        background: rgba(255, 255, 255, 0.02);
       }
 
       .project-row--alt {
-        background: #0d1117;
+        background: #0d1828;
       }
 
       .project-row--alt:hover {
-        background: #0f1520;
+        background: #0f1e30;
       }
 
       .project-inner {
@@ -316,26 +350,29 @@ import { Router } from '@angular/router';
       }
 
       .visual-box {
-        width: 220px;
-        height: 220px;
-        background: #111820;
-        border: 1px solid #1a2030;
-        border-radius: 16px;
+        width: 240px;
+        height: 240px;
+        background: linear-gradient(135deg, #0f1e32 0%, #0c1626 100%);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
         transition: border-color 0.25s, box-shadow 0.25s;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
       }
 
       .project-row:hover .visual-box {
-        border-color: rgba(102, 252, 241, 0.25);
-        box-shadow: 0 0 40px rgba(102, 252, 241, 0.06);
+        border-color: rgba(102, 252, 241, 0.3);
+        box-shadow: 0 0 50px rgba(102, 252, 241, 0.08),
+          0 4px 24px rgba(0, 0, 0, 0.5);
       }
 
       .visual-box img {
-        width: 150px;
-        height: 150px;
-        object-fit: contain;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 18px;
       }
 
       /* ── Project text ── */
@@ -355,7 +392,8 @@ import { Router } from '@angular/router';
         font-family: 'Fira Code', monospace;
         font-size: 0.72rem;
         color: #66fcf1;
-        border: 1px solid rgba(102, 252, 241, 0.2);
+        border: 1px solid rgba(102, 252, 241, 0.3);
+        background: rgba(102, 252, 241, 0.06);
         padding: 2px 8px;
         border-radius: 3px;
         letter-spacing: 0.5px;
@@ -375,7 +413,7 @@ import { Router } from '@angular/router';
       .project-desc {
         font-size: 1rem;
         font-weight: 300;
-        color: #9ba3af;
+        color: #b8c5d5;
         margin: 0;
         line-height: 1.8;
       }
