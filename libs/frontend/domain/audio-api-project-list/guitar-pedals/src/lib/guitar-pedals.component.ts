@@ -1,10 +1,47 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { afterNextRender, Component, computed, inject, OnInit, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { KnobComponent } from '@ivanrogulj.com/knob';
 import { SelectComponent, SelectOption } from '@ivanrogulj.com/select';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { ButtonDirective } from '@ivanrogulj.com/button';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { TourComponent, TourStep } from '@ivanrogulj.com/tour';
 import { GuitarPedalsViewModel } from '../viewmodel/guitar-pedals.viewmodel';
 import { PedalboardComponent } from './pedalboard/pedalboard.component';
 import { AudioSettingsComponent } from './audio-settings/audio-settings.component';
+
+const TOUR_STORAGE_KEY = 'guitar-pedals-tour';
+
+const GUITAR_PEDALS_TOUR_STEPS: TourStep[] = [
+  {
+    targetSelector: '.controls-bar',
+    title: 'Connect Your Guitar',
+    content:
+      'Select your audio input device (e.g. your Focusrite interface or built-in mic), then click ▶ Start. Your browser will ask for microphone permission — this is required to capture the guitar signal.',
+    tooltipPosition: 'bottom',
+  },
+  {
+    targetSelector: '.board',
+    title: 'The Pedalboard',
+    content:
+      'Four real-time effects run live through the Web Audio API. Drag any pedal left or right to reorder it — the signal chain updates instantly without any audio glitch.',
+    tooltipPosition: 'top',
+  },
+  {
+    targetSelector: '.pedal-slot',
+    title: 'Each Pedal',
+    content:
+      'Click the LED dot at the top of any pedal to bypass or re-enable that effect. Use the knobs to dial in Drive, Tone, Mix and other parameters in real time.',
+    tooltipPosition: 'top',
+  },
+  {
+    targetSelector: '.gain-controls',
+    title: 'Input & Master',
+    content:
+      'Input controls how loud the guitar signal enters the chain — useful if your interface has no hardware gain knob. Master sets the final output volume going to your speakers.',
+    tooltipPosition: 'bottom',
+  },
+];
 
 @Component({
   selector: 'lib-guitar-pedals',
@@ -15,6 +52,8 @@ import { AudioSettingsComponent } from './audio-settings/audio-settings.componen
     SelectComponent,
     PedalboardComponent,
     AudioSettingsComponent,
+    ButtonDirective,
+    TourComponent,
   ],
   template: `
     @if (vm.vm$ | async; as state) {
@@ -35,6 +74,8 @@ import { AudioSettingsComponent } from './audio-settings/audio-settings.componen
         </div>
 
         <lib-audio-settings />
+
+        <button libBtn (click)="startTour()">APP TOUR</button>
 
         <button
           class="start-btn"
@@ -81,6 +122,8 @@ import { AudioSettingsComponent } from './audio-settings/audio-settings.componen
       </button>
     </div>
     } }
+
+    <lib-tour [steps]="tourSteps" storageKey="guitar-pedals-tour-v1" />
   `,
   styles: [
     `
@@ -262,6 +305,9 @@ export class GuitarPedalsComponent implements OnInit {
   public readonly vm = inject(GuitarPedalsViewModel);
   public readonly showHint = signal(true);
 
+  private readonly tourRef = viewChild(TourComponent);
+  public readonly tourSteps = GUITAR_PEDALS_TOUR_STEPS;
+
   private readonly availableInputs = signal<MediaDeviceInfo[]>([]);
 
   public readonly inputOptions = computed<SelectOption[]>(() => {
@@ -274,6 +320,18 @@ export class GuitarPedalsComponent implements OnInit {
       })),
     ];
   });
+
+  constructor() {
+    afterNextRender(() => {
+      if (!localStorage.getItem(TOUR_STORAGE_KEY)) {
+        setTimeout(() => this.tourRef()?.start(), 500);
+      }
+    });
+  }
+
+  public startTour(): void {
+    this.tourRef()?.start();
+  }
 
   public ngOnInit(): void {
     this.vm.loadInputs();
