@@ -36,7 +36,7 @@ export class AudioApiProjectListComponent {
     {
       title: 'Chord Changer',
       description:
-        'Paste your song lyrics and chords to instantly transpose them to any key. The tool automatically detects the current key of the song, extracts all chords, and lets you shift the entire piece up or down by any number of semitones. Supports all standard chord notations including sus, maj7, add9, and slash chords. Export the result as a formatted PDF ready to print or save.',
+        'Paste your song lyrics and chords to instantly transpose them to any key. The tool automatically detects the current key of the song, extracts all chords, and lets you shift the entire piece up or down by any number of semitones. Supports all standard chord notations including sus, maj7, add9, and slash chords. Export the result as a formatted PDF ready to print or save them to your library if you have an account.',
       iconUrl: 'images/chord-changer.svg',
       path: 'chord-changer',
     },

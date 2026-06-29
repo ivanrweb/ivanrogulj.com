@@ -9,60 +9,23 @@ import { Router } from '@angular/router';
   imports: [],
   template: `
     <div class="portfolio-container">
-      <header class="hero-section">
+
+      <!-- HERO -->
+      <section class="hero-section">
+        <div class="hero-glow"></div>
+        <div class="hero-glow hero-glow--secondary"></div>
         <div class="hero-content">
-          <h1 class="hero-title">Explore Software &amp; Music intersection</h1>
-          <div class="hero-body">
-            <div class="hero-lines">
-              <p class="hero-desc">
-                <img
-                  class="term-prompt"
-                  src="svg/terminal.svg"
-                  alt=""
-                />Browser-based audio tools built on the Web Audio API — synths,
-                effects, and utilities.
-              </p>
-              <p class="hero-desc">
-                <img
-                  class="term-prompt"
-                  src="svg/terminal.svg"
-                  alt=""
-                />Downloadable VST plugins to use in your DAW (C++/JUCE)
-              </p>
-              @if(false){
-              <!--              <p class="hero-desc">-->
-              <!--                <img class="term-prompt" src="svg/terminal.svg" alt="" />Learn-->
-              <!--                about audio and tech in blog articles. I make audio-related-->
-              <!--                content once a week on Medium. You can subscribe to my-->
-              <!--                newsletter to always get the latest post.-->
-              <!--              </p>-->
-              <!--              <p class="hero-desc">-->
-              <!--                <img class="term-prompt" src="svg/terminal.svg" alt="" /><span-->
-              <!--                  >Web Audio API projects (in-browser projects) are completely-->
-              <!--                  free for you to use, and you can support me on-->
-              <!--                  <a-->
-              <!--                    href="https://patreon.com/Soundionic"-->
-              <!--                    target="_blank"-->
-              <!--                    rel="noopener noreferrer"-->
-              <!--                    class="hero-link"-->
-              <!--                    >Patreon</a-->
-              <!--                  >-->
-              <!--                  if you enjoy them :)</span-->
-              <!--                >-->
-              <!--              </p>-->
-              <!--              <p class="hero-desc">-->
-              <!--                <img-->
-              <!--                  class="term-prompt"-->
-              <!--                  src="svg/terminal.svg"-->
-              <!--                  alt=""-->
-              <!--                />Downloadable VST Plugins for DAW-s can be purchased (discount-->
-              <!--                for Patreon members). I upload one new plugin on a first day of-->
-              <!--                every month.-->
-              <!--              </p>-->
-              <!--            TODO: Uncomment when you have avatar picture -->
-              <!--            <lib-avatar [size]="200" initials="IR" src="avatar.jpg" />-->
-              }
-            </div>
+          <div class="hero-eyebrow">Ivan Rogulj &nbsp;·&nbsp; Software &amp; Music</div>
+          <h1 class="hero-title">Explore Software &amp;<br />Music intersection</h1>
+          <div class="hero-lines">
+            <p class="hero-desc">
+              <img class="term-prompt" src="svg/terminal.svg" alt="" />
+              Browser-based audio tools built on the Web Audio API — synths, effects, and utilities.
+            </p>
+            <p class="hero-desc">
+              <img class="term-prompt" src="svg/terminal.svg" alt="" />
+              Downloadable VST plugins to use in your DAW (C++/JUCE)
+            </p>
           </div>
           <div class="hero-stack">
             <span class="stack-tag">Web Audio API</span>
@@ -73,104 +36,108 @@ import { Router } from '@angular/router';
             <span class="stack-tag">NestJS</span>
           </div>
         </div>
-      </header>
+      </section>
 
-      <main class="grid-layout">
-        <section class="card" (click)="navigate('audio/analog-synth')">
-          <div class="card-top">
-            <div class="card-icon"><img src="svg/synth.svg" alt="Synth" /></div>
-            <div class="card-tags">
+      <!-- VIRTUAL ANALOG SYNTH -->
+      <section class="project-row" (click)="navigate('audio/analog-synth')">
+        <div class="project-inner">
+          <div class="project-visual">
+            <div class="visual-box">
+              <img src="svg/synth.svg" alt="Synth" />
+            </div>
+          </div>
+          <div class="project-text">
+            <div class="project-tags">
               <span class="tag">Web Audio API</span>
               <span class="tag">MIDI</span>
             </div>
+            <h2 class="project-title">Virtual Analog Synth</h2>
+            <p class="project-desc">
+              Try OHM-1, a fully-featured polyphonic subtractive synthesizer that runs entirely in your browser.
+              Three oscillators with selectable waveforms, a resonant low-pass filter with ADSR envelope,
+              LFO modulation, a step sequencer, and a built-in effects chain — distortion, chorus, delay, reverb.
+              Connect your MIDI controller for a hands-on hardware experience. No downloads, no installs.
+            </p>
+            <div class="project-cta">Launch synth <span class="cta-arrow">→</span></div>
           </div>
-          <h3 class="card-title">Virtual Analog Synth</h3>
-          <p class="card-desc">
-            Try OHM-1, a polyphonic subtractive synth with oscillators, filter,
-            ADSR, LFO modulation, step sequencer, and effects chain. Runs
-            in-browser, MIDI-ready.
-          </p>
-        </section>
+        </div>
+      </section>
 
-        <section class="card" (click)="navigate('audio/guitar-pedals')">
-          <div class="card-top">
-            <div class="card-icon">
+      <!-- GUITAR PEDALBOARD -->
+      <section class="project-row project-row--alt" (click)="navigate('audio/guitar-pedals')">
+        <div class="project-inner project-inner--reversed">
+          <div class="project-text">
+            <div class="project-tags">
+              <span class="tag">Web Audio API</span>
+              <span class="tag">getUserMedia</span>
+            </div>
+            <h2 class="project-title">Guitar Pedalboard</h2>
+            <p class="project-desc">
+              Plug your guitar into any audio interface and start building your rig directly in the browser.
+              Stack and reorder distortion, chorus, delay, and reverb pedals in any combination via drag-and-drop.
+              Processes your guitar signal in real-time with minimal latency. No app installations required —
+              works entirely in Chrome. Use a dedicated audio interface for best results.
+            </p>
+            <div class="project-cta">Open pedalboard <span class="cta-arrow">→</span></div>
+          </div>
+          <div class="project-visual">
+            <div class="visual-box">
               <img src="svg/pedal.svg" alt="Pedals" />
             </div>
-            <div class="card-tags">
-              <span class="tag">Web Audio API</span>
-            </div>
           </div>
-          <h3 class="card-title">Guitar Pedalboard</h3>
-          <p class="card-desc">
-            Real-time guitar effects via audio interface input. Distortion,
-            chorus, delay, reverb — reorderable, low-latency, no installations.
-          </p>
-        </section>
+        </div>
+      </section>
 
-        <section class="card" (click)="navigate('audio/chord-changer')">
-          <div class="card-top">
-            <div class="card-icon">
+      <!-- CHORD CHANGER -->
+      <section class="project-row" (click)="navigate('audio/chord-changer')">
+        <div class="project-inner">
+          <div class="project-visual">
+            <div class="visual-box">
               <img src="svg/chord-changer.svg" alt="Chord Changer" />
             </div>
-            <div class="card-tags">
-              <span class="tag">Transpose</span>
-            </div>
           </div>
-          <h3 class="card-title">Chord Changer</h3>
-          <p class="card-desc">
-            Paste lyrics with chord notation, transpose to any key, detect
-            probable keys and chord progressions, export to PDF.
-          </p>
-        </section>
+          <div class="project-text">
+            <div class="project-tags">
+              <span class="tag">Transpose</span>
+              <span class="tag">PDF Export</span>
+            </div>
+            <h2 class="project-title">Chord Changer</h2>
+            <p class="project-desc">
+              Paste your song lyrics together with chord notation and instantly transpose the entire piece to any key.
+              The tool automatically detects the current key, extracts all chords, and lets you shift up or down
+              by any number of semitones. Supports all standard chord notations — sus, maj7, add9, slash chords.
+              Export the result as a formatted PDF, ready to print or share.
+            </p>
+            <div class="project-cta">Try tool <span class="cta-arrow">→</span></div>
+          </div>
+        </div>
+      </section>
 
-        <section class="card" (click)="navigate('juce')">
-          <div class="card-top">
-            <div class="card-icon"><img src="svg/vst.svg" alt="VST" /></div>
-            <div class="card-tags">
+      <!-- VST PLUGINS -->
+      <section class="project-row project-row--alt" (click)="navigate('juce')">
+        <div class="project-inner project-inner--reversed">
+          <div class="project-text">
+            <div class="project-tags">
               <span class="tag">C++ / JUCE</span>
               <span class="tag">.vst3 · .au</span>
             </div>
+            <h2 class="project-title">VST Plugins</h2>
+            <p class="project-desc">
+              Native audio plugins built with the JUCE framework for professional DAW integration.
+              Available as VST3 on Windows and AU/VST3 on macOS. Compatible with Ableton Live, FL Studio,
+              Logic Pro, and other major DAWs. Download for free and use them in your productions.
+              Each plugin ships with a PDF manual.
+            </p>
+            <div class="project-cta">View plugins <span class="cta-arrow">→</span></div>
           </div>
-          <h3 class="card-title">VST Plugins</h3>
-          <p class="card-desc">
-            Native audio plugins built with the JUCE framework. Compatible with
-            Ableton, FL Studio, and Logic Pro. Free download.
-          </p>
-        </section>
+          <div class="project-visual">
+            <div class="visual-box">
+              <img src="svg/vst.svg" alt="VST" />
+            </div>
+          </div>
+        </div>
+      </section>
 
-        <!--        <section class="card" (click)="navigate('juce')">-->
-        <!--          <div class="card-top">-->
-        <!--            <div class="card-icon">-->
-        <!--              <img src="svg/puredata.svg" alt="PureData" />-->
-        <!--            </div>-->
-        <!--            <div class="card-tags">-->
-        <!--              <span class="tag">PureData</span>-->
-        <!--              <span class="tag">.pd</span>-->
-        <!--            </div>-->
-        <!--          </div>-->
-        <!--          <h3 class="card-title">PureData Patches</h3>-->
-        <!--          <p class="card-desc">-->
-        <!--            Downloadable PureData projects — signal processing experiments and-->
-        <!--            generative audio patches.-->
-        <!--          </p>-->
-        <!--        </section>-->
-
-        <!--        <section class="card" (click)="navigate('articles')">-->
-        <!--          <div class="card-top">-->
-        <!--            <div class="card-icon"><img src="svg/blog.svg" alt="Blog" /></div>-->
-        <!--            <div class="card-tags">-->
-        <!--              <span class="tag">Tech</span>-->
-        <!--              <span class="tag">Audio</span>-->
-        <!--            </div>-->
-        <!--          </div>-->
-        <!--          <h3 class="card-title">Blog — Music &amp; Code</h3>-->
-        <!--          <p class="card-desc">-->
-        <!--            Technical writing on Web Audio API, JUCE, and web development.-->
-        <!--            Angular, NestJS, RxJS, Nx — real-world guides and best practices.-->
-        <!--          </p>-->
-        <!--        </section>-->
-      </main>
     </div>
   `,
   styles: [
@@ -192,211 +159,265 @@ import { Router } from '@angular/router';
 
       /* ── Hero ── */
       .hero-section {
-        border-bottom: 1px solid #1f2833;
         padding: 5rem 2rem 4rem;
+        display: flex;
+        justify-content: center;
         position: relative;
         overflow: hidden;
+        border-bottom: 1px solid #1a2030;
       }
 
       .hero-section::before {
         content: '';
         position: absolute;
         inset: 0;
-        background-image: linear-gradient(
-            rgba(102, 252, 241, 0.1) 1px,
-            transparent 1px
-          ),
-          linear-gradient(90deg, rgba(102, 252, 241, 0.1) 1px, transparent 1px);
-        background-size: 40px 40px;
+        background-image:
+          linear-gradient(rgba(102, 252, 241, 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(102, 252, 241, 0.04) 1px, transparent 1px);
+        background-size: 48px 48px;
         pointer-events: none;
       }
 
+      .hero-glow {
+        position: absolute;
+        top: -20%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 700px;
+        height: 500px;
+        background: radial-gradient(ellipse at center, rgba(102, 252, 241, 0.07) 0%, transparent 65%);
+        pointer-events: none;
+      }
+
+      .hero-glow--secondary {
+        top: 10%;
+        left: 70%;
+        width: 400px;
+        height: 300px;
+        background: radial-gradient(ellipse at center, rgba(255, 0, 127, 0.04) 0%, transparent 70%);
+      }
+
       .hero-content {
-        max-width: 1030px;
-        margin: 0 auto;
+        max-width: 760px;
+        width: 100%;
         position: relative;
         z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1.5rem;
+      }
+
+      .hero-eyebrow {
+        font-family: 'Fira Code', monospace;
+        font-size: 0.75rem;
+        color: #45a29e;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        border: 1px solid rgba(69, 162, 158, 0.25);
+        padding: 4px 14px;
+        border-radius: 20px;
       }
 
       .hero-title {
         font-family: 'Fira Code', monospace;
-        font-size: clamp(1.5rem, 2rem, 2.5rem);
+        font-size: clamp(2rem, 5vw, 3.2rem);
         font-weight: 700;
         color: #66fcf1;
-        margin: 0 0 1.25rem 0;
+        margin: 0;
         letter-spacing: 1px;
-        line-height: 1.1;
-      }
-
-      .hero-body {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 3rem;
-        margin-bottom: 2rem;
+        line-height: 1.15;
       }
 
       .hero-lines {
         display: flex;
         flex-direction: column;
-        flex: 1;
+        gap: 0.4rem;
+        width: 100%;
+        max-width: 580px;
       }
 
       .hero-desc {
-        font-size: 1.15rem;
+        font-size: 1rem;
         font-weight: 300;
         color: #888;
-        margin: 0 0 0.6rem 0;
+        margin: 0;
         line-height: 1.7;
         display: flex;
         align-items: flex-start;
         gap: 10px;
+        text-align: left;
       }
 
       .term-prompt {
-        width: 30px;
-        height: 30px;
+        width: 20px;
+        height: 20px;
         flex-shrink: 0;
-        opacity: 0.6;
-        margin-top: 2px;
+        opacity: 0.45;
+        margin-top: 4px;
       }
 
       .hero-stack {
-        margin-top: 1.6rem;
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
+        justify-content: center;
       }
 
       .stack-tag {
         font-family: 'Fira Code', monospace;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         color: #45a29e;
-        border: 1px solid rgba(69, 162, 158, 0.3);
+        border: 1px solid rgba(69, 162, 158, 0.25);
         padding: 3px 10px;
         border-radius: 3px;
         letter-spacing: 0.5px;
       }
 
-      .hero-link {
-        color: #66fcf1;
-        text-decoration: none;
-        border-bottom: 1px solid rgba(102, 252, 241, 0.4);
-        transition: border-color 0.2s;
-      }
-
-      .hero-link:hover {
-        border-color: #66fcf1;
-      }
-
-      /* ── Grid ── */
-      .grid-layout {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-        max-width: 1100px;
-        margin: 3rem auto;
-        padding: 0 2rem;
-      }
-
-      /* ── Card ── */
-      .card {
-        background: #0f1318;
-        border: 1px solid #1a2030;
-        border-radius: 6px;
-        padding: 1.5rem;
+      /* ── Project rows ── */
+      .project-row {
+        width: 100%;
+        border-bottom: 1px solid #1a2030;
         cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .project-row:hover {
+        background: #0d1117;
+      }
+
+      .project-row--alt {
+        background: #0d1117;
+      }
+
+      .project-row--alt:hover {
+        background: #0f1520;
+      }
+
+      .project-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 5rem 3rem;
+        display: grid;
+        grid-template-columns: 1fr 1.6fr;
+        gap: 5rem;
+        align-items: center;
+      }
+
+      .project-inner--reversed {
+        grid-template-columns: 1.6fr 1fr;
+      }
+
+      /* ── Visual box ── */
+      .project-visual {
         display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-        transition: border-color 0.2s, background 0.2s;
-        position: relative;
-        overflow: hidden;
+        justify-content: center;
       }
 
-      .card::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 2px;
-        background: #66fcf1;
-        opacity: 0;
-        transition: opacity 0.2s;
-      }
-
-      .card:hover {
-        border-color: #2a3545;
-        background: #131920;
-      }
-
-      .card:hover::before {
-        opacity: 1;
-      }
-
-      .card-top {
+      .visual-box {
+        width: 220px;
+        height: 220px;
+        background: #111820;
+        border: 1px solid #1a2030;
+        border-radius: 16px;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 12px;
+        justify-content: center;
+        transition: border-color 0.25s, box-shadow 0.25s;
       }
 
-      .card-icon {
-        width: 42px;
-        height: 42px;
-        flex-shrink: 0;
+      .project-row:hover .visual-box {
+        border-color: rgba(102, 252, 241, 0.25);
+        box-shadow: 0 0 40px rgba(102, 252, 241, 0.06);
       }
 
-      .card-icon img {
-        width: 100%;
-        height: 100%;
+      .visual-box img {
+        width: 150px;
+        height: 150px;
         object-fit: contain;
-        filter: grayscale(1);
       }
 
-      .card-tags {
+      /* ── Project text ── */
+      .project-text {
         display: flex;
-        gap: 6px;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .project-tags {
+        display: flex;
+        gap: 8px;
         flex-wrap: wrap;
-        justify-content: flex-end;
       }
 
       .tag {
         font-family: 'Fira Code', monospace;
-        font-size: 0.8rem;
+        font-size: 0.72rem;
         color: #66fcf1;
         border: 1px solid rgba(102, 252, 241, 0.2);
-        padding: 2px 7px;
+        padding: 2px 8px;
         border-radius: 3px;
         letter-spacing: 0.5px;
         white-space: nowrap;
       }
 
-      .card-title {
+      .project-title {
         font-family: 'Fira Code', monospace;
-        font-size: 1.2rem;
+        font-size: clamp(1.4rem, 2.5vw, 1.9rem);
         font-weight: 700;
-        color: #c5c6c7;
+        color: #ffffff;
         margin: 0;
         letter-spacing: 0.5px;
+        line-height: 1.2;
       }
 
-      .card-desc {
+      .project-desc {
         font-size: 1rem;
         font-weight: 300;
-        color: #888;
+        color: #9ba3af;
         margin: 0;
-        line-height: 1.65;
+        line-height: 1.8;
       }
 
-      @media (max-width: 768px) {
-        .hero-section {
+      .project-cta {
+        font-family: 'Fira Code', monospace;
+        font-size: 0.85rem;
+        color: #45a29e;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 0.5rem;
+        transition: color 0.2s;
+      }
+
+      .project-row:hover .project-cta {
+        color: #66fcf1;
+      }
+
+      .cta-arrow {
+        display: inline-block;
+        transition: transform 0.2s;
+      }
+
+      .project-row:hover .cta-arrow {
+        transform: translateX(5px);
+      }
+
+      @media (max-width: 900px) {
+        .project-inner,
+        .project-inner--reversed {
+          grid-template-columns: 1fr;
+          gap: 2.5rem;
           padding: 3rem 1.5rem;
         }
-        .grid-layout {
-          padding: 0 1rem;
-          margin: 2rem auto;
+
+        .project-inner--reversed .project-visual {
+          order: -1;
+        }
+
+        .hero-section {
+          padding: 3.5rem 1.5rem 3rem;
         }
       }
     `,

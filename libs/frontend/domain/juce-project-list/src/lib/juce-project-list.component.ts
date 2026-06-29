@@ -19,10 +19,12 @@ interface VstPlugin {
   template: `
     <div class="page">
       <div class="content">
-        <h1 class="page-title">VST plugins for DAW</h1>
+        <h1 class="page-title">VST Desktop plugins for your DAW</h1>
         <p class="page-sub">
-          Native audio plugins built with the JUCE framework. Compatible with
-          Ableton, FL Studio, and Logic Pro.
+          Native audio plugins built in C++ with JUCE framework.<br />
+          Download them for your platform (available for MacOS and Windows).<br />
+          Compatible with Ableton, FL Studio, and Logic Pro, and other popular
+          digital audio workstations.
         </p>
 
         @for (plugin of plugins; track plugin.name) {
