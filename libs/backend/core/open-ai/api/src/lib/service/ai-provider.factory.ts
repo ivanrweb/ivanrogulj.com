@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { OpenAiApiService } from './open-ai-api.service';
 import { AnthropicApiService } from './anthropic-api.service';
 import { AiProviderService } from './ai-provider.abstract';
@@ -9,9 +9,9 @@ export type AiProviderName = 'openai' | 'anthropic';
 export class AiProviderFactory {
   private readonly providers: Record<AiProviderName, AiProviderService>;
 
-  public constructor(
+  constructor(
     private readonly openAiService: OpenAiApiService,
-    private readonly anthropicService: AnthropicApiService,
+    private readonly anthropicService: AnthropicApiService
   ) {
     this.providers = {
       openai: this.openAiService,

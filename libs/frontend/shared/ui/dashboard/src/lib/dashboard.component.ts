@@ -14,12 +14,8 @@ import { Router } from '@angular/router';
         <div class="hero-glow"></div>
         <div class="hero-glow hero-glow--secondary"></div>
         <div class="hero-content">
-          <div class="hero-eyebrow">
-            Ivan Rogulj &nbsp;·&nbsp; Software &amp; Music
-          </div>
-          <h1 class="hero-title">
-            Explore Software &amp;<br />Music intersection
-          </h1>
+          <div class="hero-eyebrow">Software &amp; Music</div>
+          <h1 class="hero-title">Soundionic</h1>
           <div class="hero-lines">
             <p class="hero-desc">
               <img class="term-prompt" src="svg/terminal.svg" alt="" />
@@ -29,6 +25,12 @@ import { Router } from '@angular/router';
             <p class="hero-desc">
               <img class="term-prompt" src="svg/terminal.svg" alt="" />
               Downloadable VST plugins to use in your DAW (C++/JUCE)
+            </p>
+            <p class="hero-desc">
+              <img class="term-prompt" src="svg/terminal.svg" alt="" />
+              My articles about creation of these music tools and used
+              technologies, so you can implement these ideas in your own
+              projects
             </p>
           </div>
           <div class="hero-stack">

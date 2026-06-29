@@ -91,7 +91,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
-  min-height: 400px;
+  min-height: 200px;
 }
 
 @media (max-width: 768px) {
@@ -131,7 +131,7 @@
   outline: none;
   transition: border-color 0.2s ease;
   white-space: pre;
-  min-height: 500px;
+  min-height: 300px;
   scrollbar-width: thin;
   scrollbar-color: rgba(69, 162, 158, 0.2) transparent;
 
@@ -192,7 +192,7 @@
 }
 
 .read-textarea {
-  min-height: 700px;
+  min-height: 220px;
 }
 
 /* ── Analysis footer ── */
