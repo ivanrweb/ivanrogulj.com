@@ -27,12 +27,12 @@ import {
   ActionDropdownSection,
 } from '@ivanrogulj.com/action-dropdown';
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { ButtonDirective, BtnGroupComponent } from '@ivanrogulj.com/button';
+import { BtnGroupComponent, ButtonDirective } from '@ivanrogulj.com/button';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { TourComponent, TourStep } from '@ivanrogulj.com/tour';
 
 // ── Tour steps — edit these to update the guided tour content ──────────────
-const TOUR_STORAGE_KEY = 'chord-changer-tour-v1';
+const TOUR_STORAGE_KEY = 'chord-changer-tour';
 
 const CHORD_CHANGER_TOUR_STEPS: TourStep[] = [
   {
@@ -125,7 +125,10 @@ export class ChordChangerComponent {
   );
 
   public songSections = computed<ActionDropdownSection[]>(() => [
-    { items: this.songs().map((s) => ({ id: s.id, name: s.title })), deletable: true },
+    {
+      items: this.songs().map((s) => ({ id: s.id, name: s.title })),
+      deletable: true,
+    },
   ]);
 
   constructor() {
