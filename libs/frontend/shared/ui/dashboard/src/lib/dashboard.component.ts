@@ -14,23 +14,21 @@ import { Router } from '@angular/router';
         <div class="hero-glow"></div>
         <div class="hero-glow hero-glow--secondary"></div>
         <div class="hero-content">
-          <div class="hero-eyebrow">Software &amp; Music</div>
+          <div class="hero-eyebrow">Software &amp; Music intersection</div>
           <h1 class="hero-title">Soundionic</h1>
           <div class="hero-lines">
             <p class="hero-desc">
               <img class="term-prompt" src="svg/terminal.svg" alt="" />
-              Browser-based audio tools built on the Web Audio API — synths,
-              effects, and utilities.
+              Browser-based audio tools built on the Web Audio API
             </p>
             <p class="hero-desc">
               <img class="term-prompt" src="svg/terminal.svg" alt="" />
-              Downloadable VST plugins to use in your DAW (C++/JUCE)
+              Downloadable VST plugins to use in your audio workstation
             </p>
             <p class="hero-desc">
               <img class="term-prompt" src="svg/terminal.svg" alt="" />
-              My articles about creation of these music tools and used
-              technologies, so you can implement these ideas in your own
-              projects
+              Articles about creation of these music tools, so you can implement
+              them in your own projects
             </p>
           </div>
           <div class="hero-stack">
@@ -274,7 +272,7 @@ import { Router } from '@angular/router';
       }
 
       .hero-desc {
-        font-size: 1rem;
+        font-size: 20px;
         font-weight: 300;
         color: #b0bcce;
         margin: 0;

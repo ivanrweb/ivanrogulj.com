@@ -1,9 +1,11 @@
 import {
+  afterNextRender,
   Component,
   computed,
   effect,
   inject,
   signal,
+  viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -26,6 +28,50 @@ import {
 } from '@ivanrogulj.com/action-dropdown';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { ButtonDirective, BtnGroupComponent } from '@ivanrogulj.com/button';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { TourComponent, TourStep } from '@ivanrogulj.com/tour';
+
+// ── Tour steps — edit these to update the guided tour content ──────────────
+const TOUR_STORAGE_KEY = 'chord-changer-tour-v1';
+
+const CHORD_CHANGER_TOUR_STEPS: TourStep[] = [
+  {
+    targetSelector: '.editor-section',
+    title: 'Paste Your Song',
+    content:
+      'Paste your song lyrics here with chords written inline — e.g. Am, F, C G — or on their own lines. Any recognised chord symbol will be transposed automatically.',
+    tooltipPosition: 'bottom',
+  },
+  {
+    targetSelector: '.transpose-controls',
+    title: 'Transpose',
+    content:
+      'Pick how many semitones to shift. Negative numbers lower the key, positive numbers raise it. Press 0 at any time to reset back to the original.',
+    tooltipPosition: 'bottom',
+  },
+  {
+    targetSelector: '.output-section',
+    title: 'Transposed Output',
+    content:
+      'Your song appears here instantly with all chords transposed. You can freely copy, edit, or keep adjusting the semitone offset.',
+    tooltipPosition: 'bottom',
+  },
+  {
+    targetSelector: '.analysis-footer',
+    title: 'Key & Chord Analysis',
+    content:
+      'The tool analyses your chord progression and suggests the most probable musical keys, lists all unique chords found, and shows the Roman numeral progression.',
+    tooltipPosition: 'top',
+  },
+  {
+    targetSelector: '.changer-header',
+    title: 'Save & Export',
+    content:
+      'Log in to save songs to your account and access them any time. Use Export as PDF to get a print-ready version of the transposed song.',
+    tooltipPosition: 'bottom',
+  },
+];
+// ────────────────────────────────────────────────────────────────────────────
 
 @Component({
   selector: 'lib-chord-changer',
@@ -37,6 +83,7 @@ import { ButtonDirective, BtnGroupComponent } from '@ivanrogulj.com/button';
     ActionDropdownComponent,
     ButtonDirective,
     BtnGroupComponent,
+    TourComponent,
   ],
   templateUrl: './chord-changer.component.html',
   styleUrl: './chord-changer.component.scss',
@@ -47,6 +94,13 @@ export class ChordChangerComponent {
   public readonly authService = inject(AuthService);
   public readonly router = inject(Router);
   private readonly songChordsApiService = inject(SongChordsApiService);
+
+  private readonly tourRef = viewChild(TourComponent);
+  public readonly tourSteps = CHORD_CHANGER_TOUR_STEPS;
+
+  public startTour(): void {
+    this.tourRef()?.start();
+  }
 
   public readonly negativeSteps: readonly number[] = [-6, -5, -4, -3, -2, -1];
   public readonly positiveSteps: readonly number[] = [1, 2, 3, 4, 5, 6];
@@ -81,6 +135,12 @@ export class ChordChangerComponent {
     if (this.authService.currentUser()) {
       this.loadMySongs();
     }
+    // Auto-start tour on first visit
+    afterNextRender(() => {
+      if (!localStorage.getItem(TOUR_STORAGE_KEY)) {
+        setTimeout(() => this.tourRef()?.start(), 500);
+      }
+    });
   }
 
   public setOffset(step: number): void {

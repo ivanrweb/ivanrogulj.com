@@ -5,6 +5,7 @@
       <h3 class="changer-title">CHORD CHANGER</h3>
 
       <div class="action-controls">
+        <button libBtn (click)="startTour()">APP TOUR</button>
         @if (authService.currentUser()) {
           <span class="control-label">MY SONGS</span>
           <lib-action-dropdown
@@ -183,6 +184,8 @@
     </div>
   }
 </div>
+
+<lib-tour [steps]="tourSteps" storageKey="chord-changer-tour-v1" />
 
 @if (showSaveInput()) {
   <lib-dialog
