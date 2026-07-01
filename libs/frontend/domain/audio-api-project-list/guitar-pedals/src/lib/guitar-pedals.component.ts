@@ -1,10 +1,16 @@
-import { afterNextRender, Component, computed, inject, OnInit, signal, viewChild } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  inject,
+  OnInit,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { KnobComponent } from '@ivanrogulj.com/knob';
-import { SelectComponent, SelectOption } from '@ivanrogulj.com/select';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { ButtonDirective } from '@ivanrogulj.com/button';
-// eslint-disable-next-line @nx/enforce-module-boundaries
+import { SelectComponent, SelectOption } from '@ivanrogulj.com/select'; // eslint-disable-next-line @nx/enforce-module-boundaries
+import { ButtonDirective } from '@ivanrogulj.com/button'; // eslint-disable-next-line @nx/enforce-module-boundaries
 import { TourComponent, TourStep } from '@ivanrogulj.com/tour';
 import { GuitarPedalsViewModel } from '../viewmodel/guitar-pedals.viewmodel';
 import { PedalboardComponent } from './pedalboard/pedalboard.component';
@@ -26,8 +32,8 @@ const GUITAR_PEDALS_TOUR_STEPS: TourStep[] = [
     targetSelector: '.board',
     title: 'The Pedalboard',
     content: [
-      'Four real-time effects run live through the Web Audio API.',
-      'Drag any pedal left or right to reorder it — the signal chain updates instantly without any audio glitch.',
+      'Effects run live in chain.',
+      'Drag any pedal left or right to reorder it.',
     ],
     tooltipPosition: 'top',
   },
@@ -35,8 +41,8 @@ const GUITAR_PEDALS_TOUR_STEPS: TourStep[] = [
     targetSelector: '.pedal-slot',
     title: 'Each Pedal',
     content: [
-      'Click the LED dot at the top of any pedal to bypass or re-enable that effect.',
-      'Use the knobs to dial in Drive, Tone, Mix and other parameters in real time.',
+      'Click the LED dot at the top right of any pedal to bypass or re-enable that effect.',
+      'Use the knobs to introduce Drive, Tone, Mix and other parameters.',
     ],
     tooltipPosition: 'top',
   },

@@ -1,4 +1,5 @@
 import { Component, computed, effect, input, OnDestroy, output, signal } from '@angular/core';
+import { VideoModalComponent } from '@ivanrogulj.com/video-modal';
 import { TourStep } from './tour-step.interface';
 
 interface SpotlightRect {
@@ -22,6 +23,7 @@ const TOOLTIP_H = 340;
 @Component({
   selector: 'lib-tour',
   standalone: true,
+  imports: [VideoModalComponent],
   template: `
     @if (isVisible()) {
     <!-- backdrop -->
@@ -54,6 +56,12 @@ const TOOLTIP_H = 340;
       <p class="tour-tooltip__content">{{ para }}</p>
       }
 
+      @if (currentStep().videoUrl) {
+      <button class="tour-btn tour-btn--video" (click)="openVideo()">
+        ▶ Show video
+      </button>
+      }
+
       <div class="tour-tooltip__actions">
         @if (!isFirst()) {
         <button class="tour-btn tour-btn--secondary" (click)="prev()">
@@ -79,6 +87,10 @@ const TOOLTIP_H = 340;
         </button>
       </div>
     </div>
+    <lib-video-modal
+      [videoUrl]="activeVideoUrl()"
+      (closed)="closeVideo()"
+    ></lib-video-modal>
     }
   `,
   styles: [
@@ -224,6 +236,18 @@ const TOOLTIP_H = 340;
           border-color: rgba(255, 255, 255, 0.4);
         }
       }
+
+      .tour-btn--video {
+        align-self: flex-start;
+        background: rgba(69, 162, 158, 0.1);
+        border-color: rgba(69, 162, 158, 0.4);
+        color: #45a29e;
+
+        &:hover {
+          background: rgba(69, 162, 158, 0.2);
+          border-color: rgba(69, 162, 158, 0.65);
+        }
+      }
     `,
   ],
 })
@@ -235,6 +259,7 @@ export class TourComponent implements OnDestroy {
   readonly skipped = output<void>();
 
   protected readonly isVisible = signal(false);
+  protected readonly activeVideoUrl = signal<string | null>(null);
   private readonly currentIndex = signal(0);
 
   protected readonly currentStep = computed(
@@ -287,6 +312,15 @@ export class TourComponent implements OnDestroy {
 
   protected prev(): void {
     this.currentIndex.update((i) => i - 1);
+  }
+
+  protected openVideo(): void {
+    const url = this.currentStep().videoUrl;
+    if (url) this.activeVideoUrl.set(url);
+  }
+
+  protected closeVideo(): void {
+    this.activeVideoUrl.set(null);
   }
 
   protected skip(): void {

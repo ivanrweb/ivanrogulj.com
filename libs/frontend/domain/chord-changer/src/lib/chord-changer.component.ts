@@ -38,10 +38,7 @@ const CHORD_CHANGER_TOUR_STEPS: TourStep[] = [
   {
     targetSelector: '.editor-section',
     title: 'Paste Your Song',
-    content: [
-      'Paste your song lyrics here with chords written inline — e.g. Am, F, C G — or on their own lines.',
-      'Any recognised chord symbol will be transposed automatically.',
-    ],
+    content: ['Paste your song with along with chords here.'],
     tooltipPosition: 'bottom',
   },
   {
