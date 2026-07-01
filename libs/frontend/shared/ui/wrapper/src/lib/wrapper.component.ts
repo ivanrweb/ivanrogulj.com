@@ -18,20 +18,7 @@ import { RouterOutlet } from '@angular/router';
       }
 
       #wrapper {
-        margin: 0 auto;
-        max-width: 1600px;
-      }
-
-      @media (min-width: 1920px) {
-        #wrapper {
-          width: 80%;
-        }
-      }
-
-      @media (max-width: 768px) {
-        #wrapper {
-          width: 100%;
-        }
+        width: 100%;
       }
     `,
   ],

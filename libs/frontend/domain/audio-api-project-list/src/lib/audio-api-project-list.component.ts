@@ -22,7 +22,7 @@ export class AudioApiProjectListComponent {
     {
       title: 'Analog Synth',
       description:
-        'Plug & Play! Connect your MIDI device and play a fully-featured polyphonic analog synthesizer directly in your browser — no downloads required. Features 3 oscillators with selectable waveforms, a resonant low-pass filter with ADSR envelope, LFO modulation, and a built-in effects chain including distortion, chorus, delay, and reverb. Save your custom presets and explore patches shared by the community.',
+        'Plug & Play! Connect your MIDI device and play a fully-featured polyphonic analog synthesizer directly in your browser — no downloads required. Features up to 8 oscillators with selectable waveforms, a resonant low-pass filter with ADSR envelope, LFO modulation, and a built-in effects chain including distortion, chorus, delay, and reverb. Save your custom presets and explore patches shared by the community.',
       iconUrl: 'images/synth.svg',
       path: 'analog-synth',
     },
