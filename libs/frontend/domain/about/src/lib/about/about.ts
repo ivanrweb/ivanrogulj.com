@@ -95,13 +95,13 @@ import { AvatarComponent } from '@ivanrogulj.com/avatar';
         <ul class="credits-list">
           <li>
             <a
-              href="https://github.com/phosphor-icons/core"
+              href="https://github.com/fefanto/fontaudio"
               target="_blank"
               rel="noopener"
             >
-              Phosphor Icons
+              Font Audio
             </a>
-            — icon set used throughout the UI
+            by fefanto — icon font for audio UI controls (knobs, sliders, waveforms)
           </li>
           <li>
             <a
