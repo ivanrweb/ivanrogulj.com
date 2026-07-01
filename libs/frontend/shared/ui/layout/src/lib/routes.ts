@@ -64,6 +64,11 @@ export const routes: Routes = [
       import('@ivanrogulj.com/blog').then((m) => m.ArticleDetailComponent),
   },
   {
+    path: 'about',
+    loadComponent: () =>
+      import('@ivanrogulj.com/about').then((m) => m.AboutComponent),
+  },
+  {
     path: 'patreon',
     loadComponent: () =>
       import('./patreon.component').then((m) => m.PatreonComponent),

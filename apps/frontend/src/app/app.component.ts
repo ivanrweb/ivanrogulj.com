@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { provideIcons } from '@ng-icons/core';
 import {
+  phosphorGithubLogo,
+  phosphorLinkedinLogo,
   phosphorWaveSawtooth,
   phosphorWaveSine,
   phosphorWaveSquare,
@@ -17,6 +19,8 @@ import {
       phosphorWaveSawtooth,
       phosphorWaveSquare,
       phosphorWaveTriangle,
+      phosphorGithubLogo,
+      phosphorLinkedinLogo,
     }),
   ],
   selector: 'app-root',

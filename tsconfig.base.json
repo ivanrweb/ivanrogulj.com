@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@ivanrogulj.com/about": ["libs/frontend/domain/about/src/index.ts"],
       "@ivanrogulj.com/action-dropdown": [
         "libs/frontend/shared/ui/action-dropdown/src/index.ts"
       ],

@@ -81,7 +81,7 @@ interface VstPlugin {
 
       .page-title {
         font-family: 'Fira Code', monospace;
-        font-size: clamp(1.4rem, 3vw, 2.2rem);
+        font-size: clamp(1.4rem, 2.5vw, 1.9rem);
         font-weight: 500;
         color: #66fcf1;
         margin: 0 0 0.5rem 0;
