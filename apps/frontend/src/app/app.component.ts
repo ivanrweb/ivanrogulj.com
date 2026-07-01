@@ -9,6 +9,7 @@ import {
   phosphorWaveSquare,
   phosphorWaveTriangle,
 } from '@ng-icons/phosphor-icons/regular';
+import { phosphorGoogleLogoBold } from '@ng-icons/phosphor-icons/bold';
 
 @Component({
   standalone: true,
@@ -20,6 +21,7 @@ import {
       phosphorWaveSquare,
       phosphorWaveTriangle,
       phosphorGithubLogo,
+      phosphorGoogleLogoBold,
       phosphorLinkedinLogo,
     }),
   ],

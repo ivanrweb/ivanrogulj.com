@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ComponentStore } from '@ngrx/component-store';
 import { catchError, tap } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
+import { NgIcon } from '@ng-icons/core';
 import { AuthService } from '../auth.service';
 
 interface LoginState {
@@ -14,7 +15,7 @@ interface LoginState {
 @Component({
   selector: 'lib-login',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, NgIcon],
   providers: [ComponentStore],
   template: `
     <div class="auth-wrapper">
@@ -57,7 +58,8 @@ interface LoginState {
         <div class="divider"><span>or</span></div>
 
         <button class="btn-google" (click)="googleLogin()" type="button">
-          <span class="google-icon">G</span> continue with Google
+          <ng-icon name="phosphorGoogleLogoBold" size="1.3rem"></ng-icon> Continue
+          with Google
         </button>
 
         <p class="alt-link">
@@ -179,14 +181,15 @@ interface LoginState {
         justify-content: center;
         gap: 0.6rem;
         transition: background 0.2s ease;
+
+        ng-icon {
+          color: #4285f4;
+          display: flex;
+          align-items: center;
+        }
       }
       .btn-google:hover {
         background: #f5f5f5;
-      }
-      .google-icon {
-        font-weight: 700;
-        font-size: 1rem;
-        color: #4285f4;
       }
       .alt-link {
         font-family: 'Fira Code', monospace;

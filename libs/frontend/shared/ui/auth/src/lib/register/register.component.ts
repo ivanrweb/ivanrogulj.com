@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { ComponentStore } from '@ngrx/component-store';
 import { tap, catchError } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
+import { NgIcon } from '@ng-icons/core';
 import { AuthService } from '../auth.service';
 
 interface RegisterState {
@@ -15,7 +16,7 @@ interface RegisterState {
 @Component({
   selector: 'lib-register',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, NgIcon],
   providers: [ComponentStore],
   template: `
     <div class="auth-wrapper">
@@ -59,6 +60,13 @@ interface RegisterState {
               @if (loading()) { creating account... } @else { register }
             </button>
           </form>
+
+          <div class="divider"><span>or</span></div>
+
+          <button class="btn-google" (click)="googleLogin()" type="button">
+            <ng-icon name="phosphorGoogleLogoBold" size="1.3rem"></ng-icon> register with Google
+          </button>
+
           <p class="alt-link">Already have an account? <a routerLink="/login">login</a></p>
         }
       </div>
@@ -164,6 +172,46 @@ interface RegisterState {
     }
     .alt-link a { color: #66fcf1; text-decoration: none; }
     .alt-link a:hover { text-decoration: underline; }
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      border-top: 1px solid #333;
+    }
+    .divider span {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.75rem;
+      color: #555;
+    }
+    .btn-google {
+      width: 100%;
+      padding: 0.7rem;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      color: #333;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      transition: background 0.2s ease;
+
+      ng-icon {
+        color: #4285f4;
+        display: flex;
+        align-items: center;
+      }
+    }
+    .btn-google:hover { background: #f5f5f5; }
   `],
 })
 export class RegisterComponent {
@@ -178,6 +226,10 @@ export class RegisterComponent {
   public readonly loading = this.store.selectSignal((s) => s.loading);
   public readonly error = this.store.selectSignal((s) => s.error);
   public readonly success = this.store.selectSignal((s) => s.success);
+
+  public googleLogin(): void {
+    this.authService.googleLogin();
+  }
 
   public onSubmit(): void {
     if (this.password !== this.confirmPassword) {

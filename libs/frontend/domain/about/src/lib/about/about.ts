@@ -24,7 +24,12 @@ import { AvatarComponent } from '@ivanrogulj.com/avatar';
               decisions through a pair of headphones.
             </p>
           </div>
-          <lib-avatar [size]="200" initials="IR" src="avatar.jpeg" />
+          <lib-avatar
+            class="avatar"
+            [size]="140"
+            initials="IR"
+            src="avatar.jpeg"
+          />
         </div>
         <div class="social-links">
           <a
@@ -101,7 +106,8 @@ import { AvatarComponent } from '@ivanrogulj.com/avatar';
             >
               Font Audio
             </a>
-            by fefanto — icon font for audio UI controls (knobs, sliders, waveforms)
+            by fefanto — icon font for audio UI controls (knobs, sliders,
+            waveforms)
           </li>
           <li>
             <a
@@ -234,6 +240,10 @@ import { AvatarComponent } from '@ivanrogulj.com/avatar';
           text-decoration: underline;
           text-underline-offset: 3px;
         }
+      }
+
+      .avatar {
+        padding-top: 10px;
       }
 
       .social-links {
