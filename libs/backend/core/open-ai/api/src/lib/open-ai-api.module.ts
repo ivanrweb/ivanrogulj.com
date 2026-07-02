@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
-import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { OpenAiApiService } from './service/open-ai-api.service';
 import { AnthropicApiService } from './service/anthropic-api.service';
 import { AiProviderFactory } from './service/ai-provider.factory';
@@ -20,7 +19,6 @@ import { OpenAiController } from './controller/open-ai.controller';
     OpenAiApiService,
     AnthropicApiService,
     AiProviderFactory,
-    { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
   exports: [],
 })
