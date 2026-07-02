@@ -15,10 +15,6 @@
             (selected)="onSongSelected($event)"
             (deleted)="onSongDeleted($event)"
           />
-        } @else {
-          <lib-auth-tooltip>
-            <button libBtn [disabled]="true">MY SONGS</button>
-          </lib-auth-tooltip>
         }
 
         @if (mode() === 'read' && activeSong()) {
@@ -53,15 +49,21 @@
           >
             TRANSPOSE
           </button>
-          <button
-            libBtn
-            variant="toggle"
-            [active]="mode() === 'read'"
-            (click)="setMode('read')"
-            [disabled]="activeSong() === null"
-          >
-            MY SONGS
-          </button>
+          @if (authService.currentUser()) {
+            <button
+              libBtn
+              variant="toggle"
+              [active]="mode() === 'read'"
+              (click)="setMode('read')"
+              [disabled]="activeSong() === null"
+            >
+              MY SONGS
+            </button>
+          } @else {
+            <lib-auth-tooltip>
+              <button libBtn variant="toggle" [disabled]="true">MY SONGS</button>
+            </lib-auth-tooltip>
+          }
         </lib-btn-group>
       </div>
 
