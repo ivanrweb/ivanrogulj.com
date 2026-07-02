@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <rect width="200" height="200" fill="#0b0c10"/>
+
+  <!-- video frame -->
+  <rect x="28" y="30" width="144" height="86" fill="#111820" rx="6" stroke="#1f2833" stroke-width="1.5"/>
+
+  <!-- play triangle -->
+  <polygon points="90,55 90,91 120,73" fill="#66fcf1"/>
+
+  <!-- loop arrows around play -->
+  <path d="M 66 73 A 34 34 0 0 1 134 73" fill="none" stroke="#45a29e" stroke-width="2.5" stroke-linecap="round"/>
+  <polyline points="128,66 134,73 126,76" fill="none" stroke="#45a29e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 134 79 A 34 34 0 0 1 66 79" fill="none" stroke="#45a29e" stroke-width="2.5" stroke-linecap="round"/>
+  <polyline points="72,86 66,79 74,76" fill="none" stroke="#45a29e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- timeline -->
+  <rect x="28" y="132" width="144" height="24" fill="#111820" rx="3" stroke="#1f2833" stroke-width="1"/>
+
+  <!-- phrase region (loop section) -->
+  <rect x="76" y="132" width="46" height="24" fill="#ff007f" opacity="0.28"/>
+  <line x1="76" y1="132" x2="76" y2="156" stroke="#ff007f" stroke-width="2"/>
+  <line x1="122" y1="132" x2="122" y2="156" stroke="#ff007f" stroke-width="2"/>
+
+  <!-- playhead -->
+  <line x1="94" y1="128" x2="94" y2="160" stroke="#66fcf1" stroke-width="2"/>
+
+  <!-- tick marks -->
+  <line x1="40" y1="140" x2="40" y2="148" stroke="#2a3545" stroke-width="1.2"/>
+  <line x1="52" y1="142" x2="52" y2="146" stroke="#2a3545" stroke-width="1.2"/>
+  <line x1="64" y1="140" x2="64" y2="148" stroke="#2a3545" stroke-width="1.2"/>
+  <line x1="134" y1="140" x2="134" y2="148" stroke="#2a3545" stroke-width="1.2"/>
+  <line x1="146" y1="142" x2="146" y2="146" stroke="#2a3545" stroke-width="1.2"/>
+  <line x1="158" y1="140" x2="158" y2="148" stroke="#2a3545" stroke-width="1.2"/>
+
+  <!-- speed label -->
+  <rect x="28" y="166" width="42" height="16" fill="#1a2535" rx="2"/>
+  <text x="49" y="177" text-anchor="middle" font-family="monospace" font-size="9" fill="#66fcf1">50%</text>
+
+  <!-- phrase time label -->
+  <rect x="76" y="166" width="62" height="16" fill="#1a2535" rx="2"/>
+  <text x="107" y="177" text-anchor="middle" font-family="monospace" font-size="9" fill="#c5c6c7">0:23-0:27</text>
+
+  <!-- loop label -->
+  <rect x="144" y="166" width="28" height="16" fill="#1a2535" rx="2"/>
+  <text x="158" y="177" text-anchor="middle" font-family="monospace" font-size="9" fill="#ff007f">&#10227;</text>
+</svg>

@@ -43,6 +43,20 @@ export const routes: Routes = [
             (m) => m.ChordChangerComponent
           ),
       },
+      {
+        path: 'practice-jam',
+        loadComponent: () =>
+          import('@ivanrogulj.com/practice-jam').then(
+            (m) => m.PracticeJamLibraryComponent
+          ),
+      },
+      {
+        path: 'practice-jam/:id',
+        loadComponent: () =>
+          import('@ivanrogulj.com/practice-jam').then(
+            (m) => m.JamPlayerComponent
+          ),
+      },
     ],
   },
 
