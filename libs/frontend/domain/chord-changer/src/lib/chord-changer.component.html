@@ -15,6 +15,10 @@
             (selected)="onSongSelected($event)"
             (deleted)="onSongDeleted($event)"
           />
+        } @else {
+          <lib-auth-tooltip>
+            <button libBtn [disabled]="true">MY SONGS</button>
+          </lib-auth-tooltip>
         }
 
         @if (mode() === 'read' && activeSong()) {
@@ -25,7 +29,9 @@
           @if (authService.currentUser()) {
             <button libBtn (click)="onSaveSongClick()">SAVE SONG</button>
           } @else {
-            <button libBtn (click)="router.navigate(['/login'])">SAVE SONG</button>
+            <lib-auth-tooltip>
+              <button libBtn [disabled]="true">SAVE SONG</button>
+            </lib-auth-tooltip>
           }
         }
 

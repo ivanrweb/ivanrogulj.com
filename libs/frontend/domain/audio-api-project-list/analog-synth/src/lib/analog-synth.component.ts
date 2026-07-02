@@ -50,6 +50,8 @@ import {
 import { ButtonDirective } from '@ivanrogulj.com/button';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { TourComponent, TourStep } from '@ivanrogulj.com/tour';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { AuthTooltipComponent } from '@ivanrogulj.com/auth-tooltip';
 
 const TOUR_STORAGE_KEY = 'analog-synth-tour';
 
@@ -149,6 +151,7 @@ const ANALOG_SYNTH_TOUR_STEPS: TourStep[] = [
     ActionDropdownComponent,
     ButtonDirective,
     TourComponent,
+    AuthTooltipComponent,
   ],
   providers: [AudioContextService],
   templateUrl: './analog-synth.component.html',

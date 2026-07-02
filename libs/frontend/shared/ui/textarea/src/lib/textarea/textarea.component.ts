@@ -5,22 +5,32 @@ import { FormsModule } from '@angular/forms';
 import { AnalogSynthViewModel } from '@ivanrogulj.com/analog-synth';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { PatchApiService } from '@ivanrogulj.com/analog-synth';
+import { AuthService } from '@ivanrogulj.com/auth';
+import { AuthTooltipComponent } from '@ivanrogulj.com/auth-tooltip';
 
 @Component({
   selector: 'lib-textarea',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AuthTooltipComponent],
   template: `
     @if (analogSynthViewModel.vm$ | async; as vm) {
     <div class="ai-prompt-container">
-      <button
-        (click)="analogSynthViewModel.togglePrompt()"
-        class="ai-prompt-button"
-        [class.active]="vm.isPromptOpen"
-        [disabled]="isLoading"
-      >
-        {{ vm.isPromptOpen ? 'CLOSE AI PROMPT' : 'OPEN AI PROMPT' }}
-      </button>
+      @if (authService.currentUser()) {
+        <button
+          (click)="analogSynthViewModel.togglePrompt()"
+          class="ai-prompt-button"
+          [class.active]="vm.isPromptOpen"
+          [disabled]="isLoading"
+        >
+          {{ vm.isPromptOpen ? 'CLOSE AI PROMPT' : 'OPEN AI PROMPT' }}
+        </button>
+      } @else {
+        <lib-auth-tooltip>
+          <button class="ai-prompt-button" [disabled]="true">
+            OPEN AI PROMPT
+          </button>
+        </lib-auth-tooltip>
+      }
 
       @if(vm.isPromptOpen){
       <div class="ai-prompt-popup">
@@ -213,6 +223,7 @@ export class TextareaComponent {
 
   public readonly analogSynthViewModel = inject(AnalogSynthViewModel);
   public readonly patchApiService = inject(PatchApiService);
+  public readonly authService = inject(AuthService);
 
   public generate(): void {
     if (this.isLoading || !this.patchAIDescription.trim()) return;

@@ -27,6 +27,9 @@
         "libs/frontend/domain/audio-api-project-list/src/index.ts"
       ],
       "@ivanrogulj.com/auth": ["libs/frontend/shared/ui/auth/src/index.ts"],
+      "@ivanrogulj.com/auth-tooltip": [
+        "libs/frontend/shared/ui/auth-tooltip/src/index.ts"
+      ],
       "@ivanrogulj.com/avatar": ["libs/frontend/shared/ui/avatar/src/index.ts"],
       "@ivanrogulj.com/backend/core/auth": [
         "libs/backend/core/auth/src/index.ts"

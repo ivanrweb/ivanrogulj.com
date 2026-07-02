@@ -30,6 +30,8 @@ import {
 import { BtnGroupComponent, ButtonDirective } from '@ivanrogulj.com/button';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { TourComponent, TourStep } from '@ivanrogulj.com/tour';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { AuthTooltipComponent } from '@ivanrogulj.com/auth-tooltip';
 
 // ── Tour steps — edit these to update the guided tour content ──────────────
 const TOUR_STORAGE_KEY = 'chord-changer-tour';
@@ -91,6 +93,7 @@ const CHORD_CHANGER_TOUR_STEPS: TourStep[] = [
     ButtonDirective,
     BtnGroupComponent,
     TourComponent,
+    AuthTooltipComponent,
   ],
   templateUrl: './chord-changer.component.html',
   styleUrl: './chord-changer.component.scss',

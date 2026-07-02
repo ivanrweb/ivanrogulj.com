@@ -22,6 +22,7 @@ export class OpenAiApiService extends AiProviderService {
     try {
       const response = await this.openai.chat.completions.create({
         model: 'gpt-5.4-nano',
+        max_tokens: 2048,
         messages: [
           { role: 'user', content: `${GENERATE_PATCH_PROMPT}${description}` },
         ],

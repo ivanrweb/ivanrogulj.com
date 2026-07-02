@@ -22,9 +22,19 @@
             (selected)="onPresetSelected($event)"
             (deleted)="onPresetDeleted($event)"
           />
+        } @else {
+          <lib-auth-tooltip>
+            <button libBtn [disabled]="true">PRESETS</button>
+          </lib-auth-tooltip>
         }
 
-        <button libBtn (click)="onSaveButtonClick()">SAVE CURRENT PATCH</button>
+        @if (authService.currentUser()) {
+          <button libBtn (click)="onSaveButtonClick()">SAVE CURRENT PATCH</button>
+        } @else {
+          <lib-auth-tooltip>
+            <button libBtn [disabled]="true">SAVE CURRENT PATCH</button>
+          </lib-auth-tooltip>
+        }
 
         @if (selectedPresetId) {
           <button libBtn (click)="showEditDialog = true">UPDATE</button>
