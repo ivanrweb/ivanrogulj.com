@@ -44,16 +44,16 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'practice-jam',
+        path: 'jamini',
         loadComponent: () =>
-          import('@ivanrogulj.com/practice-jam').then(
-            (m) => m.PracticeJamLibraryComponent
+          import('@ivanrogulj.com/jamini').then(
+            (m) => m.JaminiLibraryComponent
           ),
       },
       {
-        path: 'practice-jam/:id',
+        path: 'jamini/:id',
         loadComponent: () =>
-          import('@ivanrogulj.com/practice-jam').then(
+          import('@ivanrogulj.com/jamini').then(
             (m) => m.JamPlayerComponent
           ),
       },

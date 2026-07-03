@@ -41,11 +41,11 @@ export class AudioApiProjectListComponent {
       path: 'chord-changer',
     },
     {
-      title: 'PracticeJam',
+      title: 'Jamini',
       description:
-        'Build your personal practice library from YouTube. Paste a link to save any video as a Jam, organize Jams into setlists, and mark the passages that need the most work as Phrases. Loop any Phrase endlessly at reduced speed — from 25% up to full tempo — until your fingers catch up. Built for musician playing any instrument learning from YouTube. Log in to keep your library.',
-      iconUrl: 'images/practice-jam.svg',
-      path: 'practice-jam',
+        'Build your personal practice library from YouTube. Paste a link to save any video as a Jam, organize Jams into categories, and mark the passages that need the most work as Licks. Loop any Lick endlessly at reduced speed — from 25% up to full tempo — until your fingers catch up. Built for musician playing any instrument learning from YouTube. Log in to keep your library.',
+      iconUrl: 'images/jamini.svg',
+      path: 'jamini',
     },
   ];
 }

@@ -58,11 +58,11 @@
       "@ivanrogulj.com/backend/domain/article/data-access": [
         "libs/backend/domain/article/data-access/src/index.ts"
       ],
-      "@ivanrogulj.com/backend/domain/practice-jam/api": [
-        "libs/backend/domain/practice-jam/api/src/index.ts"
+      "@ivanrogulj.com/backend/domain/jamini/api": [
+        "libs/backend/domain/jamini/api/src/index.ts"
       ],
-      "@ivanrogulj.com/backend/domain/practice-jam/data-access": [
-        "libs/backend/domain/practice-jam/data-access/src/index.ts"
+      "@ivanrogulj.com/backend/domain/jamini/data-access": [
+        "libs/backend/domain/jamini/data-access/src/index.ts"
       ],
       "@ivanrogulj.com/backend/domain/song-chords/api": [
         "libs/backend/domain/song-chords/api/src/index.ts"
@@ -135,8 +135,8 @@
       "@ivanrogulj.com/oscilloscope": [
         "libs/frontend/domain/audio-api-project-list/ui/oscilloscope/src/index.ts"
       ],
-      "@ivanrogulj.com/practice-jam": [
-        "libs/frontend/domain/audio-api-project-list/practice-jam/src/index.ts"
+      "@ivanrogulj.com/jamini": [
+        "libs/frontend/domain/audio-api-project-list/jamini/src/index.ts"
       ],
       "@ivanrogulj.com/select": ["libs/frontend/shared/ui/select/src/index.ts"],
       "@ivanrogulj.com/shared/data-access/model": [

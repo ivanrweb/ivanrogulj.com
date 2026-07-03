@@ -132,10 +132,10 @@ import { Router } from '@angular/router';
         </div>
       </section>
 
-      <!-- PRACTICEJAM -->
+      <!-- JAMINI -->
       <section
         class="project-row project-row--alt"
-        (click)="navigate('audio/practice-jam')"
+        (click)="navigate('audio/jamini')"
       >
         <div class="project-inner project-inner--reversed">
           <div class="project-text">
@@ -143,11 +143,11 @@ import { Router } from '@angular/router';
               <span class="tag">YouTube</span>
               <span class="tag">Loop Practice</span>
             </div>
-            <h2 class="project-title">PracticeJam</h2>
+            <h2 class="project-title">Jamini</h2>
             <p class="project-desc">
               Turn any YouTube video into a practice session. Save videos as
-              Jams in your personal library, organize them into setlists, and
-              mark the hardest passages as Phrases. Loop a Phrase over and over
+              Jams in your personal library, organize them into categories, and
+              mark the hardest passages as Licks. Loop a Lick over and over
               at reduced speed — from 25% up to full tempo — until you nail it.
               Built for musician playing any instrument learning from YouTube.
             </p>
@@ -157,7 +157,7 @@ import { Router } from '@angular/router';
           </div>
           <div class="project-visual">
             <div class="visual-box">
-              <img src="images/practice-jam.svg" alt="PracticeJam" />
+              <img src="images/jamini.svg" alt="Jamini" />
             </div>
           </div>
         </div>
