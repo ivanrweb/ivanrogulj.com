@@ -43,6 +43,20 @@ export const routes: Routes = [
             (m) => m.ChordChangerComponent
           ),
       },
+      {
+        path: 'jamini',
+        loadComponent: () =>
+          import('@ivanrogulj.com/jamini').then(
+            (m) => m.JaminiLibraryComponent
+          ),
+      },
+      {
+        path: 'jamini/:id',
+        loadComponent: () =>
+          import('@ivanrogulj.com/jamini').then(
+            (m) => m.JamPlayerComponent
+          ),
+      },
     ],
   },
 

@@ -132,9 +132,45 @@ import { Router } from '@angular/router';
         </div>
       </section>
 
-      <!-- VST PLUGINS -->
-      <section class="project-row project-row--alt" (click)="navigate('juce')">
+      <!-- JAMINI -->
+      <section
+        class="project-row project-row--alt"
+        (click)="navigate('audio/jamini')"
+      >
         <div class="project-inner project-inner--reversed">
+          <div class="project-text">
+            <div class="project-tags">
+              <span class="tag">YouTube</span>
+              <span class="tag">Loop Practice</span>
+            </div>
+            <h2 class="project-title">Jamini</h2>
+            <p class="project-desc">
+              Turn any YouTube video into a practice session. Save videos as
+              Jams in your personal library, organize them into categories, and
+              mark the hardest passages as Licks. Loop a Lick over and over
+              at reduced speed — from 25% up to full tempo — until you nail it.
+              Built for musician playing any instrument learning from YouTube.
+            </p>
+            <div class="project-cta">
+              Start practicing <span class="cta-arrow">→</span>
+            </div>
+          </div>
+          <div class="project-visual">
+            <div class="visual-box">
+              <img src="images/jamini.svg" alt="Jamini" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VST PLUGINS -->
+      <section class="project-row" (click)="navigate('juce')">
+        <div class="project-inner">
+          <div class="project-visual">
+            <div class="visual-box">
+              <img src="images/vst.svg" alt="VST" />
+            </div>
+          </div>
           <div class="project-text">
             <div class="project-tags">
               <span class="tag">C++ / JUCE</span>
@@ -150,11 +186,6 @@ import { Router } from '@angular/router';
             </p>
             <div class="project-cta">
               View plugins <span class="cta-arrow">→</span>
-            </div>
-          </div>
-          <div class="project-visual">
-            <div class="visual-box">
-              <img src="images/vst.svg" alt="VST" />
             </div>
           </div>
         </div>
