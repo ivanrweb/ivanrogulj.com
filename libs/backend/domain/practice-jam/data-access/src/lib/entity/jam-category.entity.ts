@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('practice_jam_setlist_link')
-export class JamSetlistEntity {
+@Entity('practice_jam_category_link')
+export class JamCategoryEntity {
   @PrimaryGeneratedColumn('uuid')
   public id!: string;
 
@@ -9,5 +9,5 @@ export class JamSetlistEntity {
   public jamId!: string;
 
   @Column()
-  public setlistId!: string;
+  public categoryId!: string;
 }

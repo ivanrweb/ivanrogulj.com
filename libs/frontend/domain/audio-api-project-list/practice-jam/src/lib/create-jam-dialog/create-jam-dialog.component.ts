@@ -49,33 +49,33 @@ const YOUTUBE_ID_PATTERNS = [
             />
           </div>
 
-          <div class="setlists">
-            <span class="setlists-label">Setlists</span>
+          <div class="categories">
+            <span class="categories-label">Categories</span>
             <div class="chips">
-              @for (setlist of vm.setlists$ | async; track setlist.id) {
+              @for (category of vm.categories$ | async; track category.id) {
                 <button
                   class="chip"
                   type="button"
-                  [class.selected]="selectedSetlistIds().includes(setlist.id)"
-                  (click)="toggleSetlist(setlist.id)"
+                  [class.selected]="selectedCategoryIds().includes(category.id)"
+                  (click)="toggleCategory(category.id)"
                 >
-                  {{ setlist.name }}
+                  {{ category.name }}
                 </button>
               }
-              @if (isAddingSetlist()) {
+              @if (isAddingCategory()) {
                 <input
-                  class="new-setlist-input"
+                  class="new-category-input"
                   type="text"
-                  placeholder="Setlist name"
-                  [ngModel]="newSetlistName()"
-                  (ngModelChange)="newSetlistName.set($event)"
-                  (keydown.enter)="createSetlist()"
-                  (keydown.escape)="isAddingSetlist.set(false)"
+                  placeholder="Category name"
+                  [ngModel]="newCategoryName()"
+                  (ngModelChange)="newCategoryName.set($event)"
+                  (keydown.enter)="createCategory()"
+                  (keydown.escape)="isAddingCategory.set(false)"
                   autocomplete="off"
                 />
-                <button class="chip confirm" type="button" (click)="createSetlist()">add</button>
+                <button class="chip confirm" type="button" (click)="createCategory()">add</button>
               } @else {
-                <button class="chip new" type="button" (click)="isAddingSetlist.set(true)">+ new setlist</button>
+                <button class="chip new" type="button" (click)="isAddingCategory.set(true)">+ new category</button>
               }
             </div>
           </div>
@@ -153,7 +153,7 @@ const YOUTUBE_ID_PATTERNS = [
 
       .url-input,
       .name-input,
-      .new-setlist-input {
+      .new-category-input {
         background: #0b0c10;
         border: 1px solid #333;
         border-radius: 4px;
@@ -168,7 +168,7 @@ const YOUTUBE_ID_PATTERNS = [
 
       .url-input:focus,
       .name-input:focus,
-      .new-setlist-input:focus {
+      .new-category-input:focus {
         border-color: #66fcf1;
       }
 
@@ -186,13 +186,13 @@ const YOUTUBE_ID_PATTERNS = [
         object-fit: cover;
       }
 
-      .setlists {
+      .categories {
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
       }
 
-      .setlists-label {
+      .categories-label {
         font-family: 'Fira Code', monospace;
         font-size: 0.75rem;
         color: #888;
@@ -235,7 +235,7 @@ const YOUTUBE_ID_PATTERNS = [
         border-style: dashed;
       }
 
-      .new-setlist-input {
+      .new-category-input {
         width: 150px;
       }
 
@@ -295,9 +295,9 @@ export class CreateJamDialogComponent {
 
   public readonly url = signal('');
   public readonly name = signal('');
-  public readonly selectedSetlistIds = signal<string[]>([]);
-  public readonly isAddingSetlist = signal(false);
-  public readonly newSetlistName = signal('');
+  public readonly selectedCategoryIds = signal<string[]>([]);
+  public readonly isAddingCategory = signal(false);
+  public readonly newCategoryName = signal('');
   public readonly isSaving = signal(false);
   public readonly saveError = signal<string | null>(null);
 
@@ -315,23 +315,23 @@ export class CreateJamDialogComponent {
     this.saveError.set(null);
   }
 
-  public toggleSetlist(setlistId: string): void {
-    this.selectedSetlistIds.update((ids) =>
-      ids.includes(setlistId) ? ids.filter((id) => id !== setlistId) : [...ids, setlistId],
+  public toggleCategory(categoryId: string): void {
+    this.selectedCategoryIds.update((ids) =>
+      ids.includes(categoryId) ? ids.filter((id) => id !== categoryId) : [...ids, categoryId],
     );
   }
 
-  public createSetlist(): void {
-    const name = this.newSetlistName().trim();
+  public createCategory(): void {
+    const name = this.newCategoryName().trim();
     if (!name) return;
-    this.apiService.createSetlist(name).subscribe({
-      next: (setlist) => {
-        this.vm.loadSetlists();
-        this.selectedSetlistIds.update((ids) => [...ids, setlist.id]);
-        this.newSetlistName.set('');
-        this.isAddingSetlist.set(false);
+    this.apiService.createCategory(name).subscribe({
+      next: (category) => {
+        this.vm.loadCategories();
+        this.selectedCategoryIds.update((ids) => [...ids, category.id]);
+        this.newCategoryName.set('');
+        this.isAddingCategory.set(false);
       },
-      error: () => this.saveError.set('Could not create the setlist.'),
+      error: () => this.saveError.set('Could not create the category.'),
     });
   }
 
@@ -343,7 +343,7 @@ export class CreateJamDialogComponent {
       .createJam({
         youtubeUrl: this.url().trim(),
         name: this.name().trim() || undefined,
-        setlistIds: this.selectedSetlistIds(),
+        categoryIds: this.selectedCategoryIds(),
       })
       .subscribe({
         next: (jam) => {

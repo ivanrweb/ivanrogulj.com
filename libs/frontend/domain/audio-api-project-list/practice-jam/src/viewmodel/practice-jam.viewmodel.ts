@@ -8,8 +8,8 @@ import { YoutubePlayerService } from '../service/youtube-player.service';
 export interface PracticeJamState {
   // Library
   jams: PracticeJamApi.JamListItem[];
-  setlists: PracticeJamApi.Setlist[];
-  activeSetlistId: string | null;
+  categories: PracticeJamApi.Category[];
+  activeCategoryId: string | null;
   isLoadingLibrary: boolean;
   libraryError: string | null;
 
@@ -31,8 +31,8 @@ export interface PracticeJamState {
 
 const defaultState: PracticeJamState = {
   jams: [],
-  setlists: [],
-  activeSetlistId: null,
+  categories: [],
+  activeCategoryId: null,
   isLoadingLibrary: false,
   libraryError: null,
   currentJam: null,
@@ -55,12 +55,12 @@ export class PracticeJamViewModel extends ComponentStore<PracticeJamState> {
 
   public readonly vm$ = this.select((s) => s);
   public readonly jams$ = this.select((s) => s.jams);
-  public readonly setlists$ = this.select((s) => s.setlists);
-  public readonly activeSetlistId$ = this.select((s) => s.activeSetlistId);
+  public readonly categories$ = this.select((s) => s.categories);
+  public readonly activeCategoryId$ = this.select((s) => s.activeCategoryId);
   public readonly filteredJams$ = this.select(
     this.jams$,
-    this.activeSetlistId$,
-    (jams, setlistId) => (setlistId === null ? jams : jams.filter((j) => j.setlistIds.includes(setlistId))),
+    this.activeCategoryId$,
+    (jams, categoryId) => (categoryId === null ? jams : jams.filter((j) => j.categoryIds.includes(categoryId))),
   );
   public readonly currentJam$ = this.select((s) => s.currentJam);
   public readonly phrases$ = this.select((s) => s.currentJam?.phrases ?? []);
@@ -110,19 +110,19 @@ export class PracticeJamViewModel extends ComponentStore<PracticeJamState> {
     ),
   );
 
-  public readonly loadSetlists = this.effect<void>((trigger$) =>
+  public readonly loadCategories = this.effect<void>((trigger$) =>
     trigger$.pipe(
       switchMap(() =>
-        this.apiService.getSetlists().pipe(
-          tap((setlists) => this.patchState({ setlists })),
+        this.apiService.getCategories().pipe(
+          tap((categories) => this.patchState({ categories })),
           catchError(() => of(null)),
         ),
       ),
     ),
   );
 
-  public setActiveSetlist(setlistId: string | null): void {
-    this.patchState({ activeSetlistId: setlistId });
+  public setActiveCategory(categoryId: string | null): void {
+    this.patchState({ activeCategoryId: categoryId });
   }
 
   public readonly deleteJam = this.effect<string>((jamId$) =>
@@ -130,6 +130,21 @@ export class PracticeJamViewModel extends ComponentStore<PracticeJamState> {
       switchMap((jamId) =>
         this.apiService.deleteJam(jamId).pipe(
           tap(() => this.patchState((s) => ({ jams: s.jams.filter((j) => j.id !== jamId) }))),
+          catchError(() => of(null)),
+        ),
+      ),
+    ),
+  );
+
+  public readonly setJamCategories = this.effect<{ jamId: string; categoryIds: string[] }>((assignment$) =>
+    assignment$.pipe(
+      switchMap(({ jamId, categoryIds }) =>
+        this.apiService.setJamCategories(jamId, categoryIds).pipe(
+          tap((savedIds) =>
+            this.patchState((s) => ({
+              jams: s.jams.map((j) => (j.id === jamId ? { ...j, categoryIds: savedIds } : j)),
+            })),
+          ),
           catchError(() => of(null)),
         ),
       ),

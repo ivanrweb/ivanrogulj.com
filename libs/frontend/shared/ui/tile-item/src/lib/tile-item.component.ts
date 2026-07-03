@@ -37,11 +37,10 @@ export interface TileItem {
         border-radius: 8px;
         overflow: hidden;
         cursor: pointer;
-        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        transition: box-shadow 0.3s ease, border-color 0.3s ease;
       }
 
       .tile:hover {
-        transform: translateY(-4px);
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
         border-color: #ff007f;
       }

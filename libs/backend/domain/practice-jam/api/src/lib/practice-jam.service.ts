@@ -2,26 +2,26 @@ import { BadRequestException, ForbiddenException, Injectable, NotFoundException 
 import {
   JamEntity,
   JamRepository,
-  JamSetlistRepository,
+  JamCategoryRepository,
   PhraseEntity,
   PhraseRepository,
-  SetlistEntity,
-  SetlistRepository,
+  CategoryEntity,
+  CategoryRepository,
 } from '@ivanrogulj.com/backend/domain/practice-jam/data-access';
-import { AssignSetlistsDto, CreateJamDto, SavePhraseDto, SetlistDto, UpdateJamDto } from './dto/practice-jam.dto';
+import { AssignCategoriesDto, CreateJamDto, SavePhraseDto, CategoryDto, UpdateJamDto } from './dto/practice-jam.dto';
 
 export interface JamListItem {
   id: string;
   name: string;
   youtubeVideoId: string;
-  setlistIds: string[];
+  categoryIds: string[];
   createdAt: Date;
 }
 
 export interface JamDetail {
   jam: JamEntity;
   phrases: PhraseEntity[];
-  setlistIds: string[];
+  categoryIds: string[];
 }
 
 @Injectable()
@@ -29,8 +29,8 @@ export class PracticeJamService {
   public constructor(
     private readonly jamRepo: JamRepository,
     private readonly phraseRepo: PhraseRepository,
-    private readonly setlistRepo: SetlistRepository,
-    private readonly jamSetlistRepo: JamSetlistRepository,
+    private readonly categoryRepo: CategoryRepository,
+    private readonly jamCategoryRepo: JamCategoryRepository,
   ) {}
 
   public async createJam(userId: string, dto: CreateJamDto): Promise<JamListItem> {
@@ -49,19 +49,19 @@ export class PracticeJamService {
       }),
     );
 
-    const setlistIds = await this.linkSetlists(jam.id, userId, dto.setlistIds ?? []);
+    const categoryIds = await this.linkCategories(jam.id, userId, dto.categoryIds ?? []);
 
-    return { id: jam.id, name: jam.name, youtubeVideoId: jam.youtubeVideoId, setlistIds, createdAt: jam.createdAt };
+    return { id: jam.id, name: jam.name, youtubeVideoId: jam.youtubeVideoId, categoryIds, createdAt: jam.createdAt };
   }
 
   public async listJams(userId: string): Promise<JamListItem[]> {
     const jams = await this.jamRepo.findByUserId(userId);
-    const links = await this.jamSetlistRepo.findByJamIds(jams.map((j) => j.id));
+    const links = await this.jamCategoryRepo.findByJamIds(jams.map((j) => j.id));
     return jams.map((jam) => ({
       id: jam.id,
       name: jam.name,
       youtubeVideoId: jam.youtubeVideoId,
-      setlistIds: links.filter((l) => l.jamId === jam.id).map((l) => l.setlistId),
+      categoryIds: links.filter((l) => l.jamId === jam.id).map((l) => l.categoryId),
       createdAt: jam.createdAt,
     }));
   }
@@ -69,8 +69,8 @@ export class PracticeJamService {
   public async getJam(id: string, userId: string): Promise<JamDetail> {
     const jam = await this.findOwnedJam(id, userId);
     const phrases = await this.phraseRepo.findByJamId(id);
-    const links = await this.jamSetlistRepo.findByJamId(id);
-    return { jam, phrases, setlistIds: links.map((l) => l.setlistId) };
+    const links = await this.jamCategoryRepo.findByJamId(id);
+    return { jam, phrases, categoryIds: links.map((l) => l.categoryId) };
   }
 
   public async updateJam(id: string, userId: string, dto: UpdateJamDto): Promise<JamListItem> {
@@ -78,12 +78,12 @@ export class PracticeJamService {
     if (dto.name !== undefined) jam.name = dto.name.trim() || jam.name;
     if (dto.durationSeconds !== undefined) jam.durationSeconds = dto.durationSeconds;
     const saved = await this.jamRepo.save(jam);
-    const links = await this.jamSetlistRepo.findByJamId(id);
+    const links = await this.jamCategoryRepo.findByJamId(id);
     return {
       id: saved.id,
       name: saved.name,
       youtubeVideoId: saved.youtubeVideoId,
-      setlistIds: links.map((l) => l.setlistId),
+      categoryIds: links.map((l) => l.categoryId),
       createdAt: saved.createdAt,
     };
   }
@@ -91,14 +91,14 @@ export class PracticeJamService {
   public async deleteJam(id: string, userId: string): Promise<void> {
     await this.findOwnedJam(id, userId);
     await this.phraseRepo.delete({ jamId: id });
-    await this.jamSetlistRepo.delete({ jamId: id });
+    await this.jamCategoryRepo.delete({ jamId: id });
     await this.jamRepo.delete(id);
   }
 
-  public async setJamSetlists(id: string, userId: string, dto: AssignSetlistsDto): Promise<string[]> {
+  public async setJamCategories(id: string, userId: string, dto: AssignCategoriesDto): Promise<string[]> {
     await this.findOwnedJam(id, userId);
-    await this.jamSetlistRepo.delete({ jamId: id });
-    return this.linkSetlists(id, userId, dto.setlistIds);
+    await this.jamCategoryRepo.delete({ jamId: id });
+    return this.linkCategories(id, userId, dto.categoryIds);
   }
 
   public async addPhrase(jamId: string, userId: string, dto: SavePhraseDto): Promise<PhraseEntity> {
@@ -132,28 +132,28 @@ export class PracticeJamService {
     await this.phraseRepo.delete(id);
   }
 
-  public async listSetlists(userId: string): Promise<SetlistEntity[]> {
-    return this.setlistRepo.findByUserId(userId);
+  public async listCategories(userId: string): Promise<CategoryEntity[]> {
+    return this.categoryRepo.findByUserId(userId);
   }
 
-  public async createSetlist(userId: string, dto: SetlistDto): Promise<SetlistEntity> {
+  public async createCategory(userId: string, dto: CategoryDto): Promise<CategoryEntity> {
     const name = dto.name?.trim();
-    if (!name) throw new BadRequestException('Setlist name is required');
-    return this.setlistRepo.save(this.setlistRepo.create({ userId, name }));
+    if (!name) throw new BadRequestException('Category name is required');
+    return this.categoryRepo.save(this.categoryRepo.create({ userId, name }));
   }
 
-  public async renameSetlist(id: string, userId: string, dto: SetlistDto): Promise<SetlistEntity> {
-    const setlist = await this.findOwnedSetlist(id, userId);
+  public async renameCategory(id: string, userId: string, dto: CategoryDto): Promise<CategoryEntity> {
+    const category = await this.findOwnedCategory(id, userId);
     const name = dto.name?.trim();
-    if (!name) throw new BadRequestException('Setlist name is required');
-    setlist.name = name;
-    return this.setlistRepo.save(setlist);
+    if (!name) throw new BadRequestException('Category name is required');
+    category.name = name;
+    return this.categoryRepo.save(category);
   }
 
-  public async deleteSetlist(id: string, userId: string): Promise<void> {
-    await this.findOwnedSetlist(id, userId);
-    await this.jamSetlistRepo.delete({ setlistId: id });
-    await this.setlistRepo.delete(id);
+  public async deleteCategory(id: string, userId: string): Promise<void> {
+    await this.findOwnedCategory(id, userId);
+    await this.jamCategoryRepo.delete({ categoryId: id });
+    await this.categoryRepo.delete(id);
   }
 
   private async findOwnedJam(id: string, userId: string): Promise<JamEntity> {
@@ -170,20 +170,20 @@ export class PracticeJamService {
     return phrase;
   }
 
-  private async findOwnedSetlist(id: string, userId: string): Promise<SetlistEntity> {
-    const setlist = await this.setlistRepo.findOne({ where: { id } });
-    if (!setlist) throw new NotFoundException('Setlist not found');
-    if (setlist.userId !== userId) throw new ForbiddenException('Not your setlist');
-    return setlist;
+  private async findOwnedCategory(id: string, userId: string): Promise<CategoryEntity> {
+    const category = await this.categoryRepo.findOne({ where: { id } });
+    if (!category) throw new NotFoundException('Category not found');
+    if (category.userId !== userId) throw new ForbiddenException('Not your category');
+    return category;
   }
 
-  /** Inserts join rows for setlists the user actually owns; returns the linked ids. */
-  private async linkSetlists(jamId: string, userId: string, setlistIds: string[]): Promise<string[]> {
-    if (setlistIds.length === 0) return [];
-    const owned = await this.setlistRepo.findByUserId(userId);
+  /** Inserts join rows for categories the user actually owns; returns the linked ids. */
+  private async linkCategories(jamId: string, userId: string, categoryIds: string[]): Promise<string[]> {
+    if (categoryIds.length === 0) return [];
+    const owned = await this.categoryRepo.findByUserId(userId);
     const ownedIds = new Set(owned.map((s) => s.id));
-    const validIds = [...new Set(setlistIds)].filter((id) => ownedIds.has(id));
-    await this.jamSetlistRepo.save(validIds.map((setlistId) => this.jamSetlistRepo.create({ jamId, setlistId })));
+    const validIds = [...new Set(categoryIds)].filter((id) => ownedIds.has(id));
+    await this.jamCategoryRepo.save(validIds.map((categoryId) => this.jamCategoryRepo.create({ jamId, categoryId })));
     return validIds;
   }
 

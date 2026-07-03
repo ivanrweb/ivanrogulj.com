@@ -2,33 +2,33 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JamEntity } from './entity/jam.entity';
 import { PhraseEntity } from './entity/phrase.entity';
-import { SetlistEntity } from './entity/setlist.entity';
-import { JamSetlistEntity } from './entity/jam-setlist.entity';
+import { CategoryEntity } from './entity/category.entity';
+import { JamCategoryEntity } from './entity/jam-category.entity';
 import { JamRepository } from './repo/jam.repository';
 import { PhraseRepository } from './repo/phrase.repository';
-import { SetlistRepository } from './repo/setlist.repository';
-import { JamSetlistRepository } from './repo/jam-setlist.repository';
+import { CategoryRepository } from './repo/category.repository';
+import { JamCategoryRepository } from './repo/jam-category.repository';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       JamEntity,
       PhraseEntity,
-      SetlistEntity,
-      JamSetlistEntity,
+      CategoryEntity,
+      JamCategoryEntity,
     ]),
   ],
   providers: [
     JamRepository,
     PhraseRepository,
-    SetlistRepository,
-    JamSetlistRepository,
+    CategoryRepository,
+    JamCategoryRepository,
   ],
   exports: [
     JamRepository,
     PhraseRepository,
-    SetlistRepository,
-    JamSetlistRepository,
+    CategoryRepository,
+    JamCategoryRepository,
   ],
 })
 export class BackendDomainPracticeJamDataAccessModule {}

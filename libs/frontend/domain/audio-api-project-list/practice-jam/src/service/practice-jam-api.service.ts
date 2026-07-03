@@ -45,10 +45,10 @@ export class PracticeJamApiService {
     });
   }
 
-  public setJamSetlists(id: string, setlistIds: string[]): Observable<string[]> {
+  public setJamCategories(id: string, categoryIds: string[]): Observable<string[]> {
     return this.http.put<string[]>(
-      `/api/practice-jam/jams/${id}/setlists`,
-      { setlistIds },
+      `/api/practice-jam/jams/${id}/categories`,
+      { categoryIds },
       { headers: this.getAuthHeaders() },
     );
   }
@@ -71,30 +71,30 @@ export class PracticeJamApiService {
     });
   }
 
-  public getSetlists(): Observable<PracticeJamApi.Setlist[]> {
-    return this.http.get<PracticeJamApi.Setlist[]>('/api/practice-jam/setlists', {
+  public getCategories(): Observable<PracticeJamApi.Category[]> {
+    return this.http.get<PracticeJamApi.Category[]>('/api/practice-jam/categories', {
       headers: this.getAuthHeaders(),
     });
   }
 
-  public createSetlist(name: string): Observable<PracticeJamApi.Setlist> {
-    return this.http.post<PracticeJamApi.Setlist>(
-      '/api/practice-jam/setlists',
+  public createCategory(name: string): Observable<PracticeJamApi.Category> {
+    return this.http.post<PracticeJamApi.Category>(
+      '/api/practice-jam/categories',
       { name },
       { headers: this.getAuthHeaders() },
     );
   }
 
-  public renameSetlist(id: string, name: string): Observable<PracticeJamApi.Setlist> {
-    return this.http.put<PracticeJamApi.Setlist>(
-      `/api/practice-jam/setlists/${id}`,
+  public renameCategory(id: string, name: string): Observable<PracticeJamApi.Category> {
+    return this.http.put<PracticeJamApi.Category>(
+      `/api/practice-jam/categories/${id}`,
       { name },
       { headers: this.getAuthHeaders() },
     );
   }
 
-  public deleteSetlist(id: string): Observable<void> {
-    return this.http.delete<void>(`/api/practice-jam/setlists/${id}`, {
+  public deleteCategory(id: string): Observable<void> {
+    return this.http.delete<void>(`/api/practice-jam/categories/${id}`, {
       headers: this.getAuthHeaders(),
     });
   }

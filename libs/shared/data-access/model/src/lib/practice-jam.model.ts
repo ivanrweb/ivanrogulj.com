@@ -13,14 +13,14 @@ export namespace PracticeJamApi {
     id: string;
     name: string;
     youtubeVideoId: string;
-    setlistIds: string[];
+    categoryIds: string[];
     createdAt: string;
   }
 
   export interface JamDetail {
     jam: Jam;
     phrases: Phrase[];
-    setlistIds: string[];
+    categoryIds: string[];
   }
 
   export interface Phrase {
@@ -34,7 +34,7 @@ export namespace PracticeJamApi {
     createdAt: string;
   }
 
-  export interface Setlist {
+  export interface Category {
     id: string;
     name: string;
     createdAt: string;
@@ -43,7 +43,7 @@ export namespace PracticeJamApi {
   export interface CreateJamPayload {
     youtubeUrl: string;
     name?: string;
-    setlistIds?: string[];
+    categoryIds?: string[];
   }
 
   export interface UpdateJamPayload {

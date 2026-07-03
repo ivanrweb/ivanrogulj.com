@@ -6,13 +6,16 @@ import { AuthService } from '@ivanrogulj.com/auth';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { AuthTooltipComponent } from '@ivanrogulj.com/auth-tooltip';
 import { PracticeJamApi } from '@ivanrogulj.com/shared/data-access/model';
+import { PracticeJamApiService } from '../service/practice-jam-api.service';
 import { PracticeJamViewModel } from '../viewmodel/practice-jam.viewmodel';
 import { CreateJamDialogComponent } from './create-jam-dialog/create-jam-dialog.component';
+import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'lib-practice-jam-library',
   standalone: true,
-  imports: [AsyncPipe, DatePipe, AuthTooltipComponent, CreateJamDialogComponent],
+  imports: [AsyncPipe, DatePipe, AuthTooltipComponent, CreateJamDialogComponent, ConfirmDialogComponent],
+  host: { '(document:click)': 'onDocumentClick()' },
   template: `
     <div class="page">
       <header class="page-header">
@@ -37,19 +40,19 @@ import { CreateJamDialogComponent } from './create-jam-dialog/create-jam-dialog.
             <button
               class="filter-chip"
               type="button"
-              [class.active]="state.activeSetlistId === null"
-              (click)="vm.setActiveSetlist(null)"
+              [class.active]="state.activeCategoryId === null"
+              (click)="vm.setActiveCategory(null)"
             >
               All
             </button>
-            @for (setlist of state.setlists; track setlist.id) {
+            @for (category of state.categories; track category.id) {
               <button
                 class="filter-chip"
                 type="button"
-                [class.active]="state.activeSetlistId === setlist.id"
-                (click)="vm.setActiveSetlist(setlist.id)"
+                [class.active]="state.activeCategoryId === category.id"
+                (click)="vm.setActiveCategory(category.id)"
               >
-                {{ setlist.name }}
+                {{ category.name }}
               </button>
             }
           </div>
@@ -63,14 +66,18 @@ import { CreateJamDialogComponent } from './create-jam-dialog/create-jam-dialog.
               @if (state.jams.length === 0) {
                 No Jams yet — paste your first YouTube link to get started.
               } @else {
-                No Jams in this setlist.
+                No Jams in this category.
               }
             </p>
           }
 
           <div class="jam-grid">
             @for (jam of vm.filteredJams$ | async; track jam.id) {
-              <div class="jam-card" (click)="openJam(jam)">
+              <div
+                class="jam-card"
+                [class.popover-open]="assignPopoverJamId() === jam.id"
+                (click)="openJam(jam)"
+              >
                 <img
                   class="jam-thumb"
                   [src]="'https://i.ytimg.com/vi/' + jam.youtubeVideoId + '/hqdefault.jpg'"
@@ -79,7 +86,22 @@ import { CreateJamDialogComponent } from './create-jam-dialog/create-jam-dialog.
                 <div class="jam-info">
                   <span class="jam-name">{{ jam.name }}</span>
                   <span class="jam-date">{{ jam.createdAt | date : 'mediumDate' }}</span>
+                  @if (jam.categoryIds.length > 0) {
+                    <div class="jam-categories">
+                      @for (category of categoriesOf(jam, state.categories); track category.id) {
+                        <span class="jam-category-tag">{{ category.name }}</span>
+                      }
+                    </div>
+                  }
                 </div>
+                <button
+                  class="jam-assign"
+                  type="button"
+                  title="Assign categories"
+                  (click)="toggleAssignPopover($event, jam)"
+                >
+                  #
+                </button>
                 <button
                   class="jam-delete"
                   type="button"
@@ -88,6 +110,40 @@ import { CreateJamDialogComponent } from './create-jam-dialog/create-jam-dialog.
                 >
                   ✕
                 </button>
+                @if (assignPopoverJamId() === jam.id) {
+                  <div class="assign-popover" (click)="$event.stopPropagation()">
+                    <span class="assign-title">Categories</span>
+                    <div class="assign-chips">
+                      @for (category of state.categories; track category.id) {
+                        <button
+                          class="assign-chip"
+                          type="button"
+                          [class.selected]="jam.categoryIds.includes(category.id)"
+                          (click)="toggleJamCategory(jam, category.id)"
+                        >
+                          {{ category.name }}
+                        </button>
+                      }
+                      @if (isAddingCategory()) {
+                        <input
+                          class="new-category-input"
+                          type="text"
+                          placeholder="Category name"
+                          [value]="newCategoryName()"
+                          (input)="newCategoryName.set($any($event.target).value)"
+                          (keydown.enter)="createCategory(jam)"
+                          (keydown.escape)="isAddingCategory.set(false)"
+                          autocomplete="off"
+                        />
+                        <button class="assign-chip new" type="button" (click)="createCategory(jam)">add</button>
+                      } @else {
+                        <button class="assign-chip new" type="button" (click)="isAddingCategory.set(true)">
+                          + new category
+                        </button>
+                      }
+                    </div>
+                  </div>
+                }
               </div>
             }
           </div>
@@ -98,6 +154,15 @@ import { CreateJamDialogComponent } from './create-jam-dialog/create-jam-dialog.
 
       @if (isDialogOpen()) {
         <lib-create-jam-dialog (closed)="isDialogOpen.set(false)" (created)="onJamCreated()"></lib-create-jam-dialog>
+      }
+
+      @if (jamPendingDelete(); as jam) {
+        <lib-confirm-dialog
+          title="Delete Jam"
+          [message]="'Delete “' + jam.name + '” and all of its Phrases? This cannot be undone.'"
+          (confirmed)="confirmDeleteJam(jam)"
+          (cancelled)="jamPendingDelete.set(null)"
+        ></lib-confirm-dialog>
       }
     </div>
   `,
@@ -215,13 +280,17 @@ import { CreateJamDialogComponent } from './create-jam-dialog/create-jam-dialog.
         border-radius: 8px;
         overflow: hidden;
         cursor: pointer;
-        transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
       }
 
       .jam-card:hover {
-        transform: translateY(-3px);
         border-color: #66fcf1;
         box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
+      }
+
+      /* overflow:hidden would clip the absolute-positioned assign popover */
+      .jam-card.popover-open {
+        overflow: visible;
       }
 
       .jam-thumb {
@@ -257,28 +326,138 @@ import { CreateJamDialogComponent } from './create-jam-dialog/create-jam-dialog.
         font-size: 0.72rem;
       }
 
-      .jam-delete {
+      .jam-categories {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 2px;
+      }
+
+      .jam-category-tag {
+        font-family: 'Fira Code', monospace;
+        font-size: 0.68rem;
+        color: #45a29e;
+        border: 1px solid rgba(69, 162, 158, 0.4);
+        border-radius: 3px;
+        padding: 1px 6px;
+        white-space: nowrap;
+      }
+
+      .jam-delete,
+      .jam-assign {
         position: absolute;
         top: 8px;
-        right: 8px;
         background: rgba(11, 12, 16, 0.75);
-        border: 1px solid #333;
+        border: 1px solid;
         border-radius: 4px;
-        color: #888;
         font-size: 0.75rem;
         padding: 3px 7px;
         cursor: pointer;
         opacity: 0;
-        transition: opacity 0.15s, color 0.15s, border-color 0.15s;
+        transition: opacity 0.15s, border-color 0.15s, background 0.15s;
       }
 
-      .jam-card:hover .jam-delete {
+      .jam-delete {
+        right: 8px;
+        color: #ff007f;
+        border-color: rgba(255, 0, 127, 0.4);
+      }
+
+      .jam-assign {
+        right: 40px;
+        font-family: 'Fira Code', monospace;
+        color: #45a29e;
+        border-color: rgba(69, 162, 158, 0.4);
+      }
+
+      .jam-card:hover .jam-delete,
+      .jam-card:hover .jam-assign {
         opacity: 1;
       }
 
       .jam-delete:hover {
-        color: #ff007f;
         border-color: #ff007f;
+        background: rgba(255, 0, 127, 0.15);
+      }
+
+      .jam-assign:hover {
+        border-color: #45a29e;
+        background: rgba(69, 162, 158, 0.15);
+      }
+
+      .assign-popover {
+        position: absolute;
+        top: 38px;
+        right: 8px;
+        z-index: 10;
+        background: #0b0c10;
+        border: 1px solid #45a29e;
+        border-radius: 6px;
+        padding: 0.75rem;
+        width: min(260px, calc(100% - 16px));
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        cursor: default;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+      }
+
+      .assign-title {
+        font-family: 'Fira Code', monospace;
+        font-size: 0.72rem;
+        color: #888;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+
+      .assign-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+      }
+
+      .assign-chip {
+        font-family: 'Fira Code', monospace;
+        font-size: 0.75rem;
+        color: #c5c6c7;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid #333;
+        border-radius: 20px;
+        padding: 3px 10px;
+        cursor: pointer;
+        transition: border-color 0.15s, color 0.15s, background 0.15s;
+      }
+
+      .assign-chip:hover {
+        border-color: #45a29e;
+      }
+
+      .assign-chip.selected {
+        color: #66fcf1;
+        border-color: #66fcf1;
+        background: rgba(102, 252, 241, 0.08);
+      }
+
+      .assign-chip.new {
+        color: #45a29e;
+        border-style: dashed;
+      }
+
+      .new-category-input {
+        background: #1f2833;
+        border: 1px solid #333;
+        border-radius: 4px;
+        color: #c5c6c7;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.75rem;
+        padding: 4px 8px;
+        outline: none;
+        width: 130px;
+      }
+
+      .new-category-input:focus {
+        border-color: #66fcf1;
       }
 
       @media (max-width: 640px) {
@@ -294,23 +473,74 @@ export class PracticeJamLibraryComponent implements OnInit {
   public readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly apiService = inject(PracticeJamApiService);
 
   public readonly isDialogOpen = signal(false);
+  public readonly assignPopoverJamId = signal<string | null>(null);
+  public readonly isAddingCategory = signal(false);
+  public readonly newCategoryName = signal('');
+  public readonly jamPendingDelete = signal<PracticeJamApi.JamListItem | null>(null);
 
   public ngOnInit(): void {
     if (isPlatformBrowser(this.platformId) && this.authService.currentUser()) {
       this.vm.loadLibrary();
-      this.vm.loadSetlists();
+      this.vm.loadCategories();
     }
   }
 
+  public onDocumentClick(): void {
+    this.assignPopoverJamId.set(null);
+    this.isAddingCategory.set(false);
+  }
+
   public openJam(jam: PracticeJamApi.JamListItem): void {
+    // While the assign popover is open, a stray card click should close it, not navigate
+    if (this.assignPopoverJamId() !== null) {
+      this.onDocumentClick();
+      return;
+    }
     this.router.navigate(['/audio/practice-jam', jam.id]);
   }
 
   public deleteJam(event: Event, jam: PracticeJamApi.JamListItem): void {
     event.stopPropagation();
+    this.jamPendingDelete.set(jam);
+  }
+
+  public confirmDeleteJam(jam: PracticeJamApi.JamListItem): void {
+    this.jamPendingDelete.set(null);
     this.vm.deleteJam(jam.id);
+  }
+
+  public toggleAssignPopover(event: Event, jam: PracticeJamApi.JamListItem): void {
+    event.stopPropagation();
+    this.isAddingCategory.set(false);
+    this.assignPopoverJamId.update((current) => (current === jam.id ? null : jam.id));
+  }
+
+  public toggleJamCategory(jam: PracticeJamApi.JamListItem, categoryId: string): void {
+    const categoryIds = jam.categoryIds.includes(categoryId)
+      ? jam.categoryIds.filter((id) => id !== categoryId)
+      : [...jam.categoryIds, categoryId];
+    this.vm.setJamCategories({ jamId: jam.id, categoryIds });
+  }
+
+  public createCategory(jam: PracticeJamApi.JamListItem): void {
+    const name = this.newCategoryName().trim();
+    if (!name) return;
+    this.apiService.createCategory(name).subscribe((category) => {
+      this.vm.loadCategories();
+      this.vm.setJamCategories({ jamId: jam.id, categoryIds: [...jam.categoryIds, category.id] });
+      this.newCategoryName.set('');
+      this.isAddingCategory.set(false);
+    });
+  }
+
+  public categoriesOf(
+    jam: PracticeJamApi.JamListItem,
+    categories: PracticeJamApi.Category[],
+  ): PracticeJamApi.Category[] {
+    return categories.filter((c) => jam.categoryIds.includes(c.id));
   }
 
   public onJamCreated(): void {

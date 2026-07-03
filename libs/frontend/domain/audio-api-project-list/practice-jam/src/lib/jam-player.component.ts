@@ -5,6 +5,7 @@ import {
   OnInit,
   PLATFORM_ID,
   inject,
+  signal,
   viewChild,
 } from '@angular/core';
 import { AsyncPipe, isPlatformBrowser } from '@angular/common';
@@ -13,6 +14,7 @@ import { Subscription, filter, take } from 'rxjs';
 import { PracticeJamApi } from '@ivanrogulj.com/shared/data-access/model';
 import { PracticeJamViewModel } from '../viewmodel/practice-jam.viewmodel';
 import { YoutubePlayerService } from '../service/youtube-player.service';
+import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 
 const PLAYER_ELEMENT_ID = 'practice-jam-player';
 /** Drags shorter than this (fraction of the timeline) count as a click-to-seek. */
@@ -21,7 +23,7 @@ const CLICK_DRAG_THRESHOLD = 0.005;
 @Component({
   selector: 'lib-jam-player',
   standalone: true,
-  imports: [AsyncPipe],
+  imports: [AsyncPipe, ConfirmDialogComponent],
   template: `
     @if (vm.vm$ | async; as state) {
       <div class="page">
@@ -164,6 +166,15 @@ const CLICK_DRAG_THRESHOLD = 0.005;
             </div>
           </div>
         </div>
+
+        @if (phrasePendingDelete(); as phrase) {
+          <lib-confirm-dialog
+            title="Delete Phrase"
+            [message]="'Delete “' + phrase.name + '”? This cannot be undone.'"
+            (confirmed)="confirmDeletePhrase(phrase)"
+            (cancelled)="phrasePendingDelete.set(null)"
+          ></lib-confirm-dialog>
+        }
       </div>
     }
   `,
@@ -471,6 +482,7 @@ export class JamPlayerComponent implements OnInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
 
   public readonly playerElementId = PLAYER_ELEMENT_ID;
+  public readonly phrasePendingDelete = signal<PracticeJamApi.Phrase | null>(null);
 
   private readonly timelineRef = viewChild<ElementRef<HTMLDivElement>>('timeline');
   private jamSubscription: Subscription | null = null;
@@ -518,6 +530,11 @@ export class JamPlayerComponent implements OnInit, OnDestroy {
 
   public deletePhrase(event: Event, phrase: PracticeJamApi.Phrase): void {
     event.stopPropagation();
+    this.phrasePendingDelete.set(phrase);
+  }
+
+  public confirmDeletePhrase(phrase: PracticeJamApi.Phrase): void {
+    this.phrasePendingDelete.set(null);
     this.vm.deletePhrase(phrase.id);
   }
 

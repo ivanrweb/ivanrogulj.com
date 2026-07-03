@@ -1,7 +1,7 @@
 export interface CreateJamDto {
   youtubeUrl: string;
   name?: string;
-  setlistIds?: string[];
+  categoryIds?: string[];
 }
 
 export interface UpdateJamDto {
@@ -16,10 +16,10 @@ export interface SavePhraseDto {
   playbackRate?: number;
 }
 
-export interface SetlistDto {
+export interface CategoryDto {
   name: string;
 }
 
-export interface AssignSetlistsDto {
-  setlistIds: string[];
+export interface AssignCategoriesDto {
+  categoryIds: string[];
 }

@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('practice_jam_setlist')
-export class SetlistEntity {
+@Entity('practice_jam_category')
+export class CategoryEntity {
   @PrimaryGeneratedColumn('uuid')
   public id!: string;
 

@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
-import { PhraseEntity, SetlistEntity } from '@ivanrogulj.com/backend/domain/practice-jam/data-access';
+import { PhraseEntity, CategoryEntity } from '@ivanrogulj.com/backend/domain/practice-jam/data-access';
 import { JamDetail, JamListItem, PracticeJamService } from './practice-jam.service';
-import { AssignSetlistsDto, CreateJamDto, SavePhraseDto, SetlistDto, UpdateJamDto } from './dto/practice-jam.dto';
+import { AssignCategoriesDto, CreateJamDto, SavePhraseDto, CategoryDto, UpdateJamDto } from './dto/practice-jam.dto';
 import { UserAuthGuard } from './guards/user-auth.guard';
 
 type AuthedRequest = Request & { user: { userId: string } };
@@ -43,13 +43,13 @@ export class PracticeJamController {
     return this.practiceJamService.deleteJam(id, req.user.userId);
   }
 
-  @Put('jams/:id/setlists')
-  public async setJamSetlists(
+  @Put('jams/:id/categories')
+  public async setJamCategories(
     @Param('id') id: string,
     @Req() req: AuthedRequest,
-    @Body() dto: AssignSetlistsDto,
+    @Body() dto: AssignCategoriesDto,
   ): Promise<string[]> {
-    return this.practiceJamService.setJamSetlists(id, req.user.userId, dto);
+    return this.practiceJamService.setJamCategories(id, req.user.userId, dto);
   }
 
   @Post('jams/:id/phrases')
@@ -77,29 +77,29 @@ export class PracticeJamController {
     return this.practiceJamService.deletePhrase(id, req.user.userId);
   }
 
-  @Get('setlists')
-  public async listSetlists(@Req() req: AuthedRequest): Promise<SetlistEntity[]> {
-    return this.practiceJamService.listSetlists(req.user.userId);
+  @Get('categories')
+  public async listCategories(@Req() req: AuthedRequest): Promise<CategoryEntity[]> {
+    return this.practiceJamService.listCategories(req.user.userId);
   }
 
-  @Post('setlists')
+  @Post('categories')
   @HttpCode(HttpStatus.CREATED)
-  public async createSetlist(@Req() req: AuthedRequest, @Body() dto: SetlistDto): Promise<SetlistEntity> {
-    return this.practiceJamService.createSetlist(req.user.userId, dto);
+  public async createCategory(@Req() req: AuthedRequest, @Body() dto: CategoryDto): Promise<CategoryEntity> {
+    return this.practiceJamService.createCategory(req.user.userId, dto);
   }
 
-  @Put('setlists/:id')
-  public async renameSetlist(
+  @Put('categories/:id')
+  public async renameCategory(
     @Param('id') id: string,
     @Req() req: AuthedRequest,
-    @Body() dto: SetlistDto,
-  ): Promise<SetlistEntity> {
-    return this.practiceJamService.renameSetlist(id, req.user.userId, dto);
+    @Body() dto: CategoryDto,
+  ): Promise<CategoryEntity> {
+    return this.practiceJamService.renameCategory(id, req.user.userId, dto);
   }
 
-  @Delete('setlists/:id')
+  @Delete('categories/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  public async deleteSetlist(@Param('id') id: string, @Req() req: AuthedRequest): Promise<void> {
-    return this.practiceJamService.deleteSetlist(id, req.user.userId);
+  public async deleteCategory(@Param('id') id: string, @Req() req: AuthedRequest): Promise<void> {
+    return this.practiceJamService.deleteCategory(id, req.user.userId);
   }
 }
