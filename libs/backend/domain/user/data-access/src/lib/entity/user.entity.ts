@@ -13,31 +13,31 @@ export class UserEntity {
   @Column({ unique: true })
   public email!: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, length: 100 })
   public firstName!: string | null;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, length: 100 })
   public lastName!: string | null;
 
-  @Column({ nullable: true, select: false })
+  @Column({ nullable: true, select: false, length: 64 })
   public passwordHash!: string | null;
 
   @Column({ type: 'enum', enum: AuthProvider, default: AuthProvider.LOCAL })
   public provider!: AuthProvider;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, length: 64 })
   public googleId!: string | null;
 
   @Column({ default: false })
   public emailConfirmed!: boolean;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, length: 40 })
   public emailConfirmToken!: string | null;
 
   @Column({ default: true })
   public subscribedToNewsletter!: boolean;
 
-  @Column({ nullable: true, unique: true })
+  @Column({ nullable: true, unique: true, length: 40 })
   public newsletterUnsubscribeToken!: string | null;
 
   @CreateDateColumn()
