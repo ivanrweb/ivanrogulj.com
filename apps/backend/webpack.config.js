@@ -19,7 +19,7 @@ module.exports = {
     }),
     new webpack.IgnorePlugin({
       resourceRegExp:
-        /^(class-validator|class-transformer|@nestjs\/websockets\/socket-module|@nestjs\/microservices\/microservices-module|@nestjs\/microservices|@nestjs\/websockets|react-native-sqlite-storage|@google-cloud\/spanner|mongodb|@sap\/hana-client|mysql$|oracledb|pg$|pg-native|pg-query-stream|typeorm-aurora-data-api-driver|redis$|ioredis|better-sqlite3|sqlite3|sql\.js|mssql)$/,
+        /^(@nestjs\/websockets\/socket-module|@nestjs\/microservices\/microservices-module|@nestjs\/microservices|@nestjs\/websockets|react-native-sqlite-storage|@google-cloud\/spanner|mongodb|@sap\/hana-client|mysql$|oracledb|pg$|pg-native|pg-query-stream|typeorm-aurora-data-api-driver|redis$|ioredis|better-sqlite3|sqlite3|sql\.js|mssql)$/,
     }),
   ],
 };

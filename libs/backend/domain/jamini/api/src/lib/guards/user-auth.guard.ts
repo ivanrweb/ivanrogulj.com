@@ -2,6 +2,7 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
+import { getRequiredJwtSecret } from '@ivanrogulj.com/backend/core/config';
 
 @Injectable()
 export class UserAuthGuard implements CanActivate {
@@ -17,7 +18,7 @@ export class UserAuthGuard implements CanActivate {
     if (!token) throw new UnauthorizedException('No token provided');
     try {
       const payload = this.jwtService.verify<{ sub: string; email: string }>(token, {
-        secret: this.configService.get<string>('JWT_SECRET') ?? 'default-secret',
+        secret: getRequiredJwtSecret(this.configService),
       });
       req.user = { userId: payload.sub, email: payload.email };
       return true;

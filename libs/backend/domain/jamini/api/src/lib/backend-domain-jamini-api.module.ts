@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BackendDomainJaminiDataAccessModule } from '@ivanrogulj.com/backend/domain/jamini/data-access';
+import { getRequiredJwtSecret } from '@ivanrogulj.com/backend/core/config';
 import { JaminiService } from './jamini.service';
 import { JaminiController } from './jamini.controller';
 import { UserAuthGuard } from './guards/user-auth.guard';
@@ -14,7 +15,7 @@ import { UserAuthGuard } from './guards/user-auth.guard';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET') ?? 'default-secret',
+        secret: getRequiredJwtSecret(configService),
       }),
     }),
   ],

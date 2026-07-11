@@ -1,5 +1,6 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { UserAuthService } from './user-auth.service';
@@ -14,6 +15,7 @@ export class UserAuthController {
   ) {}
 
   @Post('register')
+  @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatus.CREATED)
   public async register(@Body() dto: RegisterUserDto): Promise<{ message: string }> {
     await this.userAuthService.register(dto.email, dto.password, dto.firstName, dto.lastName);
@@ -28,6 +30,7 @@ export class UserAuthController {
   }
 
   @Post('login')
+  @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatus.OK)
   public async login(@Body() dto: LoginUserDto): Promise<{ access_token: string }> {
     return this.userAuthService.login(dto.email, dto.password);
