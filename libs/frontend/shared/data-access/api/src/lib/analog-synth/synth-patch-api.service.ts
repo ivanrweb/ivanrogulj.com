@@ -7,7 +7,6 @@ import { AnalogSynthApi } from '@ivanrogulj.com/shared/data-access/model';
   providedIn: 'root'
 })
 export class SynthPatchApiService {
-  private BASE_URL = 'http://localhost:3000/api';
   private synthPatchUrl = 'synth-patch';
 
   constructor(private httpClient: HttpClient) {
@@ -15,7 +14,7 @@ export class SynthPatchApiService {
 
   public generateAIPatch(patchDescription: string, provider: 'openai' | 'anthropic' = 'openai', headers?: HttpHeaders): Observable<AnalogSynthApi.FullSynthPatchJson> {
     return this.httpClient.post<AnalogSynthApi.FullSynthPatchJson>(
-      `${this.BASE_URL}/${this.synthPatchUrl}/generate-ai-patch?provider=${provider}`,
+      `/api/${this.synthPatchUrl}/generate-ai-patch?provider=${provider}`,
       { description: patchDescription },
       { headers },
     );
