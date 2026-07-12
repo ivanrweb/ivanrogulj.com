@@ -1,25 +1,52 @@
-export interface CreateJamDto {
-  youtubeUrl: string;
-  name?: string;
-  categoryIds?: string[];
+import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
+
+export class CreateJamDto {
+  @IsString()
+  public youtubeUrl!: string;
+
+  @IsOptional()
+  @IsString()
+  public name?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  public categoryIds?: string[];
 }
 
-export interface UpdateJamDto {
-  name?: string;
-  durationSeconds?: number | null;
+export class UpdateJamDto {
+  @IsOptional()
+  @IsString()
+  public name?: string;
+
+  @IsOptional()
+  @IsNumber()
+  public durationSeconds?: number | null;
 }
 
-export interface SaveLickDto {
-  name?: string;
-  startSeconds: number;
-  endSeconds: number;
-  playbackRate?: number;
+export class SaveLickDto {
+  @IsOptional()
+  @IsString()
+  public name?: string;
+
+  @IsNumber()
+  public startSeconds!: number;
+
+  @IsNumber()
+  public endSeconds!: number;
+
+  @IsOptional()
+  @IsNumber()
+  public playbackRate?: number;
 }
 
-export interface CategoryDto {
-  name: string;
+export class CategoryDto {
+  @IsString()
+  public name!: string;
 }
 
-export interface AssignCategoriesDto {
-  categoryIds: string[];
+export class AssignCategoriesDto {
+  @IsArray()
+  @IsString({ each: true })
+  public categoryIds!: string[];
 }

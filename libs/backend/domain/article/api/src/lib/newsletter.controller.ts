@@ -1,4 +1,5 @@
-import { Controller, Get, Query, Res } from '@nestjs/common';
+import { Controller, Get, Query, Res, UseGuards } from '@nestjs/common';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import { Response } from 'express';
 import { UserRepository } from '@ivanrogulj.com/backend/domain/user/data-access';
 
@@ -7,6 +8,7 @@ export class NewsletterController {
   public constructor(private readonly userRepository: UserRepository) {}
 
   @Get('unsubscribe')
+  @UseGuards(ThrottlerGuard)
   public async unsubscribe(@Query('token') token: string, @Res() res: Response): Promise<void> {
     if (!token) {
       res.status(400).send(this.html('Invalid link.', 'The unsubscribe link is missing a token.'));

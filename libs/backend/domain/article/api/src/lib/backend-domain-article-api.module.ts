@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { ArticleController } from './article.controller';
 import { MediumService } from './medium.service';
 import { NewsletterService } from './newsletter.service';
@@ -8,7 +9,12 @@ import { BackendDomainUserDataAccessModule } from '@ivanrogulj.com/backend/domai
 import { BackendCoreMailModule } from '@ivanrogulj.com/backend/core/mail';
 
 @Module({
-  imports: [BackendDomainArticleDataAccessModule, BackendDomainUserDataAccessModule, BackendCoreMailModule],
+  imports: [
+    BackendDomainArticleDataAccessModule,
+    BackendDomainUserDataAccessModule,
+    BackendCoreMailModule,
+    ThrottlerModule.forRoot([{ name: 'newsletter', ttl: 60000, limit: 5 }]),
+  ],
   controllers: [ArticleController, NewsletterController],
   providers: [MediumService, NewsletterService],
 })

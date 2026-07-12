@@ -23,6 +23,7 @@ export class UserAuthController {
   }
 
   @Get('confirm-email')
+  @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatus.OK)
   public async confirmEmail(@Query('token') token: string): Promise<{ message: string }> {
     await this.userAuthService.confirmEmail(token);
