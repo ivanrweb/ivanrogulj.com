@@ -295,7 +295,7 @@ export class PatchApiService {
   }
 
   public generateAIPatch(description: string, provider: 'openai' | 'anthropic' = 'openai'): Observable<void> {
-    return this.synthPatchApiService.generateAIPatch(description, provider).pipe(
+    return this.synthPatchApiService.generateAIPatch(description, provider, this.getAuthHeaders()).pipe(
       tap((patch) => {
         // Oscillator
         this.analogSynthViewModel.onOscillatorTypeChange(patch.oscillator.type as OscillatorType);

@@ -19,9 +19,9 @@ import { AvatarComponent } from '@ivanrogulj.com/avatar';
             </p>
             <p>
               When I'm not writing code, I'm making music. I build virtual
-              synthesizers, effects processors, and plugins because there's
-              something deeply satisfying about hearing your own engineering
-              decisions through a pair of headphones.
+              synthesizers, audio effects, and plugins because there's something
+              deeply satisfying about hearing your own engineering decisions
+              through a pair of headphones.
             </p>
           </div>
           <lib-avatar
