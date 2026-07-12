@@ -43,9 +43,9 @@ interface VstPlugin {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <div class="dl-platform">{{ dl.ext }}</div>
-                <div class="dl-label">Download for {{ dl.label }}</div>
-                <div class="dl-arrow">&darr;</div>
+                <span class="dl-platform">{{ dl.ext }}</span>
+                <span class="dl-label">Download for {{ dl.label }}</span>
+                <span class="dl-arrow">&darr;</span>
               </a>
               }
             </div>
@@ -99,7 +99,7 @@ interface VstPlugin {
 
       .plugin-card {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
         background: #1f2833;
         border: 1px solid #333;
         border-radius: 8px;
@@ -109,6 +109,7 @@ interface VstPlugin {
       }
 
       .plugin-left {
+        min-width: 0;
         padding: 2rem;
         display: flex;
         flex-direction: column;
@@ -142,12 +143,9 @@ interface VstPlugin {
 
       .download-box {
         display: flex;
-        flex-direction: column;
         align-items: center;
-        justify-content: center;
-        gap: 0.4rem;
-        width: 200px;
-        padding: 1.5rem 1rem;
+        gap: 0.65rem;
+        padding: 0.7rem 1rem;
         background: #0f1318;
         border: 1px solid #333;
         border-radius: 6px;
@@ -156,6 +154,7 @@ interface VstPlugin {
         transition: border-color 0.2s, background 0.2s;
         position: relative;
         overflow: hidden;
+        box-sizing: border-box;
       }
 
       .download-box::before {
@@ -181,23 +180,34 @@ interface VstPlugin {
 
       .dl-platform {
         font-family: 'Fira Code', monospace;
-        font-size: 0.8rem;
+        font-size: 0.7rem;
         color: #66fcf1;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.3px;
         font-weight: 700;
+        background: rgba(102, 252, 241, 0.08);
+        border: 1px solid rgba(102, 252, 241, 0.3);
+        border-radius: 4px;
+        padding: 0.15rem 0.4rem;
+        white-space: nowrap;
+        flex-shrink: 0;
       }
 
       .dl-label {
         font-family: 'Fira Code', monospace;
-        font-size: 0.75rem;
+        font-size: 0.8rem;
         color: #c5c6c7;
         letter-spacing: 0.3px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 0;
+        flex: 1;
       }
 
       .dl-arrow {
-        font-size: 1.2rem;
+        font-size: 1rem;
         color: #45a29e;
-        margin-top: 0.25rem;
+        flex-shrink: 0;
       }
 
       .plugin-right {
@@ -214,7 +224,7 @@ interface VstPlugin {
 
       @media (max-width: 700px) {
         .plugin-card {
-          grid-template-columns: 1fr;
+          grid-template-columns: minmax(0, 1fr);
         }
         .plugin-right {
           min-height: 200px;
@@ -240,7 +250,7 @@ export class JuceProjectListComponent {
       name: 'Aether Reverb Plugin',
       description:
         'An algorithmic reverb plugin with pre-delay, damping, and size controls. Suitable for any mix bus or individual instrument track.',
-      image: 'images/reverb.png',
+      image: 'images/aether_reverb.png',
       downloads: [
         {
           label: 'Windows',

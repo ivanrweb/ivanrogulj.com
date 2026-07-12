@@ -50,6 +50,14 @@ import { NavItem } from './nav-item.interface';
       a.active::after {
         width: 100%;
       }
+
+      @media (max-width: 640px) {
+        a {
+          display: block;
+          width: 100%;
+          box-sizing: border-box;
+        }
+      }
     `,
   ],
 })
