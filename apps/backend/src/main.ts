@@ -10,6 +10,7 @@ import { AppModule } from './app/app.module';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
+  app.getHttpAdapter().getInstance().set('trust proxy', 1);
   app.enableCors({
     origin: ['https://ivanrogulj.com', 'https://admin.ivanrogulj.com', 'http://localhost:4200', 'http://localhost:4201'],
   });
