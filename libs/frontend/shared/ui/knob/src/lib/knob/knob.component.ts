@@ -18,7 +18,7 @@ import { CommonModule } from '@angular/common';
           <i
             class="icon-fad-slider-round-3 knob-icon"
             [ngStyle]="{ transform: 'rotate(' + (rotation - 135) + 'deg)' }"
-            (mousedown)="startDragging($event)"
+            (pointerdown)="startDragging($event)"
           >
           </i>
         </div>
@@ -82,6 +82,7 @@ import { CommonModule } from '@angular/common';
         font-size: 3.2rem;
         line-height: 1;
         cursor: pointer;
+        touch-action: none;
         color: #d0d0d0;
         transform-origin: center center;
         width: 1em;
@@ -191,27 +192,29 @@ export class KnobComponent {
   // This number is inversely proportional to knob rotation speed
   private dragRange = 300;
 
-  public startDragging(event: MouseEvent): void {
+  public startDragging(event: PointerEvent): void {
     this.isDragging = true;
     this.startX = event.clientX;
     this.startY = event.clientY;
     this.startRotation = this.rotation;
 
-    this.onMouseMove = this.onMouseMove.bind(this);
+    this.onPointerMove = this.onPointerMove.bind(this);
     this.stopDragging = this.stopDragging.bind(this);
 
-    document.addEventListener('mousemove', this.onMouseMove);
-    document.addEventListener('mouseup', this.stopDragging);
+    document.addEventListener('pointermove', this.onPointerMove);
+    document.addEventListener('pointerup', this.stopDragging);
+    document.addEventListener('pointercancel', this.stopDragging);
     event.preventDefault();
   }
 
   public stopDragging(): void {
     this.isDragging = false;
-    document.removeEventListener('mousemove', this.onMouseMove);
-    document.removeEventListener('mouseup', this.stopDragging);
+    document.removeEventListener('pointermove', this.onPointerMove);
+    document.removeEventListener('pointerup', this.stopDragging);
+    document.removeEventListener('pointercancel', this.stopDragging);
   }
 
-  public onMouseMove(event: MouseEvent): void {
+  public onPointerMove(event: PointerEvent): void {
     if (
       this.isDragging &&
       this.startX !== null &&

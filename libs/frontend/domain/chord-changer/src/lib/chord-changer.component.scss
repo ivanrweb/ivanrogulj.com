@@ -352,3 +352,13 @@
     color: #66fcf1;
   }
 }
+
+@media (max-width: 768px) {
+  .transpose-controls lib-btn-group {
+    flex-wrap: wrap;
+  }
+
+  .transpose-controls .transpose-break {
+    flex-basis: 100%;
+  }
+}

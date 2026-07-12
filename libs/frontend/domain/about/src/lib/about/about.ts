@@ -282,6 +282,10 @@ import { AvatarComponent } from '@ivanrogulj.com/avatar';
           flex-direction: column-reverse;
           align-items: flex-start;
         }
+
+        .tech-grid {
+          grid-template-columns: 1fr;
+        }
       }
     `,
   ],

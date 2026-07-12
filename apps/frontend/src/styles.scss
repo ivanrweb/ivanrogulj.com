@@ -17,3 +17,21 @@ body {
   min-height: 100%;
   overflow-x: hidden;
 }
+
+@media (max-width: 640px) {
+  button,
+  a {
+    -webkit-appearance: none;
+    appearance: none;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button:focus,
+  button:focus-visible,
+  a:focus,
+  a:focus-visible {
+    outline: none !important;
+    box-shadow: none;
+  }
+}

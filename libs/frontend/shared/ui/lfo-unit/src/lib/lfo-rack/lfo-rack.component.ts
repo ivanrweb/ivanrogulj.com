@@ -66,6 +66,34 @@ import { SequencerComponent } from '../sequencer/sequencer.component';
       .sequencer-section lib-sequencer {
         width: 100%;
       }
+
+      @media (max-width: 640px) {
+        .rack-layout {
+          flex-direction: column;
+          min-height: 0;
+        }
+
+        .lfo-section {
+          flex: 0 0 auto;
+          width: 100%;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 15px;
+          padding: 0 10px 15px;
+        }
+
+        .seq-divider {
+          width: 100%;
+          height: 1px;
+        }
+
+        .sequencer-section {
+          flex: 0 0 auto;
+          width: 100%;
+          padding-left: 0;
+          padding-top: 15px;
+        }
+      }
     `,
   ],
 })

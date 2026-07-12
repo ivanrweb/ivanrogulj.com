@@ -243,6 +243,15 @@ export interface ActionDropdownSection {
           border-color: #ff007f;
         }
       }
+
+      @media (max-width: 640px) {
+        .dropdown-panel {
+          left: 0;
+          right: 0;
+          width: auto;
+          min-width: 0;
+        }
+      }
     `,
   ],
 })
