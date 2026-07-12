@@ -788,6 +788,10 @@ const MIN_MARK_GAP = 0.1;
           gap: 0.5rem;
         }
 
+        .lick-name-input {
+          font-size: 16px;
+        }
+
         .mark-handle {
           width: 26px;
         }

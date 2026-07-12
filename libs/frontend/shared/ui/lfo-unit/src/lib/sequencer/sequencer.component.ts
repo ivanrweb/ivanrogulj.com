@@ -302,6 +302,13 @@ function midiToName(midi: number): string {
       .bpm-input::-webkit-inner-spin-button,
       .bpm-input::-webkit-outer-spin-button { -webkit-appearance: none; }
 
+      @media (max-width: 640px) {
+        .bpm-input {
+          width: 56px;
+          font-size: 16px;
+        }
+      }
+
       .play-btn {
         background: rgba(102, 252, 241, 0.08);
         border: 1px solid #66fcf1;

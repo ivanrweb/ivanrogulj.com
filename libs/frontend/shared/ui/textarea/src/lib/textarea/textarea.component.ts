@@ -225,6 +225,10 @@ import { AuthTooltipComponent } from '@ivanrogulj.com/auth-tooltip';
           width: auto;
           margin-top: 8px;
         }
+
+        .ai-textarea {
+          font-size: 16px;
+        }
       }
     `,
   ],

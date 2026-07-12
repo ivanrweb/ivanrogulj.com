@@ -195,6 +195,10 @@ export class AnalogSynthViewModel extends ComponentStore<AnalogSynthState> {
     this.lfoService.initialize();
   }
 
+  public resumeAudioIfSuspended(): void {
+    this.audioContextService.resumeIfSuspended();
+  }
+
   public destroyAudioContext(): void {
     this.audioContextService.destroyContext();
   }

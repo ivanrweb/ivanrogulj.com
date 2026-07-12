@@ -35,7 +35,11 @@ export class AudioContextService {
         (window as any).webkitAudioContext)();
       console.log('Started audio context.');
     }
-    return this._context!;
+    const context = this._context!;
+    if (context.state === 'suspended') {
+      void context.resume();
+    }
+    return context;
   }
 
   public initializeAudioNodes(): void {
@@ -357,6 +361,12 @@ export class AudioContextService {
 
   public getAudioContext(): AudioContext {
     return this.context;
+  }
+
+  public resumeIfSuspended(): void {
+    if (this._context && this._context.state === 'suspended') {
+      void this._context.resume();
+    }
   }
 
   public getMasterGain(): GainNode | undefined {

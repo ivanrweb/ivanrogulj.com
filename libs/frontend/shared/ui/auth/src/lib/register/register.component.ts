@@ -123,6 +123,9 @@ interface RegisterState {
       width: 100%;
     }
     input:focus { border-color: #66fcf1; }
+    @media (max-width: 640px) {
+      input { font-size: 16px; }
+    }
     .error {
       font-family: 'Fira Code', monospace;
       font-size: 0.82rem;

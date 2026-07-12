@@ -34,4 +34,9 @@ body {
     outline: none !important;
     box-shadow: none;
   }
+
+  button,
+  a {
+    touch-action: manipulation;
+  }
 }

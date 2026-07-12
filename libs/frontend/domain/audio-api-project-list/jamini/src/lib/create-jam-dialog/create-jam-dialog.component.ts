@@ -172,6 +172,14 @@ const YOUTUBE_ID_PATTERNS = [
         border-color: #66fcf1;
       }
 
+      @media (max-width: 640px) {
+        .url-input,
+        .name-input,
+        .new-category-input {
+          font-size: 16px;
+        }
+      }
+
       .preview {
         display: flex;
         flex-direction: column;

@@ -154,6 +154,9 @@ const ANALOG_SYNTH_TOUR_STEPS: TourStep[] = [
     AuthTooltipComponent,
   ],
   providers: [AudioContextService],
+  host: {
+    '(document:pointerdown)': 'analogSynthViewModel.resumeAudioIfSuspended()',
+  },
   templateUrl: './analog-synth.component.html',
   styleUrl: './analog-synth.component.scss',
 })

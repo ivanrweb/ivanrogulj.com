@@ -533,6 +533,12 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
       }
 
       @media (max-width: 640px) {
+        .new-category-input {
+          font-size: 16px;
+        }
+      }
+
+      @media (max-width: 640px) {
         .page-header {
           flex-direction: column;
         }

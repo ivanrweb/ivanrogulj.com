@@ -361,4 +361,9 @@
   .transpose-controls .transpose-break {
     flex-basis: 100%;
   }
+
+  .dialog-text-input,
+  .chord-textarea {
+    font-size: 16px;
+  }
 }
