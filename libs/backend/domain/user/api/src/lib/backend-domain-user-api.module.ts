@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
-import { ThrottlerModule } from '@nestjs/throttler';
 import { BackendDomainUserDataAccessModule } from '@ivanrogulj.com/backend/domain/user/data-access';
 import { BackendCoreMailModule } from '@ivanrogulj.com/backend/core/mail';
 import { getRequiredJwtSecret } from '@ivanrogulj.com/backend/core/config';
@@ -15,7 +14,7 @@ import { GoogleStrategy } from './strategies/google.strategy';
     PassportModule,
     BackendDomainUserDataAccessModule,
     BackendCoreMailModule,
-    ThrottlerModule.forRoot([{ name: 'auth', ttl: 60000, limit: 5 }]),
+    // Throttler is registered once, app-wide, in BackendShellModule
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({

@@ -1,6 +1,6 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ThrottlerGuard } from '@nestjs/throttler';
+import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { UserAuthService } from './user-auth.service';
@@ -8,6 +8,7 @@ import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 
 @Controller('auth/user')
+@SkipThrottle({ 'ai-short': true, 'ai-daily': true, newsletter: true, 'newsletter-daily': true })
 export class UserAuthController {
   public constructor(
     private readonly userAuthService: UserAuthService,

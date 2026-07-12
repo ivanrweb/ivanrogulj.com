@@ -1,5 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
-import { ThrottlerGuard } from '@nestjs/throttler';
+import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
 import { IsNotEmpty, IsString, MinLength } from 'class-validator';
 import { AuthService } from './auth.service';
 
@@ -14,6 +14,7 @@ export class LoginDto {
 }
 
 @Controller('auth')
+@SkipThrottle({ 'ai-short': true, 'ai-daily': true, newsletter: true, 'newsletter-daily': true })
 export class AuthController {
   public constructor(private readonly authService: AuthService) {}
 

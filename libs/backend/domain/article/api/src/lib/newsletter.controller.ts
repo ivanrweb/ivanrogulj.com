@@ -1,9 +1,10 @@
 import { Controller, Get, Query, Res, UseGuards } from '@nestjs/common';
-import { ThrottlerGuard } from '@nestjs/throttler';
+import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
 import { Response } from 'express';
 import { UserRepository } from '@ivanrogulj.com/backend/domain/user/data-access';
 
 @Controller('newsletter')
+@SkipThrottle({ auth: true, 'auth-daily': true, 'ai-short': true, 'ai-daily': true })
 export class NewsletterController {
   public constructor(private readonly userRepository: UserRepository) {}
 
