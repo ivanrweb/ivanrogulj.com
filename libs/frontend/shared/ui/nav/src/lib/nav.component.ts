@@ -139,6 +139,10 @@ import { AuthService } from '@ivanrogulj.com/auth';
       }
 
       @media (max-width: 640px) {
+        nav {
+          z-index: 20000;
+        }
+
         .hamburger {
           display: flex;
         }
@@ -149,6 +153,9 @@ import { AuthService } from '@ivanrogulj.com/auth';
           top: 61px;
           left: 0;
           right: 0;
+          z-index: 2000;
+          max-height: calc(100vh - 61px);
+          overflow-y: auto;
           flex-direction: column;
           align-items: flex-start;
           gap: 0;

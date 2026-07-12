@@ -431,8 +431,7 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
         font-size: 0.75rem;
         padding: 3px 7px;
         cursor: pointer;
-        opacity: 0;
-        transition: opacity 0.15s, border-color 0.15s, background 0.15s;
+        transition: border-color 0.15s, background 0.15s;
       }
 
       .jam-delete {
@@ -446,11 +445,6 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
         font-family: 'Fira Code', monospace;
         color: #45a29e;
         border-color: rgba(69, 162, 158, 0.4);
-      }
-
-      .jam-card:hover .jam-delete,
-      .jam-card:hover .jam-assign {
-        opacity: 1;
       }
 
       .jam-delete:hover {

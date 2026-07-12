@@ -29,7 +29,6 @@ const MIN_MARK_GAP = 0.1;
   imports: [AsyncPipe, ConfirmDialogComponent],
   host: {
     '(document:keydown)': 'onKeydown($event)',
-    '(document:click)': 'onDocumentClick()',
   },
   template: `
     @if (vm.vm$ | async; as state) {
@@ -42,64 +41,6 @@ const MIN_MARK_GAP = 0.1;
           @if (state.currentJam; as detail) {
           <span class="crumb-sep">/</span>
           <span class="crumb-current">{{ detail.jam.name }}</span>
-          <div class="cat-control" (click)="$event.stopPropagation()">
-            <button
-              class="cat-btn"
-              type="button"
-              [class.active]="catPopoverOpen()"
-              (click)="toggleCatPopover()"
-            >
-              #
-              {{
-                detail.categoryIds.length > 0
-                  ? 'Categories (' + detail.categoryIds.length + ')'
-                  : 'Categories'
-              }}
-            </button>
-            @if (catPopoverOpen()) {
-            <div class="cat-popover">
-              <span class="cat-title">Assign categories</span>
-              <div class="cat-chips">
-                @for (category of vm.categories$ | async; track category.id) {
-                <button
-                  class="cat-chip"
-                  type="button"
-                  [class.selected]="detail.categoryIds.includes(category.id)"
-                  (click)="toggleJamCategory(detail, category.id)"
-                >
-                  {{ category.name }}
-                </button>
-                } @if (isAddingCategory()) {
-                <input
-                  class="cat-new-input"
-                  type="text"
-                  placeholder="Category name"
-                  [value]="newCategoryName()"
-                  (input)="newCategoryName.set($any($event.target).value)"
-                  (keydown.enter)="createCategory(detail)"
-                  (keydown.escape)="isAddingCategory.set(false)"
-                  autocomplete="off"
-                />
-                <button
-                  class="cat-chip new"
-                  type="button"
-                  (click)="createCategory(detail)"
-                >
-                  add
-                </button>
-                } @else {
-                <button
-                  class="cat-chip new"
-                  type="button"
-                  (click)="isAddingCategory.set(true)"
-                >
-                  + new category
-                </button>
-                }
-              </div>
-            </div>
-            }
-          </div>
           }
         </div>
 
@@ -117,7 +58,7 @@ const MIN_MARK_GAP = 0.1;
             <div
               class="timeline"
               #timeline
-              (mousedown)="onTimelineMouseDown($event)"
+              (pointerdown)="onTimelinePointerDown($event)"
               (wheel)="onWheel($event)"
             >
               <button
@@ -125,7 +66,7 @@ const MIN_MARK_GAP = 0.1;
                 type="button"
                 title="Scroll earlier"
                 [disabled]="state.viewStart <= 0"
-                (mousedown)="$event.stopPropagation()"
+                (pointerdown)="$event.stopPropagation()"
                 (click)="panStep(-1, state)"
               >
                 ‹
@@ -137,7 +78,7 @@ const MIN_MARK_GAP = 0.1;
                 [disabled]="
                   state.viewStart + vm.visibleSpan(state) >= state.duration
                 "
-                (mousedown)="$event.stopPropagation()"
+                (pointerdown)="$event.stopPropagation()"
                 (click)="panStep(1, state)"
               >
                 ›
@@ -163,12 +104,12 @@ const MIN_MARK_GAP = 0.1;
                   <div
                     class="mark-handle left"
                     title="Drag to move the start"
-                    (mousedown)="onMarkHandleMouseDown($event, 'in')"
+                    (pointerdown)="onMarkHandlePointerDown($event, 'in')"
                   ></div>
                   <div
                     class="mark-handle right"
                     title="Drag to move the end"
-                    (mousedown)="onMarkHandleMouseDown($event, 'out')"
+                    (pointerdown)="onMarkHandlePointerDown($event, 'out')"
                   ></div>
                 </div>
                 }
@@ -193,6 +134,19 @@ const MIN_MARK_GAP = 0.1;
                 {{ state.isPlaying ? '❚❚' : '▶' }}
               </button>
 
+              <button
+                class="transport-btn mobile-only"
+                type="button"
+                title="Jump to start of selection and play"
+                [disabled]="
+                  !state.activeLickId &&
+                  (state.markIn === null || state.markOut === null)
+                "
+                (click)="vm.restartRange()"
+              >
+                ⏮ start
+              </button>
+
               <div class="control-group">
                 <span class="control-label">Speed</span>
                 <div class="control-row">
@@ -212,6 +166,28 @@ const MIN_MARK_GAP = 0.1;
                     type="button"
                     title="Faster"
                     (click)="vm.stepPlaybackRate(1)"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              <div class="control-group mobile-only">
+                <span class="control-label">Zoom</span>
+                <div class="control-row">
+                  <button
+                    class="transport-btn"
+                    type="button"
+                    title="Zoom out"
+                    (click)="zoomStep(-1)"
+                  >
+                    −
+                  </button>
+                  <button
+                    class="transport-btn"
+                    type="button"
+                    title="Zoom in"
+                    (click)="zoomStep(1)"
                   >
                     +
                   </button>
@@ -381,110 +357,6 @@ const MIN_MARK_GAP = 0.1;
         white-space: nowrap;
       }
 
-      /* ── Categories control (breadcrumb, right) ── */
-      .cat-control {
-        position: relative;
-        margin-left: auto;
-        flex-shrink: 0;
-      }
-
-      .cat-btn {
-        font-family: 'Fira Code', monospace;
-        font-size: 0.78rem;
-        color: #45a29e;
-        background: rgba(69, 162, 158, 0.08);
-        border: 1px solid rgba(69, 162, 158, 0.4);
-        border-radius: 4px;
-        padding: 4px 10px;
-        cursor: pointer;
-        white-space: nowrap;
-        outline: none;
-        transition: border-color 0.15s, color 0.15s, background 0.15s;
-      }
-
-      .cat-btn:hover,
-      .cat-btn.active {
-        color: #66fcf1;
-        border-color: #66fcf1;
-        background: rgba(102, 252, 241, 0.08);
-      }
-
-      .cat-popover {
-        position: absolute;
-        top: calc(100% + 8px);
-        right: 0;
-        z-index: 40;
-        background: #0b0c10;
-        border: 1px solid #45a29e;
-        border-radius: 6px;
-        padding: 0.75rem;
-        width: min(280px, 80vw);
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        cursor: default;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
-      }
-
-      .cat-title {
-        font-family: 'Fira Code', monospace;
-        font-size: 0.72rem;
-        color: #888;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-      }
-
-      .cat-chips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        align-items: center;
-      }
-
-      .cat-chip {
-        font-family: 'Fira Code', monospace;
-        font-size: 0.75rem;
-        color: #c5c6c7;
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid #333;
-        border-radius: 20px;
-        padding: 3px 10px;
-        cursor: pointer;
-        outline: none;
-        transition: border-color 0.15s, color 0.15s, background 0.15s;
-      }
-
-      .cat-chip:hover {
-        border-color: #45a29e;
-      }
-
-      .cat-chip.selected {
-        color: #66fcf1;
-        border-color: #66fcf1;
-        background: rgba(102, 252, 241, 0.08);
-      }
-
-      .cat-chip.new {
-        color: #45a29e;
-        border-style: dashed;
-      }
-
-      .cat-new-input {
-        background: #1f2833;
-        border: 1px solid #333;
-        border-radius: 4px;
-        color: #c5c6c7;
-        font-family: 'Fira Code', monospace;
-        font-size: 0.75rem;
-        padding: 4px 8px;
-        outline: none;
-        width: 130px;
-      }
-
-      .cat-new-input:focus {
-        border-color: #66fcf1;
-      }
-
       .status {
         font-family: 'Fira Code', monospace;
         color: #888;
@@ -540,6 +412,7 @@ const MIN_MARK_GAP = 0.1;
         margin-top: 1rem;
         cursor: crosshair;
         user-select: none;
+        touch-action: none;
       }
 
       /* Pan buttons at the timeline edges — always present, fade out when there's
@@ -743,6 +616,10 @@ const MIN_MARK_GAP = 0.1;
         flex: 1;
       }
 
+      .mobile-only {
+        display: none;
+      }
+
       .shortcut-hint {
         font-family: 'Inter', sans-serif;
         color: #666;
@@ -910,6 +787,22 @@ const MIN_MARK_GAP = 0.1;
         .transport {
           gap: 0.5rem;
         }
+
+        .mark-handle {
+          width: 26px;
+        }
+
+        .mark-handle.left {
+          left: -13px;
+        }
+
+        .mark-handle.right {
+          right: -13px;
+        }
+
+        .mobile-only {
+          display: flex;
+        }
       }
     `,
   ],
@@ -926,9 +819,6 @@ export class JamPlayerComponent implements OnInit, OnDestroy {
   public readonly lickPendingDelete = signal<JaminiApi.Lick | null>(null);
   public readonly editingLickId = signal<string | null>(null);
   public readonly editingName = signal('');
-  public readonly catPopoverOpen = signal(false);
-  public readonly isAddingCategory = signal(false);
-  public readonly newCategoryName = signal('');
 
   private readonly timelineRef =
     viewChild<ElementRef<HTMLDivElement>>('timeline');
@@ -946,7 +836,6 @@ export class JamPlayerComponent implements OnInit, OnDestroy {
     }
 
     this.vm.loadJam(jamId);
-    this.vm.loadCategories();
     this.jamSubscription = this.vm.currentJam$
       .pipe(
         filter((detail): detail is JaminiApi.JamDetail => detail !== null),
@@ -968,39 +857,6 @@ export class JamPlayerComponent implements OnInit, OnDestroy {
     this.router.navigate(['/audio/jamini']);
   }
 
-  public onDocumentClick(): void {
-    this.catPopoverOpen.set(false);
-    this.isAddingCategory.set(false);
-  }
-
-  public toggleCatPopover(): void {
-    this.catPopoverOpen.update((open) => !open);
-    this.isAddingCategory.set(false);
-  }
-
-  public toggleJamCategory(
-    detail: JaminiApi.JamDetail,
-    categoryId: string
-  ): void {
-    const categoryIds = detail.categoryIds.includes(categoryId)
-      ? detail.categoryIds.filter((id) => id !== categoryId)
-      : [...detail.categoryIds, categoryId];
-    this.vm.setJamCategories({ jamId: detail.jam.id, categoryIds });
-  }
-
-  public createCategory(detail: JaminiApi.JamDetail): void {
-    const name = this.newCategoryName().trim();
-    if (!name) return;
-    this.apiService.createCategory(name).subscribe((category) => {
-      this.vm.loadCategories();
-      this.vm.setJamCategories({
-        jamId: detail.jam.id,
-        categoryIds: [...detail.categoryIds, category.id],
-      });
-      this.newCategoryName.set('');
-      this.isAddingCategory.set(false);
-    });
-  }
 
   public onKeydown(event: KeyboardEvent): void {
     const target = event.target as HTMLElement | null;
@@ -1054,14 +910,15 @@ export class JamPlayerComponent implements OnInit, OnDestroy {
     this.vm.deleteLick(lick.id);
   }
 
-  public onTimelineMouseDown(event: MouseEvent): void {
+  public onTimelinePointerDown(event: PointerEvent): void {
     const duration = this.vm.getState().duration;
     if (duration <= 0) return;
+    event.preventDefault();
 
     this.dragStartFraction = this.eventFraction(event);
     const startTime = this.eventTime(event);
 
-    const onMove = (moveEvent: MouseEvent): void => {
+    const onMove = (moveEvent: PointerEvent): void => {
       const start = this.dragStartFraction;
       if (start === null) return;
       const current = this.eventFraction(moveEvent);
@@ -1074,7 +931,7 @@ export class JamPlayerComponent implements OnInit, OnDestroy {
       }
     };
 
-    const onUp = (upEvent: MouseEvent): void => {
+    const onUp = (upEvent: PointerEvent): void => {
       const start = this.dragStartFraction;
       this.dragStartFraction = null;
       if (start === null) return;
@@ -1087,13 +944,13 @@ export class JamPlayerComponent implements OnInit, OnDestroy {
     this.attachDragListeners(onMove, onUp);
   }
 
-  public onMarkHandleMouseDown(event: MouseEvent, edge: 'in' | 'out'): void {
+  public onMarkHandlePointerDown(event: PointerEvent, edge: 'in' | 'out'): void {
     event.stopPropagation();
     event.preventDefault();
     const duration = this.vm.getState().duration;
     if (duration <= 0) return;
 
-    const onMove = (moveEvent: MouseEvent): void => {
+    const onMove = (moveEvent: PointerEvent): void => {
       const seconds = this.eventTime(moveEvent);
       const { markIn, markOut } = this.vm.getState();
       if (edge === 'in' && markOut !== null) {
@@ -1112,6 +969,10 @@ export class JamPlayerComponent implements OnInit, OnDestroy {
     const onUp = (): void => this.removeDragListeners?.();
 
     this.attachDragListeners(onMove, onUp);
+  }
+
+  public zoomStep(direction: 1 | -1): void {
+    this.vm.zoomAt(direction > 0 ? 1.4 : 1 / 1.4, 0.5);
   }
 
   /** Wheel over the timeline: zoom (plain wheel / trackpad pinch) or pan (horizontal / shift). */
@@ -1169,23 +1030,27 @@ export class JamPlayerComponent implements OnInit, OnDestroy {
   }
 
   private attachDragListeners(
-    onMove: (e: MouseEvent) => void,
-    onUp: (e: MouseEvent) => void
+    onMove: (e: PointerEvent) => void,
+    onUp: (e: PointerEvent) => void
   ): void {
     this.removeDragListeners?.();
-    const upHandler = (upEvent: MouseEvent): void => {
+    const upHandler = (upEvent: PointerEvent): void => {
       onUp(upEvent);
       this.removeDragListeners?.();
     };
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', upHandler);
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', upHandler);
+    document.addEventListener('pointercancel', upHandler);
     this.removeDragListeners = (): void => {
-      document.removeEventListener('mousemove', onMove);
-      document.removeEventListener('mouseup', upHandler);
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', upHandler);
+      document.removeEventListener('pointercancel', upHandler);
       this.removeDragListeners = null;
     };
   }
 
+  // MouseEvent, not PointerEvent — this is also called from onWheel(WheelEvent),
+  // and both PointerEvent/WheelEvent extend MouseEvent, not each other.
   private eventFraction(event: MouseEvent): number {
     const timeline = this.timelineRef()?.nativeElement;
     if (!timeline) return 0;

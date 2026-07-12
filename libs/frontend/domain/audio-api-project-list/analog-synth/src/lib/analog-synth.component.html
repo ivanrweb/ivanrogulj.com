@@ -13,6 +13,32 @@
           rel="noopener noreferrer"
         >MANUAL</a>
 
+        @if (midiService.connectedInputs().length > 0) {
+          <div
+            class="midi-device-list"
+            (click)="showMidiDropdown = !showMidiDropdown"
+          >
+            <span class="midi-device-label">MIDI IN</span>
+            <span class="midi-device-chip">{{
+                midiService.connectedInputs()[0].name
+              }}</span>
+            @if (midiService.connectedInputs().length > 1) {
+              <span class="midi-device-extra"
+              >+{{ midiService.connectedInputs().length - 1 }}</span
+              >
+            }
+            @if (showMidiDropdown) {
+              <div class="midi-device-dropdown">
+                @for (input of midiService.connectedInputs(); track input.id) {
+                  <div class="midi-device-dropdown-item">{{ input.name }}</div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="header-right">
         @if (authService.currentUser()) {
           <lib-action-dropdown
             [sections]="presetSections()"
@@ -84,34 +110,8 @@
             </div>
           </lib-dialog>
         }
-      </div>
 
-      <div class="header-right">
-        @if (midiService.connectedInputs().length > 0) {
-          <div
-            class="midi-device-list"
-            (click)="showMidiDropdown = !showMidiDropdown"
-          >
-            <span class="midi-device-label">MIDI IN</span>
-            <span class="midi-device-chip">{{
-                midiService.connectedInputs()[0].name
-              }}</span>
-            @if (midiService.connectedInputs().length > 1) {
-              <span class="midi-device-extra"
-              >+{{ midiService.connectedInputs().length - 1 }}</span
-              >
-            }
-            @if (showMidiDropdown) {
-              <div class="midi-device-dropdown">
-                @for (input of midiService.connectedInputs(); track input.id) {
-                  <div class="midi-device-dropdown-item">{{ input.name }}</div>
-                }
-              </div>
-            }
-          </div>
-        }
-
-        <div class="midi-btn-wrapper">
+        <div class="midi-btn-wrapper push-right">
           <button
             class="btn-midi"
             (click)="analogSynthViewModel.toggleMidiLearn()"

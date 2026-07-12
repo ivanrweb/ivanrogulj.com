@@ -213,6 +213,19 @@ import { AuthTooltipComponent } from '@ivanrogulj.com/auth-tooltip';
         from { opacity: 0; transform: translateY(-10px); }
         to   { opacity: 1; transform: translateY(0); }
       }
+
+      @media (max-width: 640px) {
+        .ai-prompt-button {
+          width: 100%;
+          min-width: 0;
+        }
+
+        .ai-prompt-popup {
+          position: static;
+          width: auto;
+          margin-top: 8px;
+        }
+      }
     `,
   ],
 })

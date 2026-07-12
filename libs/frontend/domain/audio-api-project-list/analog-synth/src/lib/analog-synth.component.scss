@@ -38,6 +38,7 @@
   display: flex;
   align-items: center;
   gap: 15px;
+  flex-grow: 1;
 }
 
 .synth-title {
@@ -79,6 +80,7 @@
   position: relative;
   cursor: pointer;
   user-select: none;
+  margin-left: auto;
 }
 
 .midi-device-label {
@@ -144,6 +146,10 @@
   position: relative;
   display: flex;
   align-items: center;
+}
+
+.midi-btn-wrapper.push-right {
+  margin-left: auto;
 }
 
 .btn-midi {
@@ -523,5 +529,61 @@
 
   strong {
     color: #66fcf1;
+  }
+}
+
+@media (max-width: 640px) {
+  :host {
+    padding: 12px;
+  }
+
+  .synth-header {
+    padding: 12px 15px;
+  }
+
+  .header-left,
+  .header-right {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .header-left > *,
+  .header-right > * {
+    width: 100%;
+  }
+
+  .manual-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  .midi-btn-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .midi-btn-wrapper .btn-midi {
+    flex: 1;
+  }
+
+  ::ng-deep .header-right lib-action-dropdown .dropdown-trigger {
+    width: 100%;
+  }
+
+  .midi-tooltip {
+    position: static;
+    width: auto;
+    margin-top: 8px;
+  }
+
+  .midi-mapper-panel {
+    position: static;
+    width: auto;
+    min-width: 0;
+    margin-top: 8px;
   }
 }

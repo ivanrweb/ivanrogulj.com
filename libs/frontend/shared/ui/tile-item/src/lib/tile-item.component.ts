@@ -84,6 +84,21 @@ export interface TileItem {
         margin: 0;
         line-height: 1.6;
       }
+
+      @media (max-width: 640px) {
+        .tile {
+          flex-direction: column;
+        }
+
+        .tile-image {
+          width: 100%;
+          height: 200px;
+        }
+
+        .tile-content {
+          padding: 1.2rem 1.5rem;
+        }
+      }
     `,
   ],
 })
