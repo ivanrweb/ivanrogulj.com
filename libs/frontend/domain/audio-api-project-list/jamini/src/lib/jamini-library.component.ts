@@ -425,12 +425,18 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
       .jam-assign {
         position: absolute;
         top: 8px;
-        background: rgba(11, 12, 16, 0.75);
+        width: 30px;
+        height: 30px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #0b0c10;
         border: 1px solid;
         border-radius: 4px;
-        font-size: 0.75rem;
-        padding: 3px 7px;
+        font-size: 0.8rem;
         cursor: pointer;
+        box-sizing: border-box;
         transition: border-color 0.15s, background 0.15s;
       }
 
@@ -441,7 +447,7 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
       }
 
       .jam-assign {
-        right: 40px;
+        right: 44px;
         font-family: 'Fira Code', monospace;
         color: #45a29e;
         border-color: rgba(69, 162, 158, 0.4);

@@ -59,17 +59,19 @@ import { AvatarComponent } from '@ivanrogulj.com/avatar';
           <div class="tech-card">
             <span class="tech-name">Angular</span>
             <p class="tech-desc">
-              Frontend framework used for this entire website — standalone
-              components, server-side rendering, and NgRx ComponentStore for
-              state management.
+              Frontend framework used for this entire website — all organized as
+              reusable libs across an Nx monorepo.
             </p>
           </div>
 
           <div class="tech-card">
             <span class="tech-name">NestJS</span>
             <p class="tech-desc">
-              Backend REST API built with NestJS and TypeORM, handling
-              authentication, articles, and analog synth patch storage.
+              Backend REST API built with NestJS and TypeORM — handles user
+              authentication, article publishing with email notifications, and
+              persistence for synth patches, chord-changer songs, and the Jamini
+              practice library, plus an AI provider layer for AI-assisted patch
+              generation.
             </p>
           </div>
 
