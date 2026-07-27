@@ -85,6 +85,18 @@ const GUITAR_PEDALS_TOUR_STEPS: TourStep[] = [
             [value]="state.selectedInput ?? ''"
             (valueChange)="vm.selectInput($event)"
           />
+          @if (state.micStatus !== 'unknown' && state.micStatus !== 'granted') {
+          <button
+            type="button"
+            class="mic-status mic-status--{{ state.micStatus }}"
+            (click)="vm.loadInputs()"
+          >
+            <span class="mic-dot"></span>
+            @switch (state.micStatus) { @case ('denied') { Mic Blocked in
+            browser settings, cannot list input devices. } @case ('no-device') {
+            No Mic Found } @case ('in-use') { Mic In Use } }
+          </button>
+          }
         </div>
 
         <lib-audio-settings />
@@ -209,6 +221,45 @@ const GUITAR_PEDALS_TOUR_STEPS: TourStep[] = [
         text-transform: uppercase;
         font-weight: bold;
         font-family: 'Fira Code', monospace;
+      }
+
+      .mic-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        align-self: flex-start;
+        margin-top: 6px;
+        padding: 4px 10px;
+        border-radius: 12px;
+        border: 1px solid #333;
+        background: transparent;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.65rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        color: #888;
+        cursor: default;
+      }
+
+      .mic-status--granted {
+        border-color: rgba(102, 252, 241, 0.4);
+        color: #66fcf1;
+      }
+
+      .mic-status--denied,
+      .mic-status--no-device,
+      .mic-status--in-use {
+        border-color: rgba(255, 0, 127, 0.4);
+        color: #ff007f;
+        cursor: pointer;
+      }
+
+      .mic-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+        flex-shrink: 0;
       }
 
       .start-btn {

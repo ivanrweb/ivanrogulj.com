@@ -15,7 +15,7 @@ import { MEDIUM_USERNAME } from './blog.tokens';
         <h1>Articles</h1>
         <p>
           I write about Web Audio API, MIDI-to-browser connectivity, audio
-          synthesis, Angular, NestJS and more — written on Medium, synched here.
+          synthesis, Angular, NestJS and more — written on Medium, synced here.
         </p>
         <a
           class="medium-link"

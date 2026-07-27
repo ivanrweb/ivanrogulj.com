@@ -437,7 +437,7 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
         font-size: 0.8rem;
         cursor: pointer;
         box-sizing: border-box;
-        transition: border-color 0.15s, background 0.15s;
+        transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
       }
 
       .jam-delete {
@@ -455,12 +455,14 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
 
       .jam-delete:hover {
         border-color: #ff007f;
-        background: rgba(255, 0, 127, 0.15);
+        background: transparent;
+        box-shadow: 0 0 6px rgba(255, 0, 127, 0.6);
       }
 
       .jam-assign:hover {
         border-color: #45a29e;
-        background: rgba(69, 162, 158, 0.15);
+        background: transparent;
+        box-shadow: 0 0 6px rgba(69, 162, 158, 0.6);
       }
 
       .assign-popover {

@@ -49,11 +49,14 @@ export type PedalParams = {
 
 export type LatencyMode = 'interactive' | 'balanced' | 'playback';
 
+export type MicStatus = 'unknown' | 'granted' | 'denied' | 'no-device' | 'in-use';
+
 export interface GuitarPedalsState {
   pedalOrder: PedalType[];
   pedals: PedalParams;
   selectedInput: string | null;
   availableInputs: MediaDeviceInfo[];
+  micStatus: MicStatus;
   isRunning: boolean;
   inputGain: number;
   masterVolume: number;
@@ -72,6 +75,7 @@ const defaultState: GuitarPedalsState = {
   },
   selectedInput: null,
   availableInputs: [],
+  micStatus: 'unknown',
   isRunning: false,
   inputGain: 1.0,
   masterVolume: 1.0,
@@ -130,16 +134,37 @@ export class GuitarPedalsViewModel extends ComponentStore<GuitarPedalsState> {
       switchMap(() =>
         from(this.guitarAudioService.getAvailableInputs()).pipe(
           tap((inputs: MediaDeviceInfo[]) =>
-            this.patchState({ availableInputs: inputs })
+            this.patchState({
+              availableInputs: inputs,
+              micStatus: inputs.length > 0 ? 'granted' : 'no-device',
+            })
           ),
           catchError((err: unknown) => {
             console.error('Failed to get inputs', err);
+            this.patchState({
+              availableInputs: [],
+              micStatus: GuitarPedalsViewModel.mapMicError(err),
+            });
             return of([]);
           })
         )
       )
     )
   );
+
+  private static mapMicError(err: unknown): MicStatus {
+    const name = err instanceof DOMException ? err.name : '';
+    switch (name) {
+      case 'NotFoundError':
+      case 'DevicesNotFoundError':
+        return 'no-device';
+      case 'NotReadableError':
+      case 'TrackStartError':
+        return 'in-use';
+      default:
+        return 'denied';
+    }
+  }
 
   public setLatencyMode(value: LatencyMode): void {
     this.patchState({ latencyMode: value });
