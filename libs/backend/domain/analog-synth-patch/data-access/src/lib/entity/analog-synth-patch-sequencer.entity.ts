@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { jsonColumnTransformer } from '@ivanrogulj.com/backend/core/config';
 
 @Entity('analog_synth_patch_sequencer')
 export class AnalogSynthPatchSequencerEntity {
@@ -14,6 +15,6 @@ export class AnalogSynthPatchSequencerEntity {
   @Column()
   public rowCount!: number;
 
-  @Column({ type: 'json' })
+  @Column({ type: 'longtext', transformer: jsonColumnTransformer })
   public steps!: Array<{ active: boolean; note: number; velocity: number }>;
 }

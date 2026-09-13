@@ -1,4 +1,5 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { jsonColumnTransformer } from '@ivanrogulj.com/backend/core/config';
 
 export enum AuditEventType {
   REGISTRATION_ATTEMPT = 'REGISTRATION_ATTEMPT',
@@ -24,7 +25,7 @@ export class AuditLogEntity {
   @Column({ nullable: true })
   public email!: string | null;
 
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'longtext', nullable: true, transformer: jsonColumnTransformer })
   public meta!: Record<string, unknown> | null;
 
   @CreateDateColumn()
