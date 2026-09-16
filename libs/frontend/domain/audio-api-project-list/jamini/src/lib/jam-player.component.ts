@@ -1,5 +1,6 @@
 import {
   Component,
+  computed,
   ElementRef,
   inject,
   OnDestroy,
@@ -12,7 +13,11 @@ import { AsyncPipe, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { filter, Subscription, take } from 'rxjs';
 import { JaminiApi } from '@ivanrogulj.com/shared/data-access/model';
-import { JaminiState, JaminiViewModel } from '../viewmodel/jamini.viewmodel';
+import {
+  colorFor,
+  JaminiState,
+  JaminiViewModel,
+} from '../viewmodel/jamini.viewmodel';
 import { JaminiApiService } from '../service/jamini-api.service';
 import { YoutubePlayerService } from '../service/youtube-player.service';
 import { ScrollableComponent } from '@ivanrogulj.com/scrollable';
@@ -23,9 +28,16 @@ const PLAYER_ELEMENT_ID = 'jamini-player';
 const CLICK_DRAG_THRESHOLD = 0.005;
 /** Minimum gap between mark-in and mark-out while dragging a handle (seconds). */
 const MIN_MARK_GAP = 0.1;
+/** How close to a region's edge (px) the pointer must be for the resize brackets. */
+const EDGE_ZONE_PX = 10;
 /** Press-and-hold on the speed buttons: wait this long, then step this often. */
 const RATE_REPEAT_DELAY_MS = 400;
 const RATE_REPEAT_INTERVAL_MS = 90;
+
+interface EdgeTarget {
+  lickId: string;
+  edge: 'start' | 'end';
+}
 
 @Component({
   selector: 'lib-jam-player',
@@ -88,16 +100,47 @@ const RATE_REPEAT_INTERVAL_MS = 90;
                 ›
               </button>
               <div class="timeline-track">
-                @for (lick of state.currentJam?.licks ?? []; track lick.id) {
+                @if (vm.lickLanes$ | async; as lanes) { @for (entry of
+                lanes.lanes; track entry.lick.id) {
                 <div
                   class="lick-region"
-                  [class.active]="lick.id === state.activeLickId"
-                  [style.left.%]="leftPct(lick.startSeconds, state)"
+                  [class.active]="entry.lick.id === state.activeLickId"
+                  [class.hovered]="hoveredLickId() === entry.lick.id"
+                  [title]="entry.lick.name"
+                  [style.left.%]="leftPct(entry.lick.startSeconds, state)"
                   [style.width.%]="
-                    widthPct(lick.endSeconds - lick.startSeconds, state)
+                    widthPct(
+                      entry.lick.endSeconds - entry.lick.startSeconds,
+                      state
+                    )
                   "
-                ></div>
-                } @if (state.markIn !== null && state.markOut !== null) {
+                  [style.top]="laneTop(entry.lane, lanes.laneCount)"
+                  [style.height]="laneHeight(lanes.laneCount)"
+                  [style.borderColor]="entry.color"
+                  [style.backgroundColor]="
+                    fillFor(
+                      entry.color,
+                      entry.lick.id === state.activeLickId ? 0.45 : 0.25
+                    )
+                  "
+                  [attr.data-lick-id]="entry.lick.id"
+                  [class.resizable]="activeEdge()?.lickId === entry.lick.id"
+                  (mouseenter)="hoveredLickId.set(entry.lick.id)"
+                  (mouseleave)="hoveredLickId.set(null)"
+                  (pointermove)="onRegionPointerMove($event, entry.lick.id)"
+                  (pointerleave)="onRegionPointerLeave(entry.lick.id)"
+                  (dblclick)="vm.selectLick(entry.lick)"
+                >
+                  @if (activeEdge(); as cue) { @if (cue.lickId ===
+                  entry.lick.id) {
+                  <span
+                    class="edge-bracket"
+                    [class.start]="cue.edge === 'start'"
+                    [class.end]="cue.edge === 'end'"
+                  ></span>
+                  } }
+                </div>
+                } } @if (state.markIn !== null && state.markOut !== null) {
                 <div
                   class="mark-region"
                   [style.left.%]="leftPct(state.markIn, state)"
@@ -221,12 +264,14 @@ const RATE_REPEAT_INTERVAL_MS = 90;
             </div>
 
             <p class="shortcut-hint">
-              Drag on the timeline to mark a section, fine-tune with the pink
-              handles, then save it. Scroll over the timeline to zoom in with
+              Drag on the timeline to mark a section, fine-tune with the
+              brackets at either end, then save it. Scroll over the timeline to zoom in with
               mouse or 2 finger zoom-in with trackpad. Press
               <kbd>←</kbd> (left arrow key) to jump to the start of the
               selection and play. Press <kbd>L</kbd> to toggle looping, and
               <kbd>↑</kbd> / <kbd>↓</kbd> to speed the video up or slow it down.
+              Grab a Lick by the brackets at either edge to retime it, or
+              double-click it to select it.
             </p>
           </div>
 
@@ -244,6 +289,7 @@ const RATE_REPEAT_INTERVAL_MS = 90;
               <div
                 class="lick-item"
                 [class.active]="lick.id === state.activeLickId"
+                [class.hovered]="hoveredLickId() === lick.id"
                 [class.dragging]="draggedIndex() === i"
                 [class.drop-above]="dropIndicator(i) === 'above'"
                 [class.drop-below]="dropIndicator(i) === 'below'"
@@ -254,7 +300,13 @@ const RATE_REPEAT_INTERVAL_MS = 90;
                 (drop)="onLickDrop($event, i)"
                 (dragend)="onLickDragEnd()"
                 (click)="toggleLick(lick, state.activeLickId)"
+                (mouseenter)="hoveredLickId.set(lick.id)"
+                (mouseleave)="hoveredLickId.set(null)"
               >
+                <span
+                  class="lick-color-bar"
+                  [style.backgroundColor]="lickColor(lick, i)"
+                ></span>
                 <div class="lick-top">
                   @if (editingLickId() === lick.id) {
                   <input
@@ -481,33 +533,90 @@ const RATE_REPEAT_INTERVAL_MS = 90;
         overflow: hidden;
       }
 
+      /* Geometry, colour and fill come from the lane assignment as inline styles. */
+      /* top/height glide so the one re-lane on drag release isn't a jump; left/width
+         deliberately have no transition so a dragged edge tracks the pointer exactly. */
       .lick-region {
         position: absolute;
-        top: 0;
-        bottom: 0;
-        background: rgba(69, 162, 158, 0.25);
-        border-left: 1px solid #45a29e;
-        border-right: 1px solid #45a29e;
+        border: 1px solid;
+        border-radius: 2px;
+        transition: top 0.18s ease, height 0.18s ease, filter 0.12s;
       }
 
       .lick-region.active {
-        background: rgba(102, 252, 241, 0.25);
-        border-color: #66fcf1;
+        box-shadow: 0 0 0 1px #66fcf1;
       }
 
+      .lick-region.hovered {
+        filter: brightness(1.45);
+        z-index: 3;
+      }
+
+      .lick-region.resizable {
+        cursor: ew-resize;
+        z-index: 4;
+      }
+
+      /* Literal [ and ] drawn with borders: the open side faces into the region. */
+      .edge-bracket {
+        position: absolute;
+        top: -1px;
+        bottom: -1px;
+        width: 7px;
+        border: 2px solid #66fcf1;
+        pointer-events: none;
+      }
+
+      .edge-bracket.start {
+        left: -1px;
+        border-right: none;
+        border-radius: 3px 0 0 3px;
+      }
+
+      .edge-bracket.end {
+        right: -1px;
+        border-left: none;
+        border-radius: 0 3px 3px 0;
+      }
+
+      /* Cyan like every other "this is the thing you're working on" cue, and carrying
+         the same [ ] brackets as a Lick's edges — the gesture is the same gesture. */
       .mark-region {
         position: absolute;
         top: 0;
         bottom: 0;
-        background: rgba(255, 0, 127, 0.2);
-        border-left: 1px solid #ff007f;
-        border-right: 1px solid #ff007f;
+        background: rgba(102, 252, 241, 0.2);
+        border-left: 1px solid #66fcf1;
+        border-right: 1px solid #66fcf1;
         transition: background 0.15s;
       }
 
       /* Brighten the fill on hover — borders stay 1px so the start/end don't thicken. */
       .mark-region:hover {
-        background: rgba(255, 0, 127, 0.34);
+        background: rgba(102, 252, 241, 0.34);
+      }
+
+      .mark-region::before,
+      .mark-region::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 7px;
+        border: 2px solid #66fcf1;
+        pointer-events: none;
+      }
+
+      .mark-region::before {
+        left: -1px;
+        border-right: none;
+        border-radius: 3px 0 0 3px;
+      }
+
+      .mark-region::after {
+        right: -1px;
+        border-left: none;
+        border-radius: 0 3px 3px 0;
       }
 
       /* Invisible drag zones over the start/end edges; the ew-resize cursor
@@ -679,10 +788,11 @@ const RATE_REPEAT_INTERVAL_MS = 90;
       }
 
       .lick-item {
+        position: relative;
         display: flex;
         flex-direction: column;
         gap: 4px;
-        padding: 0.55rem 0.7rem;
+        padding: 0.55rem 0.7rem 0.55rem 0.85rem;
         background: rgba(255, 255, 255, 0.03);
         border: 1px solid #333;
         border-radius: 4px;
@@ -696,8 +806,22 @@ const RATE_REPEAT_INTERVAL_MS = 90;
         border-color: #45a29e;
       }
 
+      .lick-item.hovered {
+        background: rgba(255, 255, 255, 0.07);
+      }
+
       .lick-item.dragging {
         opacity: 0.4;
+      }
+
+      /* Ties the row to its region on the timeline. */
+      .lick-color-bar {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 6px;
+        border-radius: 4px 0 0 4px;
       }
 
       .lick-item.drop-above {
@@ -722,9 +846,10 @@ const RATE_REPEAT_INTERVAL_MS = 90;
         color: #45a29e;
       }
 
+      /* Quiet enough not to drown out the colour bar that identifies the Lick. */
       .lick-item.active {
-        border-color: #66fcf1;
-        background: rgba(102, 252, 241, 0.07);
+        border-color: rgba(102, 252, 241, 0.55);
+        background: rgba(255, 255, 255, 0.04);
       }
 
       .lick-top {
@@ -765,17 +890,22 @@ const RATE_REPEAT_INTERVAL_MS = 90;
         flex-shrink: 0;
       }
 
+      /* Fixed square box: sizing by the glyph's advance width made the two buttons
+         different widths and left the hover border sitting wide around the mark. */
       .lick-edit,
       .lick-delete {
         display: flex;
         align-items: center;
         justify-content: center;
+        flex: 0 0 auto;
+        width: 24px;
+        height: 24px;
+        padding: 0;
         background: none;
         border: 1px solid transparent;
         border-radius: 4px;
         font-size: 1.05rem;
         line-height: 1;
-        padding: 3px 7px;
         cursor: pointer;
         transition: color 0.15s, border-color 0.15s;
       }
@@ -868,6 +998,13 @@ export class JamPlayerComponent implements OnInit, OnDestroy {
   public readonly lickPendingDelete = signal<JaminiApi.Lick | null>(null);
   public readonly editingLickId = signal<string | null>(null);
   public readonly editingName = signal('');
+  public readonly hoveredLickId = signal<string | null>(null);
+  private readonly edgeCue = signal<EdgeTarget | null>(null);
+  private readonly edgeDrag = signal<EdgeTarget | null>(null);
+  /** The brackets stay put during a drag, even once the pointer leaves the region. */
+  public readonly activeEdge = computed(
+    () => this.edgeDrag() ?? this.edgeCue()
+  );
   public readonly draggedIndex = signal<number | null>(null);
   public readonly dragOverIndex = signal<number | null>(null);
 
@@ -990,6 +1127,24 @@ export class JamPlayerComponent implements OnInit, OnDestroy {
     if (event.detail === 0) this.vm.stepPlaybackRate(direction);
   }
 
+  /** Brackets appear as soon as the pointer nears a region's edge. */
+  public onRegionPointerMove(event: PointerEvent, lickId: string): void {
+    if (this.edgeDrag() !== null) return;
+
+    const edge = this.edgeAt(event, event.currentTarget as HTMLElement);
+    const current = this.edgeCue();
+    // pointermove fires constantly; only write when the cue actually changes.
+    if (current?.lickId === lickId && current.edge === edge) return;
+    if (edge === null && current?.lickId !== lickId) return;
+    this.edgeCue.set(edge === null ? null : { lickId, edge });
+  }
+
+  public onRegionPointerLeave(lickId: string): void {
+    if (this.edgeDrag() === null && this.edgeCue()?.lickId === lickId) {
+      this.edgeCue.set(null);
+    }
+  }
+
   public toggleLick(lick: JaminiApi.Lick, activeLickId: string | null): void {
     if (lick.id === activeLickId) {
       this.vm.deselectLick();
@@ -1080,6 +1235,12 @@ export class JamPlayerComponent implements OnInit, OnDestroy {
   public onTimelinePointerDown(event: PointerEvent): void {
     const duration = this.vm.getState().duration;
     if (duration <= 0) return;
+
+    // A press on a Lick's edge retimes that Lick; anywhere else on the timeline —
+    // the middle of a region included — still seeks on click and marks on drag.
+    // Selecting a Lick from the timeline is the region's double-click.
+    if (this.startLickEdgeDrag(event)) return;
+
     event.preventDefault();
 
     this.dragStartFraction = this.eventFraction(event);
@@ -1109,6 +1270,88 @@ export class JamPlayerComponent implements OnInit, OnDestroy {
     };
 
     this.attachDragListeners(onMove, onUp);
+  }
+
+  /** Returns true only when the press landed on a Lick's edge and started a retime. */
+  private startLickEdgeDrag(event: PointerEvent): boolean {
+    const regionEl = (event.target as HTMLElement | null)?.closest<HTMLElement>(
+      '.lick-region'
+    );
+    if (!regionEl) return false;
+
+    const edge = this.edgeAt(event, regionEl);
+    if (edge === null) return false;
+
+    const lickId = regionEl.dataset['lickId'];
+    const lick = this.vm
+      .getState()
+      .currentJam?.licks.find((p) => p.id === lickId);
+    if (!lick) return false;
+
+    event.preventDefault();
+    this.startEdgeDrag(lick, edge);
+    return true;
+  }
+
+  private startEdgeDrag(lick: JaminiApi.Lick, edge: 'start' | 'end'): void {
+    this.edgeDrag.set({ lickId: lick.id, edge });
+    this.edgeCue.set({ lickId: lick.id, edge });
+    // Rows stay put for the whole gesture; they re-settle once on release.
+    this.vm.freezeLanes();
+
+    const onMove = (moveEvent: PointerEvent): void => {
+      const { duration, currentJam } = this.vm.getState();
+      const current = currentJam?.licks.find((p) => p.id === lick.id);
+      if (!current) return;
+      const seconds = this.eventTime(moveEvent);
+
+      if (edge === 'start') {
+        this.vm.previewLickRange(
+          lick.id,
+          Math.max(0, Math.min(seconds, current.endSeconds - MIN_MARK_GAP)),
+          current.endSeconds
+        );
+      } else {
+        this.vm.previewLickRange(
+          lick.id,
+          current.startSeconds,
+          Math.min(
+            duration,
+            Math.max(seconds, current.startSeconds + MIN_MARK_GAP)
+          )
+        );
+      }
+    };
+
+    const onUp = (): void => {
+      this.edgeDrag.set(null);
+      this.edgeCue.set(null);
+      this.vm.releaseLanes();
+      const retimed = this.vm
+        .getState()
+        .currentJam?.licks.find((p) => p.id === lick.id);
+      if (
+        retimed &&
+        (retimed.startSeconds !== lick.startSeconds ||
+          retimed.endSeconds !== lick.endSeconds)
+      ) {
+        this.vm.saveLickRange({ lick: retimed, previous: lick });
+      }
+    };
+
+    this.attachDragListeners(onMove, onUp);
+  }
+
+  /** Which edge of `element` the pointer is within EDGE_ZONE_PX of, if any. */
+  private edgeAt(
+    event: PointerEvent,
+    element: HTMLElement
+  ): 'start' | 'end' | null {
+    const rect = element.getBoundingClientRect();
+    const fromStart = event.clientX - rect.left;
+    const fromEnd = rect.right - event.clientX;
+    if (Math.min(fromStart, fromEnd) > EDGE_ZONE_PX) return null;
+    return fromStart <= fromEnd ? 'start' : 'end';
   }
 
   public onMarkHandlePointerDown(
@@ -1178,6 +1421,28 @@ export class JamPlayerComponent implements OnInit, OnDestroy {
   public widthPct(durationSeconds: number, state: JaminiState): number {
     const span = this.vm.visibleSpan(state);
     return span > 0 ? (durationSeconds / span) * 100 : 0;
+  }
+
+  public lickColor(lick: JaminiApi.Lick, index: number): string {
+    return colorFor(lick, index);
+  }
+
+  /** Top offset of a lane, leaving a 2px gutter between stacked regions. */
+  public laneTop(lane: number, laneCount: number): string {
+    return `calc(${(lane * 100) / laneCount}% + 2px)`;
+  }
+
+  public laneHeight(laneCount: number): string {
+    return `calc(${100 / laneCount}% - 4px)`;
+  }
+
+  /** Same hue as the region border, dropped to a fill-strength alpha. */
+  public fillFor(hex: string, alpha: number): string {
+    if (hex.length !== 7) return hex;
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   }
 
   public ratePercent(rate: number): number {

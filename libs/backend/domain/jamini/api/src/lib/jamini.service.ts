@@ -8,6 +8,7 @@ import {
   CategoryEntity,
   CategoryRepository,
 } from '@ivanrogulj.com/backend/domain/jamini/data-access';
+import { JaminiApi } from '@ivanrogulj.com/shared/data-access/model';
 import {
   AssignCategoriesDto,
   CreateJamDto,
@@ -75,7 +76,7 @@ export class JaminiService {
 
   public async getJam(id: string, userId: string): Promise<JamDetail> {
     const jam = await this.findOwnedJam(id, userId);
-    const licks = await this.lickRepo.findByJamId(id);
+    const licks = await this.backfillColors(await this.lickRepo.findByJamId(id));
     const links = await this.jamCategoryRepo.findByJamId(id);
     return { jam, licks: licks, categoryIds: links.map((l) => l.categoryId) };
   }
@@ -120,6 +121,7 @@ export class JaminiService {
         endSeconds: dto.endSeconds,
         playbackRate: dto.playbackRate ?? 1,
         sortOrder: existing.length,
+        color: this.colorForIndex(existing.length),
       }),
     );
   }
@@ -177,6 +179,22 @@ export class JaminiService {
     await this.findOwnedCategory(id, userId);
     await this.jamCategoryRepo.delete({ categoryId: id });
     await this.categoryRepo.delete(id);
+  }
+
+  /** Licks created before colours existed get one on first read, in list order. */
+  private async backfillColors(licks: LickEntity[]): Promise<LickEntity[]> {
+    const uncoloured = licks.filter((lick) => !lick.color);
+    if (uncoloured.length === 0) return licks;
+
+    licks.forEach((lick, index) => {
+      if (!lick.color) lick.color = this.colorForIndex(index);
+    });
+    await this.lickRepo.save(licks);
+    return licks;
+  }
+
+  private colorForIndex(index: number): string {
+    return JaminiApi.LICK_COLORS[index % JaminiApi.LICK_COLORS.length];
   }
 
   private async findOwnedJam(id: string, userId: string): Promise<JamEntity> {
