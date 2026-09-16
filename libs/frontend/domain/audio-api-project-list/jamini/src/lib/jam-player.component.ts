@@ -129,7 +129,7 @@ const RATE_REPEAT_INTERVAL_MS = 90;
             </div>
 
             <!-- Transport -->
-            <div class="transport">
+            <div class="transport" (pointerdown)="preventButtonFocus($event)">
               <button
                 class="transport-btn play"
                 type="button"
@@ -152,7 +152,6 @@ const RATE_REPEAT_INTERVAL_MS = 90;
               </button>
 
               <div class="control-group">
-                <span class="control-label">Speed</span>
                 <div class="control-row">
                   <button
                     class="transport-btn"
@@ -224,9 +223,10 @@ const RATE_REPEAT_INTERVAL_MS = 90;
             <p class="shortcut-hint">
               Drag on the timeline to mark a section, fine-tune with the pink
               handles, then save it. Scroll over the timeline to zoom in with
-              mouse or 2 finger close-up method in with with trackpad. Press
+              mouse or 2 finger zoom-in with trackpad. Press
               <kbd>←</kbd> (left arrow key) to jump to the start of the
-              selection and play.
+              selection and play. Press <kbd>L</kbd> to toggle looping, and
+              <kbd>↑</kbd> / <kbd>↓</kbd> to speed the video up or slow it down.
             </p>
           </div>
 
@@ -239,8 +239,8 @@ const RATE_REPEAT_INTERVAL_MS = 90;
             </p>
             }
             <lib-scrollable class="lick-list" maxHeight="60vh">
-              @for (lick of state.currentJam?.licks ?? []; track lick.id; let i =
-              $index) {
+              @for (lick of state.currentJam?.licks ?? []; track lick.id; let i
+              = $index) {
               <div
                 class="lick-item"
                 [class.active]="lick.id === state.activeLickId"
@@ -329,7 +329,7 @@ const RATE_REPEAT_INTERVAL_MS = 90;
       .page {
         max-width: 1600px;
         margin: 0 auto;
-        padding: 2rem;
+        padding: 1rem;
       }
 
       .breadcrumb {
@@ -589,9 +589,8 @@ const RATE_REPEAT_INTERVAL_MS = 90;
       }
 
       .transport-btn.loop.engaged {
-        color: #ff007f;
-        border-color: #ff007f;
-        background: rgba(255, 0, 127, 0.1);
+        color: #66fcf1;
+        border-color: #66fcf1;
       }
 
       .transport-btn.save {
@@ -913,7 +912,6 @@ export class JamPlayerComponent implements OnInit, OnDestroy {
     this.router.navigate(['/audio/jamini']);
   }
 
-
   public onKeydown(event: KeyboardEvent): void {
     const target = event.target as HTMLElement | null;
     if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA'))
@@ -924,6 +922,25 @@ export class JamPlayerComponent implements OnInit, OnDestroy {
     } else if (event.code === 'ArrowLeft' || event.key === 'ArrowLeft') {
       event.preventDefault();
       this.vm.restartRange();
+    } else if (event.key === 'l' || event.key === 'L') {
+      event.preventDefault();
+      this.vm.toggleLoop();
+    } else if (event.code === 'ArrowUp' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      this.vm.stepPlaybackRate(1);
+    } else if (event.code === 'ArrowDown' || event.key === 'ArrowDown') {
+      event.preventDefault();
+      this.vm.stepPlaybackRate(-1);
+    }
+  }
+
+  /**
+   * Keeps a mouse click from parking focus on a transport button — without this,
+   * Space would both play and re-click whichever button was last clicked.
+   */
+  public preventButtonFocus(event: PointerEvent): void {
+    if ((event.target as HTMLElement | null)?.closest('button')) {
+      event.preventDefault();
     }
   }
 
@@ -1094,7 +1111,10 @@ export class JamPlayerComponent implements OnInit, OnDestroy {
     this.attachDragListeners(onMove, onUp);
   }
 
-  public onMarkHandlePointerDown(event: PointerEvent, edge: 'in' | 'out'): void {
+  public onMarkHandlePointerDown(
+    event: PointerEvent,
+    edge: 'in' | 'out'
+  ): void {
     event.stopPropagation();
     event.preventDefault();
     const duration = this.vm.getState().duration;

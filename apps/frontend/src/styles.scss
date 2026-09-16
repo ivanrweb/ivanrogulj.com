@@ -18,6 +18,22 @@ body {
   overflow-x: hidden;
 }
 
+/* Chrome's default focus ring (blue outline + white halo) doesn't belong in the
+   dark theme. Hover and active states carry the interactive feedback instead.
+   Text fields keep their ring — components style those individually. */
+button:focus,
+button:focus-visible,
+a:focus,
+a:focus-visible,
+select:focus,
+select:focus-visible,
+summary:focus,
+summary:focus-visible,
+[tabindex]:focus,
+[tabindex]:focus-visible {
+  outline: none;
+}
+
 @media (max-width: 640px) {
   button,
   a {
