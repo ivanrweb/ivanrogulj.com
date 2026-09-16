@@ -8,7 +8,14 @@ import {
   CategoryEntity,
   CategoryRepository,
 } from '@ivanrogulj.com/backend/domain/jamini/data-access';
-import { AssignCategoriesDto, CreateJamDto, SaveLickDto, CategoryDto, UpdateJamDto } from './dto/jamini.dto';
+import {
+  AssignCategoriesDto,
+  CreateJamDto,
+  SaveLickDto,
+  CategoryDto,
+  ReorderLicksDto,
+  UpdateJamDto,
+} from './dto/jamini.dto';
 
 export interface JamListItem {
   id: string;
@@ -125,6 +132,22 @@ export class JaminiService {
     lick.endSeconds = dto.endSeconds;
     lick.playbackRate = dto.playbackRate ?? lick.playbackRate;
     return this.lickRepo.save(lick);
+  }
+
+  /**
+   * Rewrites sortOrder to match the given id order. Ids that don't belong to the
+   * jam are ignored; licks missing from the list keep their relative order at the end.
+   */
+  public async reorderLicks(jamId: string, userId: string, dto: ReorderLicksDto): Promise<LickEntity[]> {
+    await this.findOwnedJam(jamId, userId);
+    const licks = await this.lickRepo.findByJamId(jamId);
+    const byId = new Map(licks.map((lick) => [lick.id, lick]));
+    const ordered = [...new Set(dto.lickIds)].map((id) => byId.get(id)).filter((lick): lick is LickEntity => !!lick);
+    const remaining = licks.filter((lick) => !ordered.includes(lick));
+    const finalOrder = [...ordered, ...remaining];
+    finalOrder.forEach((lick, index) => (lick.sortOrder = index));
+    await this.lickRepo.save(finalOrder);
+    return finalOrder;
   }
 
   public async deleteLick(id: string, userId: string): Promise<void> {

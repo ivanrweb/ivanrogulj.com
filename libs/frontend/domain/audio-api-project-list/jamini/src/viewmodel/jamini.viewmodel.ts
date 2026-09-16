@@ -377,6 +377,45 @@ export class JaminiViewModel extends ComponentStore<JaminiState> {
     ),
   );
 
+  /**
+   * Drag-and-drop reorder: moves the lick at `from` to index `to`, patches state
+   * immediately and persists the new order; the previous order is restored on failure.
+   */
+  public readonly moveLick = this.effect<{ from: number; to: number }>((input$) =>
+    input$.pipe(
+      switchMap(({ from, to }) => {
+        const { currentJam } = this.get();
+        if (!currentJam) return of(null);
+
+        const previous = currentJam.licks;
+        if (from === to || from < 0 || from >= previous.length || to < 0 || to >= previous.length) {
+          return of(null);
+        }
+
+        const reordered = [...previous];
+        const [moved] = reordered.splice(from, 1);
+        reordered.splice(to, 0, moved);
+        this.patchState((s) => ({
+          currentJam: s.currentJam ? { ...s.currentJam, licks: reordered } : s.currentJam,
+        }));
+
+        return this.apiService.reorderLicks(currentJam.jam.id, reordered.map((lick) => lick.id)).pipe(
+          tap((licks) =>
+            this.patchState((s) => ({
+              currentJam: s.currentJam ? { ...s.currentJam, licks } : s.currentJam,
+            })),
+          ),
+          catchError(() => {
+            this.patchState((s) => ({
+              currentJam: s.currentJam ? { ...s.currentJam, licks: previous } : s.currentJam,
+            }));
+            return of(null);
+          }),
+        );
+      }),
+    ),
+  );
+
   public readonly deleteLick = this.effect<string>((lickId$) =>
     lickId$.pipe(
       switchMap((lickId) =>

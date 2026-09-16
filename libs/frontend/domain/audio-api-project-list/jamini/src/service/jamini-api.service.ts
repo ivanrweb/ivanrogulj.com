@@ -65,6 +65,14 @@ export class JaminiApiService {
     });
   }
 
+  public reorderLicks(jamId: string, lickIds: string[]): Observable<JaminiApi.Lick[]> {
+    return this.http.put<JaminiApi.Lick[]>(
+      `/api/jamini/jams/${jamId}/licks/reorder`,
+      { lickIds },
+      { headers: this.getAuthHeaders() },
+    );
+  }
+
   public deleteLick(id: string): Observable<void> {
     return this.http.delete<void>(`/api/jamini/licks/${id}`, {
       headers: this.getAuthHeaders(),

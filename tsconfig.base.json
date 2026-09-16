@@ -138,6 +138,9 @@
       "@ivanrogulj.com/jamini": [
         "libs/frontend/domain/audio-api-project-list/jamini/src/index.ts"
       ],
+      "@ivanrogulj.com/scrollable": [
+        "libs/frontend/shared/ui/scrollable/src/index.ts"
+      ],
       "@ivanrogulj.com/select": ["libs/frontend/shared/ui/select/src/index.ts"],
       "@ivanrogulj.com/shared/data-access/model": [
         "libs/shared/data-access/model/src/index.ts"

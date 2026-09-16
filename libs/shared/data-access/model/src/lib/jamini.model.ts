@@ -51,6 +51,10 @@ export namespace JaminiApi {
     durationSeconds?: number | null;
   }
 
+  export interface ReorderLicksPayload {
+    lickIds: string[];
+  }
+
   export interface SaveLickPayload {
     name?: string;
     startSeconds: number;

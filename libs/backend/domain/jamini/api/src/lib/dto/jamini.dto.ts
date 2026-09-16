@@ -40,6 +40,12 @@ export class SaveLickDto {
   public playbackRate?: number;
 }
 
+export class ReorderLicksDto {
+  @IsArray()
+  @IsString({ each: true })
+  public lickIds!: string[];
+}
+
 export class CategoryDto {
   @IsString()
   public name!: string;

@@ -15,6 +15,7 @@ import { JaminiApi } from '@ivanrogulj.com/shared/data-access/model';
 import { JaminiState, JaminiViewModel } from '../viewmodel/jamini.viewmodel';
 import { JaminiApiService } from '../service/jamini-api.service';
 import { YoutubePlayerService } from '../service/youtube-player.service';
+import { ScrollableComponent } from '@ivanrogulj.com/scrollable';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 
 const PLAYER_ELEMENT_ID = 'jamini-player';
@@ -26,7 +27,7 @@ const MIN_MARK_GAP = 0.1;
 @Component({
   selector: 'lib-jam-player',
   standalone: true,
-  imports: [AsyncPipe, ConfirmDialogComponent],
+  imports: [AsyncPipe, ConfirmDialogComponent, ScrollableComponent],
   host: {
     '(document:keydown)': 'onKeydown($event)',
   },
@@ -232,11 +233,21 @@ const MIN_MARK_GAP = 0.1;
               No Licks yet — mark a section on the timeline and save it.
             </p>
             }
-            <div class="lick-list">
-              @for (lick of state.currentJam?.licks ?? []; track lick.id) {
+            <lib-scrollable class="lick-list" maxHeight="60vh">
+              @for (lick of state.currentJam?.licks ?? []; track lick.id; let i =
+              $index) {
               <div
                 class="lick-item"
                 [class.active]="lick.id === state.activeLickId"
+                [class.dragging]="draggedIndex() === i"
+                [class.drop-above]="dropIndicator(i) === 'above'"
+                [class.drop-below]="dropIndicator(i) === 'below'"
+                [draggable]="editingLickId() !== lick.id"
+                (dragstart)="onLickDragStart($event, i)"
+                (dragover)="onLickDragOver($event, i)"
+                (dragleave)="onLickDragLeave($event, i)"
+                (drop)="onLickDrop($event, i)"
+                (dragend)="onLickDragEnd()"
                 (click)="toggleLick(lick, state.activeLickId)"
               >
                 <div class="lick-top">
@@ -253,6 +264,7 @@ const MIN_MARK_GAP = 0.1;
                     autocomplete="off"
                   />
                   } @else {
+                  <span class="lick-grip" title="Drag to reorder">⠿</span>
                   <span class="lick-name">{{ lick.name }}</span>
                   <div class="lick-actions">
                     <button
@@ -283,7 +295,7 @@ const MIN_MARK_GAP = 0.1;
                 </span>
               </div>
               }
-            </div>
+            </lib-scrollable>
           </div>
         </div>
       </div>
@@ -659,8 +671,7 @@ const MIN_MARK_GAP = 0.1;
         display: flex;
         flex-direction: column;
         gap: 6px;
-        max-height: 60vh;
-        overflow-y: auto;
+        padding-right: 6px;
       }
 
       .lick-item {
@@ -672,11 +683,39 @@ const MIN_MARK_GAP = 0.1;
         border: 1px solid #333;
         border-radius: 4px;
         cursor: pointer;
+        -webkit-user-select: none;
+        user-select: none;
         transition: border-color 0.15s, background 0.15s;
       }
 
       .lick-item:hover {
         border-color: #45a29e;
+      }
+
+      .lick-item.dragging {
+        opacity: 0.4;
+      }
+
+      .lick-item.drop-above {
+        box-shadow: inset 0 2px 0 0 #66fcf1;
+      }
+
+      .lick-item.drop-below {
+        box-shadow: inset 0 -2px 0 0 #66fcf1;
+      }
+
+      .lick-grip {
+        font-family: 'Fira Code', monospace;
+        color: #555;
+        font-size: 0.85rem;
+        line-height: 1;
+        cursor: grab;
+        flex-shrink: 0;
+        transition: color 0.15s;
+      }
+
+      .lick-item:hover .lick-grip {
+        color: #45a29e;
       }
 
       .lick-item.active {
@@ -703,6 +742,8 @@ const MIN_MARK_GAP = 0.1;
 
       .lick-name-input {
         flex: 1;
+        -webkit-user-select: text;
+        user-select: text;
         background: #0b0c10;
         border: 1px solid #66fcf1;
         border-radius: 4px;
@@ -775,7 +816,7 @@ const MIN_MARK_GAP = 0.1;
         }
 
         .lick-list {
-          max-height: none;
+          max-height: none !important;
         }
       }
 
@@ -823,6 +864,8 @@ export class JamPlayerComponent implements OnInit, OnDestroy {
   public readonly lickPendingDelete = signal<JaminiApi.Lick | null>(null);
   public readonly editingLickId = signal<string | null>(null);
   public readonly editingName = signal('');
+  public readonly draggedIndex = signal<number | null>(null);
+  public readonly dragOverIndex = signal<number | null>(null);
 
   private readonly timelineRef =
     viewChild<ElementRef<HTMLDivElement>>('timeline');
@@ -902,6 +945,54 @@ export class JamPlayerComponent implements OnInit, OnDestroy {
 
   public cancelRename(): void {
     this.editingLickId.set(null);
+  }
+
+  // ── Lick drag-and-drop reorder (native HTML5 DnD — no @angular/cdk in this repo) ──
+
+  public onLickDragStart(event: DragEvent, index: number): void {
+    this.draggedIndex.set(index);
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+      // Firefox only starts a drag when some data is set.
+      event.dataTransfer.setData('text/plain', String(index));
+    }
+  }
+
+  public onLickDragOver(event: DragEvent, index: number): void {
+    if (this.draggedIndex() === null) return;
+    event.preventDefault();
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
+    this.dragOverIndex.set(index);
+  }
+
+  public onLickDragLeave(event: DragEvent, index: number): void {
+    // Moving between children of the same row also fires dragleave — ignore those.
+    const row = event.currentTarget as HTMLElement | null;
+    const next = event.relatedTarget as Node | null;
+    if (row && next && row.contains(next)) return;
+    if (this.dragOverIndex() === index) this.dragOverIndex.set(null);
+  }
+
+  public onLickDrop(event: DragEvent, index: number): void {
+    event.preventDefault();
+    event.stopPropagation();
+    const from = this.draggedIndex();
+    this.onLickDragEnd();
+    if (from === null || from === index) return;
+    this.vm.moveLick({ from, to: index });
+  }
+
+  public onLickDragEnd(): void {
+    this.draggedIndex.set(null);
+    this.dragOverIndex.set(null);
+  }
+
+  /** Which edge of row `index` shows the drop line, based on the drag direction. */
+  public dropIndicator(index: number): 'above' | 'below' | null {
+    const from = this.draggedIndex();
+    if (from === null || this.dragOverIndex() !== index || from === index)
+      return null;
+    return from > index ? 'above' : 'below';
   }
 
   public deleteLick(event: Event, lick: JaminiApi.Lick): void {

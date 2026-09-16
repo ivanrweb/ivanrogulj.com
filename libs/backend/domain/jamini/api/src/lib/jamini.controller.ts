@@ -2,7 +2,14 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, 
 import { Request } from 'express';
 import { LickEntity, CategoryEntity } from '@ivanrogulj.com/backend/domain/jamini/data-access';
 import { JamDetail, JamListItem, JaminiService } from './jamini.service';
-import { AssignCategoriesDto, CreateJamDto, SaveLickDto, CategoryDto, UpdateJamDto } from './dto/jamini.dto';
+import {
+  AssignCategoriesDto,
+  CreateJamDto,
+  SaveLickDto,
+  CategoryDto,
+  ReorderLicksDto,
+  UpdateJamDto,
+} from './dto/jamini.dto';
 import { UserAuthGuard } from './guards/user-auth.guard';
 
 type AuthedRequest = Request & { user: { userId: string } };
@@ -60,6 +67,15 @@ export class JaminiController {
     @Body() dto: SaveLickDto,
   ): Promise<LickEntity> {
     return this.jaminiService.addLick(id, req.user.userId, dto);
+  }
+
+  @Put('jams/:id/licks/reorder')
+  public async reorderLicks(
+    @Param('id') id: string,
+    @Req() req: AuthedRequest,
+    @Body() dto: ReorderLicksDto,
+  ): Promise<LickEntity[]> {
+    return this.jaminiService.reorderLicks(id, req.user.userId, dto);
   }
 
   @Put('licks/:id')
