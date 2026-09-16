@@ -31,6 +31,14 @@ export interface JaminiState {
   // Timeline zoom (1 = whole video fits; higher = zoomed in) and pan window start (seconds)
   zoom: number;
   viewStart: number;
+
+  /** Lane assignment held still while a Lick is being retimed; null when live. */
+  laneFreeze: LaneFreeze | null;
+}
+
+export interface LaneFreeze {
+  lanes: Record<string, number>;
+  laneCount: number;
 }
 
 /** Max timeline zoom factor. */
@@ -45,6 +53,21 @@ const MAX_ZOOM = 40;
 const RATE_MIN = 0.25;
 const RATE_MAX = 2;
 const RATE_STEP = 0.05;
+
+/** How many stacked rows the timeline splits into when Licks overlap. */
+const MAX_LANES = 3;
+
+/** A Lick placed into a timeline row, with the colour both panels render it in. */
+export interface LaneLick {
+  lick: JaminiApi.Lick;
+  lane: number;
+  color: string;
+}
+
+export interface LickLanes {
+  lanes: LaneLick[];
+  laneCount: number;
+}
 
 const FINE_RATES: number[] = Array.from(
   { length: Math.round((RATE_MAX - RATE_MIN) / RATE_STEP) + 1 },
@@ -70,7 +93,45 @@ const defaultState: JaminiState = {
   markOut: null,
   zoom: 1,
   viewStart: 0,
+  laneFreeze: null,
 };
+
+/**
+ * Greedy interval partitioning: each Lick drops into the first row whose previous region
+ * has already ended, so overlapping and nested Licks sit under one another instead of on
+ * top of one another. Rows past MAX_LANES reuse the one that frees up first.
+ */
+export function assignLanes(licks: JaminiApi.Lick[]): LickLanes {
+  const ordered = [...licks].sort(
+    (a, b) =>
+      a.startSeconds - b.startSeconds ||
+      b.endSeconds - b.startSeconds - (a.endSeconds - a.startSeconds),
+  );
+
+  // Fallback colours follow list order, not time order, so both panels agree.
+  const listIndex = new Map(licks.map((lick, index) => [lick.id, index]));
+
+  const laneEnds: number[] = [];
+  const lanes = ordered.map((lick, index) => {
+    let lane = laneEnds.findIndex((end) => end <= lick.startSeconds);
+    if (lane === -1) {
+      if (laneEnds.length < MAX_LANES) {
+        lane = laneEnds.length;
+      } else {
+        lane = laneEnds.reduce((earliest, end, i) => (end < laneEnds[earliest] ? i : earliest), 0);
+      }
+    }
+    laneEnds[lane] = lick.endSeconds;
+    return { lick, lane, color: colorFor(lick, listIndex.get(lick.id) ?? index) };
+  });
+
+  return { lanes, laneCount: Math.max(1, laneEnds.length) };
+}
+
+/** Falls back to the palette by position for Licks the API hasn't backfilled yet. */
+export function colorFor(lick: JaminiApi.Lick, index: number): string {
+  return lick.color ?? JaminiApi.LICK_COLORS[index % JaminiApi.LICK_COLORS.length];
+}
 
 @Injectable({ providedIn: 'root' })
 export class JaminiViewModel extends ComponentStore<JaminiState> {
@@ -90,6 +151,34 @@ export class JaminiViewModel extends ComponentStore<JaminiState> {
   public readonly licks$ = this.select((s) => s.currentJam?.licks ?? []);
   public readonly activeLick$ = this.select(
     (s) => s.currentJam?.licks.find((p) => p.id === s.activeLickId) ?? null,
+  );
+
+  /**
+   * Greedy interval partitioning: each Lick drops into the first row whose previous
+   * region has already ended, so overlapping and nested Licks sit under one another
+   * instead of on top of one another. Rows past MAX_LANES reuse the one that frees up first.
+   */
+  public readonly laneFreeze$ = this.select((s) => s.laneFreeze);
+
+  /**
+   * Live lane assignment, except while a retime drag holds it still: recomputing on every
+   * pointermove would shuffle Licks the user isn't even touching between rows. Positions
+   * still come from the live times — only the row a Lick sits in is frozen.
+   */
+  public readonly lickLanes$ = this.select(
+    this.licks$,
+    this.laneFreeze$,
+    (licks, freeze): LickLanes =>
+      freeze === null
+        ? assignLanes(licks)
+        : {
+            lanes: licks.map((lick, index) => ({
+              lick,
+              lane: freeze.lanes[lick.id] ?? 0,
+              color: colorFor(lick, index),
+            })),
+            laneCount: freeze.laneCount,
+          },
   );
 
   /** The range the loop applies to: the active Lick, or the unsaved mark-in/out selection. */
@@ -441,6 +530,70 @@ export class JaminiViewModel extends ComponentStore<JaminiState> {
     ),
   );
 
+  /**
+   * Live preview while a Lick edge is dragged on the timeline. Local only — the drag
+   * ends with a single saveLickRange call rather than a request per pointermove.
+   */
+  /** Pins every Lick to the row it currently occupies, for the duration of a retime drag. */
+  public freezeLanes(): void {
+    const { lanes, laneCount } = assignLanes(this.get().currentJam?.licks ?? []);
+    this.patchState({
+      laneFreeze: {
+        lanes: Object.fromEntries(lanes.map((entry) => [entry.lick.id, entry.lane])),
+        laneCount,
+      },
+    });
+  }
+
+  public releaseLanes(): void {
+    this.patchState({ laneFreeze: null });
+  }
+
+  public previewLickRange(lickId: string, startSeconds: number, endSeconds: number): void {
+    this.patchState((s) => ({
+      currentJam: s.currentJam
+        ? {
+            ...s.currentJam,
+            licks: s.currentJam.licks.map((lick) =>
+              lick.id === lickId ? { ...lick, startSeconds, endSeconds } : lick,
+            ),
+          }
+        : s.currentJam,
+    }));
+  }
+
+  /** Persists a retimed Lick; restores the pre-drag range if the request fails. */
+  public readonly saveLickRange = this.effect<{ lick: JaminiApi.Lick; previous: JaminiApi.Lick }>(
+    (input$) =>
+      input$.pipe(
+        switchMap(({ lick, previous }) =>
+          this.apiService
+            .updateLick(lick.id, {
+              name: lick.name,
+              startSeconds: lick.startSeconds,
+              endSeconds: lick.endSeconds,
+              playbackRate: lick.playbackRate,
+            })
+            .pipe(
+              tap((updated) =>
+                this.patchState((s) => ({
+                  currentJam: s.currentJam
+                    ? {
+                        ...s.currentJam,
+                        licks: s.currentJam.licks.map((p) => (p.id === updated.id ? updated : p)),
+                      }
+                    : s.currentJam,
+                })),
+              ),
+              catchError(() => {
+                this.previewLickRange(previous.id, previous.startSeconds, previous.endSeconds);
+                return of(null);
+              }),
+            ),
+        ),
+      ),
+  );
+
   public readonly deleteLick = this.effect<string>((lickId$) =>
     lickId$.pipe(
       switchMap((lickId) =>
@@ -472,6 +625,7 @@ export class JaminiViewModel extends ComponentStore<JaminiState> {
       duration: 0,
       zoom: 1,
       viewStart: 0,
+      laneFreeze: null,
     });
   }
 

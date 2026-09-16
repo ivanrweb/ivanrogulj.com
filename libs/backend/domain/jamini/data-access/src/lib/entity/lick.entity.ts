@@ -23,6 +23,9 @@ export class LickEntity {
   @Column({ type: 'int', default: 0 })
   public sortOrder!: number;
 
+  @Column({ type: 'varchar', length: 16, nullable: true })
+  public color!: string | null;
+
   @CreateDateColumn()
   public createdAt!: Date;
 }
