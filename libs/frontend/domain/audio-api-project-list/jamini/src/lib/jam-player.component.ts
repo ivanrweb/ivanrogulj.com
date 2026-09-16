@@ -23,6 +23,9 @@ const PLAYER_ELEMENT_ID = 'jamini-player';
 const CLICK_DRAG_THRESHOLD = 0.005;
 /** Minimum gap between mark-in and mark-out while dragging a handle (seconds). */
 const MIN_MARK_GAP = 0.1;
+/** Press-and-hold on the speed buttons: wait this long, then step this often. */
+const RATE_REPEAT_DELAY_MS = 400;
+const RATE_REPEAT_INTERVAL_MS = 90;
 
 @Component({
   selector: 'lib-jam-player',
@@ -154,8 +157,9 @@ const MIN_MARK_GAP = 0.1;
                   <button
                     class="transport-btn"
                     type="button"
-                    title="Slower"
-                    (click)="vm.stepPlaybackRate(-1)"
+                    title="Slower (hold to keep stepping)"
+                    (pointerdown)="startRateRepeat($event, -1)"
+                    (click)="onRateButtonClick($event, -1)"
                   >
                     −
                   </button>
@@ -165,8 +169,9 @@ const MIN_MARK_GAP = 0.1;
                   <button
                     class="transport-btn"
                     type="button"
-                    title="Faster"
-                    (click)="vm.stepPlaybackRate(1)"
+                    title="Faster (hold to keep stepping)"
+                    (pointerdown)="startRateRepeat($event, 1)"
+                    (click)="onRateButtonClick($event, 1)"
                   >
                     +
                   </button>
@@ -872,6 +877,9 @@ export class JamPlayerComponent implements OnInit, OnDestroy {
   private jamSubscription: Subscription | null = null;
   private dragStartFraction: number | null = null;
   private removeDragListeners: (() => void) | null = null;
+  private rateHoldTimeout: ReturnType<typeof setTimeout> | null = null;
+  private rateHoldInterval: ReturnType<typeof setInterval> | null = null;
+  private removeRateRepeatListeners: (() => void) | null = null;
 
   public ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
@@ -897,6 +905,7 @@ export class JamPlayerComponent implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.jamSubscription?.unsubscribe();
     this.removeDragListeners?.();
+    this.stopRateRepeat();
     this.vm.leavePlayer();
   }
 
@@ -916,6 +925,52 @@ export class JamPlayerComponent implements OnInit, OnDestroy {
       event.preventDefault();
       this.vm.restartRange();
     }
+  }
+
+  /** One step on press, then repeat while the button stays held. */
+  public startRateRepeat(event: PointerEvent, direction: 1 | -1): void {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    event.preventDefault();
+    this.stopRateRepeat();
+    this.vm.stepPlaybackRate(direction);
+
+    this.rateHoldTimeout = setTimeout(() => {
+      this.rateHoldInterval = setInterval(
+        () => this.vm.stepPlaybackRate(direction),
+        RATE_REPEAT_INTERVAL_MS
+      );
+    }, RATE_REPEAT_DELAY_MS);
+
+    const stop = (): void => this.stopRateRepeat();
+    document.addEventListener('pointerup', stop);
+    document.addEventListener('pointercancel', stop);
+    window.addEventListener('blur', stop);
+    this.removeRateRepeatListeners = (): void => {
+      document.removeEventListener('pointerup', stop);
+      document.removeEventListener('pointercancel', stop);
+      window.removeEventListener('blur', stop);
+      this.removeRateRepeatListeners = null;
+    };
+  }
+
+  public stopRateRepeat(): void {
+    if (this.rateHoldTimeout !== null) {
+      clearTimeout(this.rateHoldTimeout);
+      this.rateHoldTimeout = null;
+    }
+    if (this.rateHoldInterval !== null) {
+      clearInterval(this.rateHoldInterval);
+      this.rateHoldInterval = null;
+    }
+    this.removeRateRepeatListeners?.();
+  }
+
+  /**
+   * Pointer presses are already handled by startRateRepeat; only keyboard-generated
+   * clicks (Enter/Space, which report detail 0) still need to step here.
+   */
+  public onRateButtonClick(event: MouseEvent, direction: 1 | -1): void {
+    if (event.detail === 0) this.vm.stepPlaybackRate(direction);
   }
 
   public toggleLick(lick: JaminiApi.Lick, activeLickId: string | null): void {
@@ -1117,11 +1172,9 @@ export class JamPlayerComponent implements OnInit, OnDestroy {
   }
 
   private async createPlayer(videoId: string): Promise<void> {
-    const { duration, availableRates } = await this.playerService.createPlayer(
-      PLAYER_ELEMENT_ID,
-      videoId
-    );
-    this.vm.onPlayerReady(duration, availableRates);
+    const { duration, supportsVariableRate } =
+      await this.playerService.createPlayer(PLAYER_ELEMENT_ID, videoId);
+    this.vm.onPlayerReady(duration, supportsVariableRate);
   }
 
   private attachDragListeners(

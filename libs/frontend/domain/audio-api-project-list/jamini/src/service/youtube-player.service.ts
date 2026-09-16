@@ -10,6 +10,7 @@ interface YtPlayer {
   getCurrentTime(): number;
   getDuration(): number;
   getAvailablePlaybackRates(): number[];
+  getPlaybackRate(): number;
   setPlaybackRate(suggestedRate: number): void;
   getPlayerState(): number;
   destroy(): void;
@@ -24,6 +25,7 @@ interface YtNamespace {
       events?: {
         onReady?: () => void;
         onStateChange?: (event: { data: number }) => void;
+        onPlaybackRateChange?: (event: { data: number }) => void;
       };
     },
   ) => YtPlayer;
@@ -42,7 +44,8 @@ const TIME_POLL_INTERVAL_MS = 100;
 
 export interface PlayerReadyInfo {
   duration: number;
-  availableRates: number[];
+  /** False only for videos the player refuses to speed up at all (it then reports just [1]). */
+  supportsVariableRate: boolean;
 }
 
 /**
@@ -59,10 +62,12 @@ export class YoutubePlayerService {
 
   public readonly time$ = new Subject<number>();
   public readonly playing$ = new Subject<boolean>();
+  /** The rate the player actually settled on — it snaps and clamps what we ask for. */
+  public readonly rate$ = new Subject<number>();
 
   public async createPlayer(elementId: string, videoId: string): Promise<PlayerReadyInfo> {
     if (!isPlatformBrowser(this.platformId)) {
-      return { duration: 0, availableRates: [1] };
+      return { duration: 0, supportsVariableRate: false };
     }
     await this.loadApi();
     this.destroyPlayer();
@@ -77,11 +82,14 @@ export class YoutubePlayerService {
             this.startPolling();
             resolve({
               duration: this.player?.getDuration() ?? 0,
-              availableRates: this.player?.getAvailablePlaybackRates() ?? [1],
+              supportsVariableRate: (this.player?.getAvailablePlaybackRates() ?? [1]).length > 1,
             });
           },
           onStateChange: (event): void => {
             this.playing$.next(event.data === yt.PlayerState.PLAYING);
+          },
+          onPlaybackRateChange: (event): void => {
+            this.rate$.next(event.data);
           },
         },
       });

@@ -36,6 +36,21 @@ export interface JaminiState {
 /** Max timeline zoom factor. */
 const MAX_ZOOM = 40;
 
+/**
+ * The player accepts any rate on a 0.05 grid between these bounds — anything else it
+ * snaps (0.92 → 0.9) or clamps (3 → 2). `getAvailablePlaybackRates()` is NOT that set:
+ * it only lists the eight presets YouTube shows in its own speed menu, so we build the
+ * full grid ourselves and let `onPlaybackRateChange` report back what actually stuck.
+ */
+const RATE_MIN = 0.25;
+const RATE_MAX = 2;
+const RATE_STEP = 0.05;
+
+const FINE_RATES: number[] = Array.from(
+  { length: Math.round((RATE_MAX - RATE_MIN) / RATE_STEP) + 1 },
+  (_, index) => Math.round((RATE_MIN + index * RATE_STEP) * 100) / 100,
+);
+
 const defaultState: JaminiState = {
   jams: [],
   categories: [],
@@ -93,6 +108,7 @@ export class JaminiViewModel extends ComponentStore<JaminiState> {
     // Playhead + play state from the player service
     this.updateTimeFromPlayer(this.playerService.time$);
     this.patchIsPlaying(this.playerService.playing$);
+    this.patchPlaybackRate(this.playerService.rate$);
 
     // Loop: when enabled and the playhead passes the end of the range, jump back to start
     this.loopWatcher(this.playerService.time$);
@@ -211,8 +227,12 @@ export class JaminiViewModel extends ComponentStore<JaminiState> {
     ),
   );
 
-  public onPlayerReady(duration: number, availableRates: number[]): void {
-    this.patchState({ duration, availableRates, playbackRate: 1 });
+  public onPlayerReady(duration: number, supportsVariableRate: boolean): void {
+    this.patchState({
+      duration,
+      availableRates: supportsVariableRate ? FINE_RATES : [1],
+      playbackRate: 1,
+    });
 
     // Persist duration the first time we learn it, so the library can show it later
     const jam = this.get().currentJam;
@@ -237,7 +257,12 @@ export class JaminiViewModel extends ComponentStore<JaminiState> {
   public stepPlaybackRate(direction: 1 | -1): void {
     const { availableRates, playbackRate } = this.get();
     const sorted = [...availableRates].sort((a, b) => a - b);
-    const index = sorted.indexOf(playbackRate);
+    // Nearest index rather than indexOf: the player can settle on a rate we never asked for.
+    const index = sorted.reduce(
+      (closest, rate, i) =>
+        Math.abs(rate - playbackRate) < Math.abs(sorted[closest] - playbackRate) ? i : closest,
+      0,
+    );
     const nextIndex = Math.min(sorted.length - 1, Math.max(0, index + direction));
     this.applyPlaybackRate(sorted[nextIndex]);
   }
@@ -467,6 +492,11 @@ export class JaminiViewModel extends ComponentStore<JaminiState> {
 
   private readonly patchIsPlaying = this.effect<boolean>((playing$) =>
     playing$.pipe(tap((isPlaying) => this.patchState({ isPlaying }))),
+  );
+
+  /** The player is the source of truth for the rate: it snaps and clamps what we ask for. */
+  private readonly patchPlaybackRate = this.effect<number>((rate$) =>
+    rate$.pipe(tap((playbackRate) => this.patchState({ playbackRate }))),
   );
 
   private readonly loopWatcher = this.effect<number>((time$) =>
